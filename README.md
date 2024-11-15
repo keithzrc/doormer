@@ -2,68 +2,12 @@
 
 A new Flutter project.
 
-## Getting Started
-
-This project is a starting point for a Flutter application that follows the
-[simple app state management
-tutorial](https://flutter.dev/to/state-management-sample).
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
-## Assets
-
-The `assets` directory houses images, fonts, and any other files you want to
-include with your application.
-
-The `assets/images` directory contains [resolution-aware
-images](https://flutter.dev/to/resolution-aware-images).
-
-## Localization
-
-This project generates localized messages based on arb files found in
-the `lib/src/localization` directory.
-
-To support additional languages, please visit the tutorial on
-[Internationalizing Flutter apps](https://flutter.dev/to/internationalization).
-
-
-# doormer
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application that follows the
-[simple app state management
-tutorial](https://flutter.dev/to/state-management-sample).
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
-## Assets
-
-The `assets` directory houses images, fonts, and any other files you want to
-include with your application.
-
-The `assets/images` directory contains [resolution-aware
-images](https://flutter.dev/to/resolution-aware-images).
-
-## Localization
-
-This project generates localized messages based on arb files found in
-the `lib/src/localization` directory.
-
-To support additional languages, please visit the tutorial on
-[Internationalizing Flutter apps](https://flutter.dev/to/internationalization).
-
 
 # Clean Architecture Development Guideline
 
 This guideline outlines the principles and practices of Clean Architecture to be followed in our Flutter project. Adhering to this structure ensures scalability, maintainability, and testability of the codebase. Below, you'll find the why and how behind each aspect of the architecture.
 
+Read: https://medium.com/@yamen.abd98/clean-architecture-in-flutter-mvvm-bloc-dio-79b1615530e1
 ---
 
 ## Core Principles of Clean Architecture
@@ -85,8 +29,7 @@ This guideline outlines the principles and practices of Clean Architecture to be
 ## Folder Structure
 
 Use a feature-based modular structure, with each feature encapsulated within its own directory.
-
-```plaintext
+```
 lib/
 ├── core/                  # Application-wide utilities, error handling, network setup, and DI
 ├── features/
@@ -95,7 +38,7 @@ lib/
 │       ├── domain/        # Business logic: entities, use cases, repositories (interfaces)
 │       └── data/          # Data handling: API calls, local storage, repository implementations
 └── shared/                # Reusable widgets or utilities shared across features
-
+```
 ---
 
 ### **Layer Responsibilities**
@@ -151,7 +94,7 @@ We use **GetIt** for Dependency Injection (DI), which allows us to inject depend
 // Registering dependencies
 sl.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl());
 sl.registerFactory(() => ChatListBloc(sl()));
-
+```
 
 ---
 
@@ -192,15 +135,13 @@ class ChatListBloc extends Bloc<ChatListEvent, ChatListState> {
     });
   }
 }
-
+```
 
 
 ---
 
 ### **Repository Guidelines**
 
-```markdown
-## Repository Guidelines
 1. Define interfaces in the **domain layer** for all repositories.
 2. Implement the interfaces in the **data layer** using concrete data sources (e.g., API calls via Dio).
 3. Return **domain entities** from repository methods, not raw data or DTOs.
@@ -225,15 +166,13 @@ class ChatRepositoryImpl implements ChatRepository {
     return data.map((dto) => ChatRoom(...)).toList();
   }
 }
-
+```
 
 
 ---
 
 ### **UI and Widgets Guidelines**
 
-```markdown
-## UI and Widgets Guidelines
 1. Break UI into smaller reusable widgets for modularity.
 2. Avoid embedding state management or business logic in widgets.
 3. Use `BlocBuilder` or `BlocListener` to react to state changes.
@@ -258,15 +197,12 @@ BlocBuilder<ChatListBloc, ChatListState>(
     }
   },
 );
-
+```
 
 
 ---
 
 ### **Testing**
-
-```markdown
-## Testing
 
 1. **Unit Tests**  
    Write tests for:
@@ -295,3 +231,4 @@ void main() {
     expect: () => [ChatListLoading(), ChatListLoaded(mockChatRooms)],
   );
 }
+```
