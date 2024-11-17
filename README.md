@@ -1,7 +1,41 @@
 # doormer
 
-A new Flutter project.
+Welcome to doormer
 
+# Installation Guide
+
+Follow the steps below to set up and run this project:
+
+## Prerequisites
+
+1. **Install Flutter**  
+   Follow the official Flutter installation guide for your operating system: [Flutter Installation Guide](https://flutter.dev/docs/get-started/install)
+
+2. Ensure you have a code editor installed (e.g., [VS Code](https://code.visualstudio.com/) or [Android Studio](https://developer.android.com/studio)).
+
+## Installation Steps
+
+1. **Clone the Project**  
+   Clone this repository to your local machine:  
+   ```bash
+   git clone <repository-url>
+   ```
+
+2. **Navigate to the Project Directory**
+   ```bash
+   cd <project-directory>
+   ```
+
+3. **Install Dependencies**
+   ```bash
+   flutter pub get
+   ```
+
+4. **Run the Project in Debug Mode**
+   ```bash
+   flutter run
+   ```
+---
 
 # Clean Architecture Development Guideline
 
