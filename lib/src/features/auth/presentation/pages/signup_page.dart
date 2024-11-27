@@ -76,241 +76,238 @@ class _SignupPageBodyState extends State<_SignupPageBody> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
         ),
-        body: BlocConsumer<AuthBloc, AuthState>(
-          listener: (context, state) {
-            if (state is AuthSuccess) {
-              AppLogger.info('Signup successful');
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Signup successful!')),
-              );
-            } else if (state is AuthFailure) {
-              AppLogger.error('Signup failed with error: ${state.error}');
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.error)),
-              );
-            }
-          },
-          builder: (context, state) {
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 0.07.sw),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20.h),
-                    Text(
-                      'CREATE COMPANY',
-                      style: TextStyle(
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 5.h),
-                    Text(
-                      "We'll send you a code to verify this email.",
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                    SizedBox(height: 20.h),
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Email TextField
-                          TextFormField(
-                            controller: _emailController,
-                            decoration: InputDecoration(
-                              labelText: 'Email',
-                              hintText: 'Enter your email',
-                              prefixIcon: const Icon(Icons.email_outlined),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.r),
-                                borderSide: const BorderSide(
-                                    color: Colors.grey, width: 1),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.r),
-                                borderSide: const BorderSide(
-                                    color: Colors.black, width: 1.5),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.r),
-                                borderSide: const BorderSide(
-                                    color: Colors.red, width: 1),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.r),
-                                borderSide: const BorderSide(
-                                    color: Colors.red, width: 2),
-                              ),
-                              hintStyle: const TextStyle(color: Colors.grey),
-                              labelStyle: const TextStyle(color: Colors.black),
-                            ),
-                            style: const TextStyle(color: Colors.black),
-                            keyboardType: TextInputType.emailAddress,
-                            validator: _validateEmail,
-                            textInputAction: TextInputAction.next,
-                          ),
-                          SizedBox(height: 16.h),
-
-                          // Password TextField with toggle visibility
-                          TextFormField(
-                            controller: _passwordController,
-                            decoration: InputDecoration(
-                              labelText: 'Password',
-                              hintText: 'Enter your password',
-                              prefixIcon: const Icon(Icons.lock_outlined),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _isPasswordVisible
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _isPasswordVisible = !_isPasswordVisible;
-                                  });
-                                },
-                                splashColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                iconSize: 20.sp,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.r),
-                                borderSide: const BorderSide(
-                                    color: Colors.grey, width: 1),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.r),
-                                borderSide: const BorderSide(
-                                    color: Colors.black, width: 1.5),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.r),
-                                borderSide: const BorderSide(
-                                    color: Colors.red, width: 1),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.r),
-                                borderSide: const BorderSide(
-                                    color: Colors.red, width: 2),
-                              ),
-                              hintStyle: const TextStyle(color: Colors.grey),
-                              labelStyle: const TextStyle(color: Colors.black),
-                            ),
-                            style: const TextStyle(color: Colors.black),
-                            obscureText: !_isPasswordVisible,
-                            validator: _validatePassword,
-                            textInputAction: TextInputAction.next,
-                          ),
-                          SizedBox(height: 16.h),
-
-                          // Confirm Password TextField with toggle visibility
-                          TextFormField(
-                            controller: _confirmPasswordController,
-                            decoration: InputDecoration(
-                              labelText: 'Confirm Password',
-                              hintText: 'Enter your password again',
-                              prefixIcon: const Icon(Icons.lock_outline),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _isConfirmPasswordVisible
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _isConfirmPasswordVisible =
-                                        !_isConfirmPasswordVisible;
-                                  });
-                                },
-                                splashColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                iconSize: 20.sp,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.r),
-                                borderSide: const BorderSide(
-                                    color: Colors.grey, width: 1),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.r),
-                                borderSide: const BorderSide(
-                                    color: Colors.black, width: 1.5),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.r),
-                                borderSide: const BorderSide(
-                                    color: Colors.red, width: 1),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.r),
-                                borderSide: const BorderSide(
-                                    color: Colors.red, width: 2),
-                              ),
-                              hintStyle: const TextStyle(color: Colors.grey),
-                              labelStyle: const TextStyle(color: Colors.black),
-                            ),
-                            style: const TextStyle(color: Colors.black),
-                            obscureText: !_isConfirmPasswordVisible,
-                            validator: _validateConfirmPassword,
-                            textInputAction: TextInputAction.done,
-                          ),
-                          SizedBox(height: 24.h),
-
-                          // Sign Up Button
-                          ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                final email = _emailController.text;
-                                final password = _passwordController.text;
-                                // Dispatch the SignupRequested event
-                                context
-                                    .read<AuthBloc>()
-                                    .add(SignupRequested(email, password));
-                                AppLogger.info(
-                                    'Signup button pressed with email=$email');
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(vertical: 10.h),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.r),
-                              ),
-                              backgroundColor:
-                                  AppColors.primary, // Button color
-                            ),
-                            child: state is AuthLoading
-                                ? const CircularProgressIndicator(
-                                    color: Colors.white)
-                                : Text(
-                                    'Sign Up',
-                                    style: TextStyle(
-                                        fontSize: 16.sp, color: Colors.white),
-                                  ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthSuccess) {
+            AppLogger.info('Signup successful');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Signup successful!')),
             );
-          },
-        ),
+          } else if (state is AuthFailure) {
+            AppLogger.error('Signup failed with error: ${state.error}');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.error)),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 0.07.sw),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20.h),
+                  Text(
+                    'CREATE COMPANY',
+                    style: TextStyle(
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 5.h),
+                  Text(
+                    "We'll send you a code to verify this email.",
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Email TextField
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            hintText: 'Enter your email',
+                            prefixIcon: const Icon(Icons.email_outlined),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide: const BorderSide(
+                                  color: Colors.grey, width: 1),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide: const BorderSide(
+                                  color: Colors.black, width: 1.5),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide:
+                                  const BorderSide(color: Colors.red, width: 1),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide:
+                                  const BorderSide(color: Colors.red, width: 2),
+                            ),
+                            hintStyle: const TextStyle(color: Colors.grey),
+                            labelStyle: const TextStyle(color: Colors.black),
+                          ),
+                          style: const TextStyle(color: Colors.black),
+                          keyboardType: TextInputType.emailAddress,
+                          validator: _validateEmail,
+                          textInputAction: TextInputAction.next,
+                        ),
+                        SizedBox(height: 16.h),
+
+                        // Password TextField with toggle visibility
+                        TextFormField(
+                          controller: _passwordController,
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            hintText: 'Enter your password',
+                            prefixIcon: const Icon(Icons.lock_outlined),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              iconSize: 20.sp,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide: const BorderSide(
+                                  color: Colors.grey, width: 1),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide: const BorderSide(
+                                  color: Colors.black, width: 1.5),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide:
+                                  const BorderSide(color: Colors.red, width: 1),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide:
+                                  const BorderSide(color: Colors.red, width: 2),
+                            ),
+                            hintStyle: const TextStyle(color: Colors.grey),
+                            labelStyle: const TextStyle(color: Colors.black),
+                          ),
+                          style: const TextStyle(color: Colors.black),
+                          obscureText: !_isPasswordVisible,
+                          validator: _validatePassword,
+                          textInputAction: TextInputAction.next,
+                        ),
+                        SizedBox(height: 16.h),
+
+                        // Confirm Password TextField with toggle visibility
+                        TextFormField(
+                          controller: _confirmPasswordController,
+                          decoration: InputDecoration(
+                            labelText: 'Confirm Password',
+                            hintText: 'Enter your password again',
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isConfirmPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isConfirmPasswordVisible =
+                                      !_isConfirmPasswordVisible;
+                                });
+                              },
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              iconSize: 20.sp,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide: const BorderSide(
+                                  color: Colors.grey, width: 1),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide: const BorderSide(
+                                  color: Colors.black, width: 1.5),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide:
+                                  const BorderSide(color: Colors.red, width: 1),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide:
+                                  const BorderSide(color: Colors.red, width: 2),
+                            ),
+                            hintStyle: const TextStyle(color: Colors.grey),
+                            labelStyle: const TextStyle(color: Colors.black),
+                          ),
+                          style: const TextStyle(color: Colors.black),
+                          obscureText: !_isConfirmPasswordVisible,
+                          validator: _validateConfirmPassword,
+                          textInputAction: TextInputAction.done,
+                        ),
+                        SizedBox(height: 24.h),
+
+                        // Sign Up Button
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              final email = _emailController.text;
+                              final password = _passwordController.text;
+                              // Dispatch the SignupRequested event
+                              context
+                                  .read<AuthBloc>()
+                                  .add(SignupRequested(email, password));
+                              AppLogger.info(
+                                  'Signup button pressed with email=$email');
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(vertical: 10.h),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.r),
+                            ),
+                            backgroundColor: AppColors.primary, // Button color
+                          ),
+                          child: state is AuthLoading
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white)
+                              : Text(
+                                  'Sign Up',
+                                  style: TextStyle(
+                                      fontSize: 16.sp, color: Colors.white),
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

@@ -4,7 +4,7 @@ import '../../features/auth/presentation/pages/auth_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/signup_page.dart';
 import '../../features/auth/presentation/pages/confirm_email_page.dart';
-import '../presentation/pages/dashboard_page.dart';
+import '../../shared/presentation/pages/dashboard_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/list/presentation/pages/list_page.dart';
 import '../../features/chat/presentation/pages/chat_page.dart';
@@ -19,7 +19,7 @@ MobileRouter defines the routing structure and logic specifically for the mobile
 
 class MobileRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/auth/signup', // Initial Page
+    initialLocation: '/main/home', // Initial Page
     routes: [
       // Auth Routes
       GoRoute(
@@ -45,6 +45,7 @@ class MobileRouter {
       ),
 
       // Main App Routes with Bottom Navigation
+      //// TODO:(Split main )
       ShellRoute(
         builder: (context, state, child) => DashboardPage(child: child),
         routes: [
