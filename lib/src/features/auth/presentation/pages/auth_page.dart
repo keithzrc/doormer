@@ -1,9 +1,11 @@
+import 'package:doormer/src/core/routes/web_router.dart';
 import 'package:doormer/src/features/auth/di/auth_module.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -50,7 +52,7 @@ class _AuthPage extends StatelessWidget {
                 // Email sign-up button
                 ElevatedButton(
                   onPressed: () {
-                    // TODO: Add navigation to email sign-up page
+                    context.go('/auth/signup');
                   },
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 12.h),
@@ -190,7 +192,7 @@ class _AuthPage extends StatelessWidget {
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              //TODO: Trigger Navigation to Login Page
+                              context.go('/auth/login');
                             },
                         ),
                       ],

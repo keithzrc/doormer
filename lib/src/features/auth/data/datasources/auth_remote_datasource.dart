@@ -1,7 +1,8 @@
 // lib/features/auth/data/datasources/auth_remote_datasource.dart
 
 import 'package:dio/dio.dart';
-import '../models/user_model.dart';
+import 'package:doormer/src/core/utils/app_logger.dart';
+import '../../../../shared/data/models/user_model.dart';
 
 class AuthRemoteDataSource {
   final Dio dio;
@@ -29,10 +30,11 @@ class AuthRemoteDataSource {
         data: {'email': email, 'password': password},
       );
 
-      // Parse the response into UserModel
+      AppLogger.info('Passing to UserModel.fromJson: ${response.data}');
       return UserModel.fromJson(response.data);
-    } on DioException catch (e) {
-      throw Exception(e.response?.data['message'] ?? 'Login failed');
+    } catch (e, stacktrace) {
+      AppLogger.error('Error in login API call: $e\n$stacktrace');
+      throw Exception('Failed to login');
     }
   }
 

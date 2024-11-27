@@ -23,6 +23,7 @@ dependencies:
   equatable:
   logger:
   go_router:
+  flutter_secure_storage:
 
 dev_dependencies:
   flutter_test:

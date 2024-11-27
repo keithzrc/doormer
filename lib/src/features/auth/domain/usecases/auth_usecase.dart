@@ -1,5 +1,5 @@
 import 'package:doormer/src/features/auth/domain/repository/auth_repository.dart';
-import '../entities/user.dart';
+import '../../../../shared/domain/entities/user.dart';
 
 class AuthUseCase {
   final AuthRepository authRepository;

@@ -30,6 +30,7 @@ class DashboardPage extends StatelessWidget {
   }
 
   // Navigate to the selected tab route
+  // TODO: enum, factory pattern
   void _onItemTapped(BuildContext context, int index) {
     switch (index) {
       case 0:

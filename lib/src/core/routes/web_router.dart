@@ -16,7 +16,7 @@ WebRouter defines the routing structure and logic specifically for the web platf
 class WebRouter {
   // TODO: Change to th according web UI
   static final GoRouter router = GoRouter(
-    initialLocation: '/auth',
+    initialLocation: '/main/inbox',
     routes: [
       // Auth Routes
       GoRoute(

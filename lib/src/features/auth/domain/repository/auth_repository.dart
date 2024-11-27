@@ -1,5 +1,5 @@
 // lib/features/auth/domain/repositories/auth_repository.dart
-import 'package:doormer/src/features/auth/domain/entities/user.dart';
+import 'package:doormer/src/shared/domain/entities/user.dart';
 
 abstract class AuthRepository {
   /// Signs up a new user with email and password
@@ -13,4 +13,7 @@ abstract class AuthRepository {
 
   /// Verify email with confirmation code
   Future<void> confirmEmail(String email, String code);
+
+  /// Logout user
+  Future<void> logout();
 }

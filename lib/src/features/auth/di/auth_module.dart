@@ -1,5 +1,7 @@
 // lib/src/features/auth/di/auth_module.dart
 
+import 'package:doormer/src/core/services/sessions/session_service.dart';
+import 'package:doormer/src/core/utils/token_storage.dart';
 import 'package:doormer/src/features/auth/domain/repository/auth_repository.dart';
 import 'package:doormer/src/features/auth/domain/usecases/auth_usecase.dart';
 import 'package:get_it/get_it.dart';
@@ -17,10 +19,11 @@ void initAuthModule() {
   );
 
   // Register AuthRepository
-  serviceLocator.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(
-        remoteDataSource: serviceLocator<AuthRemoteDataSource>()),
-  );
+  serviceLocator.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(
+        remoteDataSource: serviceLocator<AuthRemoteDataSource>(),
+        tokenStorage: serviceLocator<TokenStorage>(),
+        sessionService: serviceLocator<SessionService>(),
+      ));
 
   // Register AuthUseCase
   serviceLocator.registerLazySingleton(() => AuthUseCase(serviceLocator()));
