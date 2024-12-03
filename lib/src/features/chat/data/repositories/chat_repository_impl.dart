@@ -24,17 +24,17 @@ class ChatRepositoryImpl implements ChatRepository {
 
   @override
   Future<List<Chat>> getChatList() async {
-    // 返回未归档的聊天列表
+    
     return _chats.where((chat) => !chat.isArchived).toList();
   }
 
   @override
   Future<void> archiveChat(String chatId) async {
-    // 查找需要归档的聊天
+   
     final index = _chats.indexWhere((chat) => chat.id == chatId);
     if (index != -1) {
       final chat = _chats[index];
-      // 创建一个新的实例来替代原来的实例，设置 isArchived 为 true
+     
       _chats[index] = ChatModel(
         id: chat.id,
         userName: chat.userName,
@@ -48,7 +48,7 @@ class ChatRepositoryImpl implements ChatRepository {
 
   @override
   Future<void> deleteChat(String chatId) async {
-    // 删除指定的聊天
+    
     _chats.removeWhere((chat) => chat.id == chatId);
   }
 
@@ -57,7 +57,7 @@ class ChatRepositoryImpl implements ChatRepository {
     for (int i = 0; i < _chats.length; i++) {
       final chat = _chats[i];
       if (!chat.isArchived && now.difference(chat.lastMessageTime) > threshold) {
-        // 创建一个新的实例来归档超出阈值时间的聊天
+      
         _chats[i] = ChatModel(
           id: chat.id,
           userName: chat.userName,
