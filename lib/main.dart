@@ -1,5 +1,6 @@
 import 'package:doormer/src/core/di/service_locator.dart';
-import 'package:doormer/src/core/navigation/app_router.dart';
+import 'package:doormer/src/core/routes/app_router.dart';
+//import 'package:doormer/src/core/navigation/app_router.dart';
 import 'package:doormer/src/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
