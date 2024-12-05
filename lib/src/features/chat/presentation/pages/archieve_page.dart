@@ -1,6 +1,53 @@
 import 'package:flutter/material.dart';
 import '../../data/repositories/chat_repository_impl.dart'; // 导入存储库实现
 
+// 聊天卡片Widget，用于显示每个聊天项
+class ChatCard extends StatelessWidget {
+  final String userName;
+  final String avatarUrl;
+  final String lastMessage;
+  final VoidCallback? onTap;
+
+  const ChatCard({
+    super.key,
+    required this.userName,
+    required this.avatarUrl,
+    required this.lastMessage,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      child: ListTile(
+        leading: CircleAvatar(
+          radius: 30,
+          backgroundImage: NetworkImage(avatarUrl),
+        ),
+        title: Text(
+          userName,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        subtitle: Text(
+          lastMessage,
+          style: const TextStyle(
+            color: Colors.grey,
+          ),
+        ),
+        onTap: onTap,
+      ),
+    );
+  }
+}
+
 class ArchivePage extends StatelessWidget {
   const ArchivePage({super.key});
 
@@ -39,35 +86,13 @@ class ArchivePage extends StatelessWidget {
                     itemCount: archivedChats.length,
                     itemBuilder: (context, index) {
                       final chat = archivedChats[index];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 8.0),
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            radius: 30,
-                            backgroundImage: NetworkImage(chat.avatarUrl),
-                          ),
-                          title: Text(
-                            chat.userName,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          subtitle: Text(
-                            chat.lastMessage,
-                            style: const TextStyle(
-                              color: Colors.grey,
-                            ),
-                          ),
-                          //trailing: Icon(Icons.message, color: Colors.blueAccent),
-                          onTap: () {
-                            // 点击每个聊天项的逻辑（可扩展）
-                          },
-                        ),
+                      return ChatCard(
+                        userName: chat.userName,
+                        avatarUrl: chat.avatarUrl,
+                        lastMessage: chat.lastMessage,
+                        onTap: () {
+                          // 点击每个聊天项的逻辑（可扩展）
+                        },
                       );
                     },
                   );
@@ -89,7 +114,7 @@ class ArchivePage extends StatelessWidget {
           Flexible(
             flex: 3, // 占整个宽度的 3/10
             child: Container(
-              color: Colors.grey[200], // 右侧的背景颜色
+              color: const Color.fromARGB(255, 255, 255, 255), // 右侧的背景颜色
               child: Center(
                 child: Text(
                   'User Profile Section',
@@ -103,3 +128,4 @@ class ArchivePage extends StatelessWidget {
     );
   }
 }
+
