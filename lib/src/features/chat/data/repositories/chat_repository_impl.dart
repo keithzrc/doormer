@@ -24,17 +24,20 @@ class ChatRepositoryImpl implements ChatRepository {
 
   @override
   Future<List<Chat>> getChatList() async {
-    
     return _chats.where((chat) => !chat.isArchived).toList();
   }
 
   @override
+  Future<List<Chat>> getArchivedList() async {
+    return _chats.where((chat) => chat.isArchived).toList();
+  }
+
+  @override
   Future<void> archiveChat(String chatId) async {
-   
     final index = _chats.indexWhere((chat) => chat.id == chatId);
     if (index != -1) {
       final chat = _chats[index];
-     
+
       _chats[index] = ChatModel(
         id: chat.id,
         userName: chat.userName,
@@ -48,7 +51,6 @@ class ChatRepositoryImpl implements ChatRepository {
 
   @override
   Future<void> deleteChat(String chatId) async {
-    
     _chats.removeWhere((chat) => chat.id == chatId);
   }
 
@@ -56,8 +58,8 @@ class ChatRepositoryImpl implements ChatRepository {
     final now = DateTime.now();
     for (int i = 0; i < _chats.length; i++) {
       final chat = _chats[i];
-      if (!chat.isArchived && now.difference(chat.lastMessageTime) > threshold) {
-      
+      if (!chat.isArchived &&
+          now.difference(chat.lastMessageTime) > threshold) {
         _chats[i] = ChatModel(
           id: chat.id,
           userName: chat.userName,
