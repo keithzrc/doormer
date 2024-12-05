@@ -1,7 +1,6 @@
-// chat_page.dart
 import 'package:flutter/material.dart';
+import './archieve_page.dart'; // 导入归档页面
 
-// ChatPage class represents the main chat screen
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
 
@@ -11,9 +10,9 @@ class ChatPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Chat'),
         leading: IconButton(
-          icon: const Icon(Icons.archive), // Archive icon in the top-left corner
+          icon: const Icon(Icons.archive), // 左上角归档按钮
           onPressed: () {
-            // When the archive button is pressed, navigate to the ArchivePage
+            // 点击按钮跳转到归档页面
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const ArchivePage()),
@@ -22,25 +21,9 @@ class ChatPage extends StatelessWidget {
         ),
       ),
       body: const Center(
-        child: Text('Chat Page'), // Placeholder text for the chat page
+        child: Text('Chat Page'), // 主体部分中间显示文本 'Chat Page'
       ),
     );
   }
 }
 
-// ArchivePage class represents the archive screen that users navigate to
-class ArchivePage extends StatelessWidget {
-  const ArchivePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Archive'), // Title for the archive page
-      ),
-      body: const Center(
-        child: Text('This is the Archive Page'), // Placeholder text for the archive page
-      ),
-    );
-  }
-}

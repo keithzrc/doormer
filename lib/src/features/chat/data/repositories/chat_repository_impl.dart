@@ -10,7 +10,7 @@ class ChatRepositoryImpl implements ChatRepository {
       avatarUrl: 'https://example.com/avatar1.png',
       lastMessage: 'Hello',
       lastMessageTime: DateTime.now().subtract(Duration(days: 1)),
-      isArchived: false,
+      isArchived: true,
     ),
     ChatModel(
       id: '2',
@@ -18,7 +18,7 @@ class ChatRepositoryImpl implements ChatRepository {
       avatarUrl: 'https://example.com/avatar2.png',
       lastMessage: 'Hi',
       lastMessageTime: DateTime.now().subtract(Duration(days: 15)),
-      isArchived: false,
+      isArchived: true,
     ),
   ];
 
