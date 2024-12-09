@@ -101,7 +101,7 @@ class ArchivePage extends StatelessWidget {
             ),
           ),
           // 中间聊天内容区域（占位）
-          Expanded(
+          const Expanded(
             flex: 5, // 占整个宽度的 5/10
             child: Center(
               child: Text(
@@ -115,7 +115,7 @@ class ArchivePage extends StatelessWidget {
             flex: 3, // 占整个宽度的 3/10
             child: Container(
               color: const Color.fromARGB(255, 255, 255, 255), // 右侧的背景颜色
-              child: Center(
+              child: const Center(
                 child: Text(
                   'User Profile Section',
                   style: TextStyle(fontSize: 24, color: Colors.black),

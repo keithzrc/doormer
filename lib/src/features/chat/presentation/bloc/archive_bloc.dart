@@ -1,47 +1,12 @@
-import 'package:doormer/src/core/utils/app_logger.dart';
+// chat_bloc.dart
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:doormer/src/core/utils/app_logger.dart';
 import '../../domain/usecases/archive_chat.dart';
 import '../../domain/usecases/delete_chat.dart';
 import '../../domain/usecases/get_chat_list.dart';
 import '../../domain/usecases/get_archived_list.dart';
-import '../../domain/entities/chat_entity.dart';
-
-abstract class ChatEvent {}
-
-class LoadChatsEvent extends ChatEvent {}
-
-class LoadArchivedChatsEvent extends ChatEvent {}
-
-class ArchiveChatEvent extends ChatEvent {
-  final String chatId;
-  ArchiveChatEvent(this.chatId);
-}
-
-class DeleteChatEvent extends ChatEvent {
-  final String chatId;
-  DeleteChatEvent(this.chatId);
-}
-
-abstract class ChatState {}
-
-class ChatLoadingState extends ChatState {}
-
-class ChatLoadedState extends ChatState {
-  final List<Chat> chats;
-  ChatLoadedState(this.chats);
-}
-
-class ArchivedChatLoadedState extends ChatState {
-  final List<Chat> archivedChats;
-  ArchivedChatLoadedState(this.archivedChats);
-}
-
-class ChatErrorState extends ChatState {
-  final String error;
-  ChatErrorState(this.error);
-  @override
-  List<Object?> get props => [error];
-}
+import 'archive_event.dart';
+import 'archive_state.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetChatList getChatList;
@@ -66,6 +31,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         AppLogger.error('Chat list loaded with error', e, stackTrace);
       }
     });
+
     on<LoadArchivedChatsEvent>((event, emit) async {
       emit(ChatLoadingState());
       try {
