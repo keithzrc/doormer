@@ -1,4 +1,4 @@
-// chat_bloc.dart
+// archieve_bloc.dart
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
 import '../../domain/usecases/archive_chat.dart';

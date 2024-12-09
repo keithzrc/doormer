@@ -1,4 +1,4 @@
-// chat_state.dart
+// archieve_state.dart
 import '../../domain/entities/chat_entity.dart';
 
 abstract class ChatState {}

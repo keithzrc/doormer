@@ -2,6 +2,11 @@ import 'package:doormer/src/core/di/service_locator.dart';
 import 'package:doormer/src/core/routes/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import 'package:doormer/src/features/chat/domain/usecases/archive_chat.dart';
+import 'package:doormer/src/features/chat/domain/usecases/delete_chat.dart';
+import 'package:doormer/src/features/chat/domain/usecases/get_chat_list.dart';
+import 'package:doormer/src/features/chat/domain/usecases/get_archived_list.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,13 +28,29 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (_, child) {
-        return MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            fontFamily: 'Helvetica',
-            useMaterial3: true,
+        return MultiProvider(
+          providers: [
+            Provider<GetChatList>(
+              create: (_) => serviceLocator<GetChatList>(),
+            ),
+            Provider<GetArchivedList>(
+              create: (_) => serviceLocator<GetArchivedList>(),
+            ),
+            Provider<ArchiveChat>(
+              create: (_) => serviceLocator<ArchiveChat>(),
+            ),
+            Provider<DeleteChat>(
+              create: (_) => serviceLocator<DeleteChat>(),
+            ),
+          ],
+          child: MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              fontFamily: 'Helvetica',
+              useMaterial3: true,
+            ),
+            routerConfig: AppRouter.router, // Use GoRouter for navigation
           ),
-          routerConfig: AppRouter.router, // Use GoRouter for navigation
         );
       },
     );
