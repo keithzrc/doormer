@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/repositories/chat_repository_impl.dart'; // 导入存储库实现
+import '../../data/repositories/file/chat_repo_impl.dart'; // 导入存储库实现
 
 // 聊天卡片Widget，用于显示每个聊天项
 class ChatCard extends StatelessWidget {
@@ -128,4 +128,3 @@ class ArchivePage extends StatelessWidget {
     );
   }
 }
-

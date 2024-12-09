@@ -1,3 +1,4 @@
+import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/usecases/archive_chat.dart';
 import '../../domain/usecases/delete_chat.dart';
@@ -35,7 +36,12 @@ class ArchivedChatLoadedState extends ChatState {
   ArchivedChatLoadedState(this.archivedChats);
 }
 
-class ChatErrorState extends ChatState {}
+class ChatErrorState extends ChatState {
+  final String error;
+  ChatErrorState(this.error);
+  @override
+  List<Object?> get props => [error];
+}
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetChatList getChatList;
@@ -54,8 +60,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       try {
         final chats = await getChatList.call();
         emit(ChatLoadedState(chats));
-      } catch (e) {
-        emit(ChatErrorState());
+        AppLogger.info('Chat list loaded successfully');
+      } catch (e, stackTrace) {
+        emit(ChatErrorState(e.toString()));
+        AppLogger.error('Chat list loaded with error', e, stackTrace);
       }
     });
     on<LoadArchivedChatsEvent>((event, emit) async {
@@ -63,8 +71,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       try {
         final archivedChats = await getArchivedChatList.call();
         emit(ArchivedChatLoadedState(archivedChats));
-      } catch (e) {
-        emit(ChatErrorState());
+      } catch (e, stackTrace) {
+        emit(ChatErrorState(e.toString()));
+        AppLogger.error('Archived chat list loaded with error', e, stackTrace);
       }
     });
 
@@ -72,8 +81,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       try {
         await archiveChat.call(event.chatId);
         add(LoadChatsEvent());
-      } catch (e) {
-        emit(ChatErrorState());
+      } catch (e, stackTrace) {
+        emit(ChatErrorState(e.toString()));
+        AppLogger.error('Archived chat with error', e, stackTrace);
       }
     });
 
@@ -81,8 +91,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       try {
         await deleteChat.call(event.chatId);
         add(LoadArchivedChatsEvent());
-      } catch (e) {
-        emit(ChatErrorState());
+      } catch (e, stackTrace) {
+        emit(ChatErrorState(e.toString()));
+        AppLogger.error('Deleted chat with error', e, stackTrace);
       }
     });
   }
