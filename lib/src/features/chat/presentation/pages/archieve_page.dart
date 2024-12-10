@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/archive_bloc.dart'; 
-import '../bloc/archive_event.dart' as archive_event; 
-import '../bloc/archive_state.dart' as archive_state; 
+import '../bloc/archive_bloc.dart';
+import '../bloc/archive_event.dart' as archive_event; // Prefix for events
+import '../bloc/archive_state.dart' as archive_state; // Prefix for states
 import '../widgets/chat_card.dart';
 
 class ArchivePage extends StatelessWidget {
@@ -10,65 +10,72 @@ class ArchivePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Archive'),
       ),
-      body: BlocProvider(
-        create: (context) => ChatBloc(
-          getChatList: context.read(),
-          getArchivedChatList: context.read(),
-          archiveChat: context.read(),
-          deleteChat: context.read(),
-        )..add(archive_event.LoadArchivedChatsEvent()), 
+      body: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1600), // Constrain maximum width
         child: Row(
           children: [
-            Flexible(
-              flex: 2,
-              child: BlocBuilder<ChatBloc, archive_state.ChatState>(
-                builder: (context, state) {
-                  if (state is archive_state.ChatLoadingState) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-
-                  if (state is archive_state.ChatErrorState) {
-                    return Center(
-                      child: Text('Error: ${state.error}'),
-                    );
-                  }
-
-                  if (state is archive_state.ArchivedChatLoadedState) {
-                    final archivedChats = state.archivedChats;
-
-                    if (archivedChats.isEmpty) {
+            // Left-side chat list with a fixed minimum width of 250px
+            SizedBox(
+              width: screenWidth > 1000 ? screenWidth * 0.25 : 250, // Minimum 250px
+              child: BlocProvider(
+                create: (context) => ChatBloc(
+                  getChatList: context.read(),
+                  getArchivedChatList: context.read(),
+                  archiveChat: context.read(),
+                  deleteChat: context.read(),
+                )..add(archive_event.LoadArchivedChatsEvent()), // Trigger loading
+                child: BlocBuilder<ChatBloc, archive_state.ChatState>(
+                  builder: (context, state) {
+                    if (state is archive_state.ChatLoadingState) {
                       return const Center(
-                        child: Text('No archived chats found.'),
+                        child: CircularProgressIndicator(),
                       );
                     }
 
-                    return ListView.builder(
-                      padding: const EdgeInsets.all(8.0),
-                      itemCount: archivedChats.length,
-                      itemBuilder: (context, index) {
-                        final chat = archivedChats[index];
-                        return ChatCard(chat: chat);
-                      },
-                    );
-                  }
+                    if (state is archive_state.ChatErrorState) {
+                      return Center(
+                        child: Text('Error: ${state.error}'),
+                      );
+                    }
 
-                  // Fallback for unexpected state
-                  return const SizedBox.shrink();
-                },
+                    if (state is archive_state.ArchivedChatLoadedState) {
+                      final archivedChats = state.archivedChats;
+
+                      if (archivedChats.isEmpty) {
+                        return const Center(
+                          child: Text('No archived chats found.'),
+                        );
+                      }
+
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0), // Consistent padding
+                        child: ListView.builder(
+                          itemCount: archivedChats.length,
+                          itemBuilder: (context, index) {
+                            final chat = archivedChats[index];
+                            return ChatCard(chat: chat);
+                          },
+                        ),
+                      );
+                    }
+
+                    return const SizedBox.shrink();
+                  },
+                ),
               ),
             ),
 
-            // Center placeholder for chat content
-            const Expanded(
-              flex: 5,
+            // Center chat content placeholder (dynamically adjusts to remaining width)
+            Flexible(
+              flex: 2,
               child: Center(
-                child: Text(
+                child: const Text(
                   'Chat Content Goes Here',
                   style: TextStyle(fontSize: 24, color: Colors.grey),
                 ),
@@ -77,7 +84,7 @@ class ArchivePage extends StatelessWidget {
 
             // Right-side user profile placeholder
             Flexible(
-              flex: 3,
+              flex: 1,
               child: Container(
                 color: const Color.fromARGB(255, 255, 255, 255),
                 child: const Center(

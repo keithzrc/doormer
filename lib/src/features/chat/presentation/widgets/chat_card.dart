@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/chat_entity.dart'; 
-
+import '../../domain/entities/chat_entity.dart';
 
 class ChatCard extends StatelessWidget {
   final Chat chat;
@@ -29,14 +28,17 @@ class ChatCard extends StatelessWidget {
           chat.userName,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontSize: 16,
           ),
+          overflow: TextOverflow.ellipsis, 
         ),
         subtitle: Text(
           chat.lastMessage,
           style: const TextStyle(
             color: Colors.grey,
+            fontSize: 14,
           ),
+          overflow: TextOverflow.ellipsis, 
         ),
         trailing: chat.createdTime != null
             ? Text(
@@ -47,7 +49,7 @@ class ChatCard extends StatelessWidget {
                 ),
               )
             : null,
-        onTap: onTap,
+        onTap: onTap, // Allow interaction on tap
       ),
     );
   }
