@@ -18,7 +18,5 @@ class ArchivedChatLoadedState extends ChatState {
 class ChatErrorState extends ChatState {
   final String error;
   ChatErrorState(this.error);
-
-  @override
   List<Object?> get props => [error];
 }

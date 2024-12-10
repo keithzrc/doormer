@@ -72,10 +72,10 @@ class ArchivePage extends StatelessWidget {
             ),
 
             // Center chat content placeholder (dynamically adjusts to remaining width)
-            Flexible(
+            const Flexible(
               flex: 2,
               child: Center(
-                child: const Text(
+                child: Text(
                   'Chat Content Goes Here',
                   style: TextStyle(fontSize: 24, color: Colors.grey),
                 ),

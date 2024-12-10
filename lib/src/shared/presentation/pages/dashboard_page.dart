@@ -5,7 +5,7 @@ import '../widgets/dashboard_bottom_navigation_bar.dart';
 class DashboardPage extends StatelessWidget {
   final Widget child; // Child widget from ShellRoute
 
-  const DashboardPage({Key? key, required this.child}) : super(key: key);
+  const DashboardPage({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

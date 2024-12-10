@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat.dart';
-import 'package:doormer/src/features/chat/domain/usecases/delete_chat.dart';
-import 'package:doormer/src/features/chat/domain/usecases/get_chat_list.dart';
-import 'package:doormer/src/features/chat/domain/usecases/get_archived_list.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

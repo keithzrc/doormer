@@ -2,9 +2,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
 import '../../domain/usecases/archive_chat.dart';
-import '../../domain/usecases/delete_chat.dart';
-import '../../domain/usecases/get_chat_list.dart';
-import '../../domain/usecases/get_archived_list.dart';
 import 'archive_event.dart';
 import 'archive_state.dart';
 
