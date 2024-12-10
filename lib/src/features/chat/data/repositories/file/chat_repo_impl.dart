@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:logger/logger.dart'; 
 import '../../../domain/entities/chat_entity.dart';
 import '../../../domain/repositories/chat_repository.dart';
 import '../../models/chat_model.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
   List<ContactModel> _chats = [];
+  final Logger _logger = Logger(); 
 
   ChatRepositoryImpl();
 
@@ -15,8 +17,9 @@ class ChatRepositoryImpl implements ChatRepository {
           'lib/src/features/chat/data/repositories/file/dummydata.json');
       final List<dynamic> jsonData = json.decode(response);
       _chats = jsonData.map((data) => ContactModel.fromJson(data)).toList();
+      _logger.i('Dummy data loaded successfully.'); 
     } catch (e) {
-      print('Error loading dummy data: $e');
+      _logger.e('Error loading dummy data', e); 
       _chats = [];
     }
   }
@@ -32,52 +35,54 @@ class ChatRepositoryImpl implements ChatRepository {
     await _ensureDataLoaded();
     return _chats.where((chat) => chat.isArchived).toList();
   }
+
   final int indexNotFound = -1;
 
   @override
-Future<void> archiveChat(String chatId) async {
-  await _ensureDataLoaded();
-  final index = _chats.indexWhere((chat) => chat.id == chatId);
-  if (index != indexNotFound) {
-    final chat = _chats[index];
-    _chats[index] = _mapToArchivedContact(chat); // 调用提取的方法
+  Future<void> archiveChat(String chatId) async {
+    await _ensureDataLoaded();
+    final index = _chats.indexWhere((chat) => chat.id == chatId);
+    if (index != indexNotFound) {
+      final chat = _chats[index];
+      _chats[index] = _mapToArchivedContact(chat); 
+      _logger.i('Chat with ID $chatId archived successfully.'); 
+    } else {
+      _logger.w('Chat with ID $chatId not found.'); 
+    }
   }
-}
 
-// 提取映射逻辑到一个单独的方法
-ContactModel _mapToArchivedContact(Chat chat) {
-  return ContactModel(
-    id: chat.id,
-    userName: chat.userName,
-    avatarUrl: chat.avatarUrl,
-    lastMessage: chat.lastMessage,
-    createdTime: chat.createdTime, // 保持字段一致性
-    isArchived: true, // 标记为已归档
-  );
-}
-
+  
+  ContactModel _mapToArchivedContact(Chat chat) {
+    return ContactModel(
+      id: chat.id,
+      userName: chat.userName,
+      avatarUrl: chat.avatarUrl,
+      lastMessage: chat.lastMessage,
+      createdTime: chat.createdTime, 
+      isArchived: true, 
+    );
+  }
 
   @override
-Future<void> deleteChat(String chatId) async {
-  await _ensureDataLoaded();
+  Future<void> deleteChat(String chatId) async {
+    await _ensureDataLoaded();
+
+    
+    final initialLength = _chats.length;
+
   
-  // 记录删除前的长度
-  final initialLength = _chats.length;
+    _chats.removeWhere((chat) => chat.id == chatId);
 
-  // 尝试移除匹配的聊天
-  _chats.removeWhere((chat) => chat.id == chatId);
-
-  // 验证删除结果
-  if (_chats.length == initialLength) {
-    // 如果没有删除任何项，记录日志或抛出异常
-    print('Chat with ID $chatId not found.'); // 或者根据需求选择抛出异常
-    // throw Exception('Chat with ID $chatId not found.');
-  } else {
-    // 删除成功时记录日志
-    print('Chat with ID $chatId successfully removed.');
+    
+    if (_chats.length == initialLength) {
+    
+      _logger.w('Chat with ID $chatId not found.'); 
+      
+    } else {
+      
+      _logger.i('Chat with ID $chatId successfully removed.'); 
+    }
   }
-}
-
 
   Future<void> autoArchiveInactiveChats(Duration threshold) async {
     await _ensureDataLoaded();
@@ -85,16 +90,17 @@ Future<void> deleteChat(String chatId) async {
     for (int i = 0; i < _chats.length; i++) {
       final chat = _chats[i];
       if (!chat.isArchived &&
-    now.difference(chat.createdTime ?? DateTime(1970, 1, 1)) > threshold) {
-  _chats[i] = ContactModel(
-    id: chat.id,
-    userName: chat.userName,
-    avatarUrl: chat.avatarUrl,
-    lastMessage: chat.lastMessage,
-    createdTime: chat.createdTime,
-    isArchived: true,
-  );
-}
+          now.difference(chat.createdTime ?? DateTime(1970, 1, 1)) > threshold) {
+        _chats[i] = ContactModel(
+          id: chat.id,
+          userName: chat.userName,
+          avatarUrl: chat.avatarUrl,
+          lastMessage: chat.lastMessage,
+          createdTime: chat.createdTime,
+          isArchived: true,
+        );
+        _logger.i('Chat with ID ${chat.id} auto-archived.'); 
+      }
     }
   }
 
