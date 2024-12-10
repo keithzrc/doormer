@@ -24,6 +24,8 @@ dependencies:
   logger:
   go_router:
   flutter_secure_storage:
+  mocktail: ^1.0.4
+  bloc_test: ^9.1.7
 
 dev_dependencies:
   flutter_test:
