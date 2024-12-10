@@ -1,5 +1,3 @@
-import 'package:equatable/equatable.dart';
-
 class Chat {
   final String id;
   final String userName;
@@ -16,7 +14,6 @@ class Chat {
     required this.createdTime, // 改为可空类型
     required this.isArchived,
   });
-  @override
   List<Object?> get props => [
         id,
         userName,

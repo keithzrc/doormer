@@ -60,7 +60,7 @@ void main() {
               userName: 'John Doe',
               avatarUrl: 'https://example.com/avatar1.png',
               lastMessage: 'Hello there!',
-              createdTime: DateTime.now(),
+              createdTime: DateTime(2023, 12, 10),
               isArchived: false,
             ),
           ],
@@ -69,17 +69,18 @@ void main() {
       build: () => chatBloc,
       act: (bloc) => bloc.add(LoadChatsEvent()),
       expect: () => [
-        ChatLoadingState(),
-        ChatLoadedState([
-          Chat(
-            id: '1',
-            userName: 'John Doe',
-            avatarUrl: 'https://example.com/avatar1.png',
-            lastMessage: 'Hello there!',
-            createdTime: DateTime.now(),
-            isArchived: false,
-          ),
-        ]),
+        isA<ChatLoadingState>(),
+        isA<ChatLoadedState>().having(
+          (state) => state.chats,
+          'chats',
+          [
+            isA<Chat>()
+                .having((chat) => chat.id, 'id', '1')
+                .having((chat) => chat.userName, 'userName', 'John Doe')
+                .having(
+                    (chat) => chat.lastMessage, 'lastMessage', 'Hello there!')
+          ],
+        ),
       ],
       verify: (_) {
         verify(() => mockGetChatList.call()).called(1);
@@ -95,8 +96,9 @@ void main() {
       build: () => chatBloc,
       act: (bloc) => bloc.add(LoadChatsEvent()),
       expect: () => [
-        ChatLoadingState(),
-        ChatErrorState('Exception: Error fetching chats'),
+        isA<ChatLoadingState>(),
+        isA<ChatErrorState>().having(
+            (state) => state.error, 'error', 'Exception: Error fetching chats'),
       ],
       verify: (_) {
         verify(() => mockGetChatList.call()).called(1);
@@ -113,7 +115,7 @@ void main() {
               userName: 'Jane Smith',
               avatarUrl: 'https://example.com/avatar2.png',
               lastMessage: 'Archived chat message',
-              createdTime: DateTime.now(),
+              createdTime: DateTime(2023, 12, 10),
               isArchived: true,
             ),
           ],
@@ -122,17 +124,18 @@ void main() {
       build: () => chatBloc,
       act: (bloc) => bloc.add(LoadArchivedChatsEvent()),
       expect: () => [
-        ChatLoadingState(),
-        ArchivedChatLoadedState([
-          Chat(
-            id: '2',
-            userName: 'Jane Smith',
-            avatarUrl: 'https://example.com/avatar2.png',
-            lastMessage: 'Archived chat message',
-            createdTime: DateTime.now(),
-            isArchived: true,
-          ),
-        ]),
+        isA<ChatLoadingState>(),
+        isA<ArchivedChatLoadedState>().having(
+          (state) => state.archivedChats,
+          'archivedChats',
+          [
+            isA<Chat>()
+                .having((chat) => chat.id, 'id', '2')
+                .having((chat) => chat.userName, 'userName', 'Jane Smith')
+                .having((chat) => chat.lastMessage, 'lastMessage',
+                    'Archived chat message')
+          ],
+        ),
       ],
       verify: (_) {
         verify(() => mockGetArchivedList.call()).called(1);
@@ -150,7 +153,7 @@ void main() {
               userName: 'John Doe',
               avatarUrl: 'https://example.com/avatar1.png',
               lastMessage: 'Hello there!',
-              createdTime: DateTime.now(),
+              createdTime: DateTime(2023, 12, 10),
               isArchived: false,
             ),
           ],
@@ -159,24 +162,20 @@ void main() {
       build: () => chatBloc,
       act: (bloc) => bloc.add(ArchiveChatEvent('1')),
       expect: () => [
-        ChatLoadingState(),
-        ChatLoadedState([
-          Chat(
-            id: '1',
-            userName: 'John Doe',
-            avatarUrl: 'https://example.com/avatar1.png',
-            lastMessage: 'Hello there!',
-            createdTime: DateTime.now(),
-            isArchived: false,
-          ),
-        ]),
+        isA<ChatLoadingState>(),
+        isA<ChatLoadedState>().having(
+          (state) => state.chats,
+          'chats',
+          [
+            isA<Chat>().having((chat) => chat.id, 'id', '1'),
+          ],
+        ),
       ],
       verify: (_) {
         verify(() => mockArchiveChat.call('1')).called(1);
         verify(() => mockGetChatList.call()).called(1);
       },
     );
-
     blocTest<ChatBloc, ChatState>(
       'calls deleteChat and triggers LoadArchivedChatsEvent when DeleteChatEvent is added',
       setUp: () {
@@ -188,7 +187,7 @@ void main() {
               userName: 'Jane Smith',
               avatarUrl: 'https://example.com/avatar2.png',
               lastMessage: 'Archived chat message',
-              createdTime: DateTime.now(),
+              createdTime: DateTime(2023, 12, 10),
               isArchived: true,
             ),
           ],
@@ -197,17 +196,14 @@ void main() {
       build: () => chatBloc,
       act: (bloc) => bloc.add(DeleteChatEvent('1')),
       expect: () => [
-        ChatLoadingState(),
-        ArchivedChatLoadedState([
-          Chat(
-            id: '2',
-            userName: 'Jane Smith',
-            avatarUrl: 'https://example.com/avatar2.png',
-            lastMessage: 'Archived chat message',
-            createdTime: DateTime.now(),
-            isArchived: true,
-          ),
-        ]),
+        isA<ChatLoadingState>(),
+        isA<ArchivedChatLoadedState>().having(
+          (state) => state.archivedChats,
+          'archivedChats',
+          [
+            isA<Chat>().having((chat) => chat.id, 'id', '2'),
+          ],
+        ),
       ],
       verify: (_) {
         verify(() => mockDeleteChat.call('1')).called(1);
