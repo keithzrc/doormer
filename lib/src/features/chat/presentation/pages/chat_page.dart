@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './archieve_page.dart'; // 导入归档页面
+import './archieve_page.dart'; 
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
@@ -10,9 +10,8 @@ class ChatPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Chat'),
         leading: IconButton(
-          icon: const Icon(Icons.archive), // 左上角归档按钮
+          icon: const Icon(Icons.archive), 
           onPressed: () {
-            // 点击按钮跳转到归档页面
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const ArchivePage()),
@@ -21,7 +20,7 @@ class ChatPage extends StatelessWidget {
         ),
       ),
       body: const Center(
-        child: Text('Chat Page'), // 主体部分中间显示文本 'Chat Page'
+        child: Text('Chat Page'), 
       ),
     );
   }

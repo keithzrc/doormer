@@ -10,9 +10,9 @@ class ConfirmEmailPage extends StatelessWidget {
   final String email;
 
   const ConfirmEmailPage({
-    Key? key,
+    super.key,
     required this.email,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

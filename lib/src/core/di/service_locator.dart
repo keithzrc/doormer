@@ -4,6 +4,9 @@ import 'package:dio/dio.dart';
 import 'package:doormer/src/core/network/dio_client.dart';
 import 'package:doormer/src/core/services/sessions/session_service.dart';
 import 'package:doormer/src/core/utils/token_storage.dart';
+import 'package:doormer/src/features/chat/data/repositories/file/chat_repo_impl.dart';
+import 'package:doormer/src/features/chat/domain/repositories/chat_repository.dart';
+import 'package:doormer/src/features/chat/domain/usecases/archive_chat.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import '../../features/auth/di/auth_module.dart';
@@ -29,6 +32,30 @@ Future<void> initDependencies() async {
       tokenStorage: serviceLocator<TokenStorage>(),
       // dio: serviceLocator<Dio>(),
     ),
+  );
+
+  // Register ChatRepository
+  serviceLocator.registerLazySingleton<ChatRepository>(
+    () => ChatRepositoryImpl(
+      // Pass required dependencies to the repository if needed
+    ),
+  );
+
+  // Register use cases
+  serviceLocator.registerLazySingleton<GetChatList>(
+    () => GetChatList(serviceLocator<ChatRepository>()),
+  );
+
+  serviceLocator.registerLazySingleton<GetArchivedList>(
+    () => GetArchivedList(serviceLocator<ChatRepository>()),
+  );
+
+  serviceLocator.registerLazySingleton<ArchiveChat>(
+    () => ArchiveChat(serviceLocator<ChatRepository>()),
+  );
+
+  serviceLocator.registerLazySingleton<DeleteChat>(
+    () => DeleteChat(serviceLocator<ChatRepository>()),
   );
 
   // Initialize feature-specific modules

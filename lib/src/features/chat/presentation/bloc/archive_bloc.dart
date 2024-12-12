@@ -1,41 +1,10 @@
+// archieve_bloc.dart
+import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:doormer/src/core/utils/app_logger.dart';
 import '../../domain/usecases/archive_chat.dart';
-import '../../domain/usecases/delete_chat.dart';
-import '../../domain/usecases/get_chat_list.dart';
-import '../../domain/usecases/get_archived_list.dart';
-import '../../domain/entities/chat_entity.dart';
-
-abstract class ChatEvent {}
-
-class LoadChatsEvent extends ChatEvent {}
-
-class LoadArchivedChatsEvent extends ChatEvent {}
-
-class ArchiveChatEvent extends ChatEvent {
-  final String chatId;
-  ArchiveChatEvent(this.chatId);
-}
-
-class DeleteChatEvent extends ChatEvent {
-  final String chatId;
-  DeleteChatEvent(this.chatId);
-}
-
-abstract class ChatState {}
-
-class ChatLoadingState extends ChatState {}
-
-class ChatLoadedState extends ChatState {
-  final List<Chat> chats;
-  ChatLoadedState(this.chats);
-}
-
-class ArchivedChatLoadedState extends ChatState {
-  final List<Chat> archivedChats;
-  ArchivedChatLoadedState(this.archivedChats);
-}
-
-class ChatErrorState extends ChatState {}
+import 'archive_event.dart';
+import 'archive_state.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetChatList getChatList;
@@ -48,23 +17,30 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     required this.getArchivedChatList,
     required this.archiveChat,
     required this.deleteChat,
-  }) : super(ChatLoadingState()) {
+    List<Chat>? initialChats,
+  }) : super(initialChats != null
+            ? ChatLoadedState(initialChats)
+            : ChatLoadingState()) {
     on<LoadChatsEvent>((event, emit) async {
       emit(ChatLoadingState());
       try {
         final chats = await getChatList.call();
         emit(ChatLoadedState(chats));
-      } catch (e) {
-        emit(ChatErrorState());
+        AppLogger.info('Chat list loaded successfully');
+      } catch (e, stackTrace) {
+        emit(ChatErrorState(e.toString()));
+        AppLogger.error('Chat list loaded with error', e, stackTrace);
       }
     });
+
     on<LoadArchivedChatsEvent>((event, emit) async {
       emit(ChatLoadingState());
       try {
         final archivedChats = await getArchivedChatList.call();
         emit(ArchivedChatLoadedState(archivedChats));
-      } catch (e) {
-        emit(ChatErrorState());
+      } catch (e, stackTrace) {
+        emit(ChatErrorState(e.toString()));
+        AppLogger.error('Archived chat list loaded with error', e, stackTrace);
       }
     });
 
@@ -72,8 +48,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       try {
         await archiveChat.call(event.chatId);
         add(LoadChatsEvent());
-      } catch (e) {
-        emit(ChatErrorState());
+      } catch (e, stackTrace) {
+        emit(ChatErrorState(e.toString()));
+        AppLogger.error('Archived chat with error', e, stackTrace);
       }
     });
 
@@ -81,8 +58,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       try {
         await deleteChat.call(event.chatId);
         add(LoadArchivedChatsEvent());
-      } catch (e) {
-        emit(ChatErrorState());
+      } catch (e, stackTrace) {
+        emit(ChatErrorState(e.toString()));
+        AppLogger.error('Deleted chat with error', e, stackTrace);
       }
     });
   }
