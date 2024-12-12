@@ -27,6 +27,7 @@ dependencies:
   go_router:
   flutter_secure_storage:
   test: ^1.25.7
+  bloc_test: ^9.1.7
 
 dev_dependencies:
   flutter_test:
