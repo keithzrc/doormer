@@ -22,7 +22,18 @@ class ChatCard extends StatelessWidget {
       child: ListTile(
         leading: CircleAvatar(
           radius: 30,
-          backgroundImage: NetworkImage(chat.avatarUrl),
+          backgroundImage: chat.avatarUrl.isEmpty
+              ? null
+              : NetworkImage(chat.avatarUrl),
+          child: chat.avatarUrl.isEmpty
+              ? Text(
+                  chat.userName.isNotEmpty ? chat.userName[0].toUpperCase() : '?',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              : null,
         ),
         title: Text(
           chat.userName,
