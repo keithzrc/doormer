@@ -17,12 +17,14 @@ class ContactModel extends Chat {
   factory ContactModel.fromJson(Map<String, dynamic> json) {
     DateTime? parsedTime;
     try {
-      if (json['lastMessageTime'] != null && json['lastMessageTime'] is String) {
-        parsedTime = DateTime.parse(json['lastMessageTime']);
+      if (json['createdTime'] != null && json['createdTime'] is String) {
+        parsedTime = DateTime.parse(json['createdTime']).toUtc();
       }
     } catch (e) {
       parsedTime = null; 
     }
+
+    
 
     return ContactModel(
       id: json['id'] ?? _uuid.v4(), 

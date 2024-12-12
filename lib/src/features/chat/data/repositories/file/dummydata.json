@@ -4,7 +4,7 @@
     "userName": "User 1",
     "avatarUrl": "https://example.com/avatar1.png",
     "lastMessage": "Hello",
-    "lastMessageTime": "2024-12-06T00:00:00.000Z",
+    "createdTime": "2024-12-06T00:00:00.000Z",
     "isArchived": true
   },
   {
@@ -12,7 +12,7 @@
     "userName": "User 2",
     "avatarUrl": "https://example.com/avatar2.png",
     "lastMessage": "Hi",
-    "lastMessageTime": "2024-11-22T00:00:00.000Z",
+    "createdTime": "2024-11-22T00:00:00.000Z",
     "isArchived": true
   },
   {
@@ -20,7 +20,7 @@
     "userName": "User 3",
     "avatarUrl": "https://example.com/avatar3.png",
     "lastMessage": "How are you?",
-    "lastMessageTime": "2024-12-04T00:00:00.000Z",
+    "createdTime": "2024-12-04T00:00:00.000Z",
     "isArchived": false
   },
   {
@@ -28,7 +28,7 @@
     "userName": "User 4",
     "avatarUrl": "https://example.com/avatar4.png",
     "lastMessage": "Are you there?",
-    "lastMessageTime": "2024-12-07T05:00:00.000Z",
+    "createdTime": "2024-12-07T05:00:00.000Z",
     "isArchived": true
   },
   {
@@ -36,7 +36,7 @@
     "userName": "User 5",
     "avatarUrl": "https://example.com/avatar5.png",
     "lastMessage": "Let’s catch up!",
-    "lastMessageTime": "2024-11-30T00:00:00.000Z",
+    "createdTime": "2024-11-30T00:00:00.000Z",
     "isArchived": false
   },
   {
@@ -44,7 +44,7 @@
     "userName": "User 6",
     "avatarUrl": "https://example.com/avatar6.png",
     "lastMessage": "See you soon!",
-    "lastMessageTime": "2024-11-27T00:00:00.000Z",
+    "createdTime": "2024-11-27T00:00:00.000Z",
     "isArchived": true
   },
   {
@@ -52,7 +52,7 @@
     "userName": "User 7",
     "avatarUrl": "https://example.com/avatar7.png",
     "lastMessage": "Can you help me with this?",
-    "lastMessageTime": "2024-12-07T14:30:00.000Z",
+    "createdTime": "2024-12-07T14:30:00.000Z",
     "isArchived": false
   },
   {
@@ -60,7 +60,7 @@
     "userName": "User 8",
     "avatarUrl": "https://example.com/avatar8.png",
     "lastMessage": "Good morning!",
-    "lastMessageTime": "2024-12-05T00:00:00.000Z",
+    "createdTime": "2024-12-05T00:00:00.000Z",
     "isArchived": true
   },
   {
@@ -68,7 +68,7 @@
     "userName": "User 9",
     "avatarUrl": "https://example.com/avatar9.png",
     "lastMessage": "Let me know.",
-    "lastMessageTime": "2024-12-06T19:00:00.000Z",
+    "createdTime": "2024-12-06T19:00:00.000Z",
     "isArchived": true
   },
   {
@@ -76,7 +76,7 @@
     "userName": "User 10",
     "avatarUrl": "https://example.com/avatar10.png",
     "lastMessage": "Thanks!",
-    "lastMessageTime": "2024-12-07T14:00:00.000Z",
+    "createdTime": "2024-12-07T14:00:00.000Z",
     "isArchived": false
   }
 ]
