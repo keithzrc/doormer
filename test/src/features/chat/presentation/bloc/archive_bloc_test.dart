@@ -45,6 +45,7 @@ void main() {
   group('ChatBloc Tests', () {
     test('initial state should be ChatLoadingState if no chats are preloaded',
         () {
+      print('Running: initial state should be ChatLoadingState');
       final chatBloc = ChatBloc(
         getChatList: mockGetChatList,
         getArchivedChatList: mockGetArchivedList,
@@ -70,6 +71,7 @@ void main() {
               isArchived: false),
         ],
       );
+      print('Running: initial state should be ChatLoadedState');
       expect(chatBloc.state, isA<ChatLoadedState>());
       expect((chatBloc.state as ChatLoadedState).chats.length, 1);
     });
@@ -119,6 +121,7 @@ void main() {
         isA<ArchivedChatLoadedState>(),
       ],
       verify: (_) {
+        print('LoadArchivedChatsEvent test executed');
         verify(() => mockGetArchivedList.call()).called(1);
       },
     );
@@ -169,6 +172,7 @@ void main() {
         isA<ArchivedChatLoadedState>(),
       ],
       verify: (_) {
+        print('DeleteChatEvent test executed');
         verify(() => mockDeleteChat.call('1')).called(1);
         verify(() => mockGetArchivedList.call()).called(1);
       },
