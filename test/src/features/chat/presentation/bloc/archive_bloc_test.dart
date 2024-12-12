@@ -1,3 +1,4 @@
+import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -42,8 +43,35 @@ void main() {
   });
 
   group('ChatBloc Tests', () {
-    test('initial state is ChatLoadingState', () {
+    test('initial state should be ChatLoadingState if no chats are preloaded',
+        () {
+      final chatBloc = ChatBloc(
+        getChatList: mockGetChatList,
+        getArchivedChatList: mockGetArchivedList,
+        archiveChat: mockArchiveChat,
+        deleteChat: mockDeleteChat,
+        initialChats: null,
+      );
       expect(chatBloc.state, isA<ChatLoadingState>());
+    });
+    test('initial state should be ChatLoadedState if chats are preloaded', () {
+      final chatBloc = ChatBloc(
+        getChatList: mockGetChatList,
+        getArchivedChatList: mockGetArchivedList,
+        archiveChat: mockArchiveChat,
+        deleteChat: mockDeleteChat,
+        initialChats: [
+          Chat(
+              id: '1',
+              userName: 'John Doe',
+              avatarUrl: '',
+              lastMessage: '',
+              createdTime: DateTime.now(),
+              isArchived: false),
+        ],
+      );
+      expect(chatBloc.state, isA<ChatLoadedState>());
+      expect((chatBloc.state as ChatLoadedState).chats.length, 1);
     });
 
     blocTest<ChatBloc, ChatState>(
