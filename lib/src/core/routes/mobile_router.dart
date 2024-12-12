@@ -24,7 +24,7 @@ class MobileRouter {
       // Auth Routes
       GoRoute(
         path: '/auth',
-        builder: (context, state) => AuthPage(),
+        builder: (context, state) => const AuthPage(),
         routes: [
           GoRoute(
             path: 'login',
@@ -32,7 +32,7 @@ class MobileRouter {
           ),
           GoRoute(
             path: 'signup',
-            builder: (context, state) => SignupPage(),
+            builder: (context, state) => const SignupPage(),
           ),
           GoRoute(
             path: 'confirm-email',

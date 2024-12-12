@@ -11,6 +11,8 @@ import '../bloc/auth_state.dart';
 import 'package:doormer/src/core/di/service_locator.dart'; // Import your service locator
 
 class SignupPage extends StatelessWidget {
+  const SignupPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -90,7 +92,7 @@ class _SignupPageBodyState extends State<_SignupPageBody> {
           if (state is AuthSuccess) {
             AppLogger.info('Signup successful');
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Signup successful!')),
+              const SnackBar(content: Text('Signup successful!')),
             );
           } else if (state is AuthFailure) {
             AppLogger.error('Signup failed with error: ${state.error}');

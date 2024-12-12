@@ -1,30 +1,38 @@
+import 'package:uuid/uuid.dart'; 
 import '../../domain/entities/chat_entity.dart';
 
-class ChatModel extends Chat {
-  ChatModel({
-    required String id,
-    required String userName,
-    required String avatarUrl,
-    required String lastMessage,
-    required DateTime lastMessageTime,
-    required bool isArchived,
-  }) : super(
-          id: id,
-          userName: userName,
-          avatarUrl: avatarUrl,
-          lastMessage: lastMessage,
-          lastMessageTime: lastMessageTime,
-          isArchived: isArchived,
-        );
+class ContactModel extends Chat {
+  // ignore: prefer_const_constructors
+  static final Uuid _uuid = Uuid(); 
 
-  factory ChatModel.fromJson(Map<String, dynamic> json) {
-    return ChatModel(
-      id: json['id'],
-      userName: json['userName'],
-      avatarUrl: json['avatarUrl'],
-      lastMessage: json['lastMessage'],
-      lastMessageTime: DateTime.parse(json['lastMessageTime']),
-      isArchived: json['isArchived'],
+  ContactModel({
+    required super.id,
+    required super.userName,
+    required super.avatarUrl,
+    required super.lastMessage,
+    required super.createdTime,
+    required super.isArchived,
+  });
+
+  factory ContactModel.fromJson(Map<String, dynamic> json) {
+    DateTime? parsedTime;
+    try {
+      if (json['createdTime'] != null && json['createdTime'] is String) {
+        parsedTime = DateTime.parse(json['createdTime']).toUtc();
+      }
+    } catch (e) {
+      parsedTime = null; 
+    }
+
+    
+
+    return ContactModel(
+      id: json['id'] ?? _uuid.v4(), 
+      userName: json['userName'] ?? 'Unknown User',
+      avatarUrl: json['avatarUrl'] ?? '',
+      lastMessage: json['lastMessage'] ?? '',
+      createdTime: parsedTime,
+      isArchived: json['isArchived'] ?? false,
     );
   }
 
@@ -34,7 +42,7 @@ class ChatModel extends Chat {
       'userName': userName,
       'avatarUrl': avatarUrl,
       'lastMessage': lastMessage,
-      'lastMessageTime': lastMessageTime.toIso8601String(),
+      'createdTime': createdTime?.toLocal().toIso8601String() ?? '',
       'isArchived': isArchived,
     };
   }
