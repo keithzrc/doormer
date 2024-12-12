@@ -1,4 +1,5 @@
 // archieve_bloc.dart
+import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
 import '../../domain/usecases/archive_chat.dart';
@@ -16,7 +17,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     required this.getArchivedChatList,
     required this.archiveChat,
     required this.deleteChat,
-  }) : super(ChatLoadingState()) {
+    List<Chat>? initialChats,
+  }) : super(initialChats != null
+            ? ChatLoadedState(initialChats)
+            : ChatLoadingState()) {
     on<LoadChatsEvent>((event, emit) async {
       emit(ChatLoadingState());
       try {
