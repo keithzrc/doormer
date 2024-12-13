@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './archieve_page.dart'; 
+import 'archive_page.dart'; 
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
