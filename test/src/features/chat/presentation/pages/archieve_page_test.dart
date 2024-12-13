@@ -84,12 +84,12 @@ void main() {
       
       debugPrint('当前 Bloc 状态: ${mockChatBloc.state}');
       debugPrint('当前渲染的所有 Widget:');
-      tester.allWidgets.forEach((widget) {
+      for (var widget in tester.allWidgets) {
         debugPrint('Widget 类型: ${widget.runtimeType}');
         if (widget is Text) {
           debugPrint('Text 内容: "${widget.data}"');
         }
-      });
+      }
       
       expect(
         find.text('No archived chats found.'),
