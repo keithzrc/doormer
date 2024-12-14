@@ -16,7 +16,7 @@ class ArchiveChat {
 
 /// Use case for deleting a chat.
 /// This class interacts with the ChatRepository to delete a chat
-/// identified by its [chatId].
+/// identified by its chatId.
 class DeleteChat {
   final ChatRepository repository;
 
