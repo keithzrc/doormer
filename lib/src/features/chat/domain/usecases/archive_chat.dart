@@ -14,6 +14,19 @@ class ArchiveChat {
   }
 }
 
+/// Use case for unarchiving a chat.
+/// This class interacts with the ChatRepository to unarchive a chat
+/// identified by its chatId.
+class UnarchiveChat {
+  final ChatRepository repository;
+
+  UnarchiveChat(this.repository);
+
+  Future<void> call(String chatId) async {
+    await repository.unArchiveChat(chatId);
+  }
+}
+
 /// Use case for deleting a chat.
 /// This class interacts with the ChatRepository to delete a chat
 /// identified by its chatId.

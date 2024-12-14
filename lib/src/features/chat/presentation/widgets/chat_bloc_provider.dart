@@ -16,11 +16,11 @@ class ChatBlocProvider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ChatBloc(
-        getChatList: context.read(),
-        getArchivedChatList: context.read(),
-        archiveChat: context.read(),
-        deleteChat: context.read(),
+      create: (context) => ChatArchiveBloc(
+        getChatListUseCase: context.read(),
+        getArchivedChatListUseCase: context.read(),
+        archiveChatUseCase: context.read(),
+        deleteChatUseCase: context.read(),
       )..add(event),
       child: child,
     );

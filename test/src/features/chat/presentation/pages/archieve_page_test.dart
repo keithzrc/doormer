@@ -16,7 +16,7 @@ import 'package:doormer/src/features/chat/presentation/widgets/chat_card.dart';
 class MockChatRepository extends Mock implements ChatRepository {}
 
 class MockChatBloc extends MockBloc<ChatEvent, archive_state.ChatState>
-    implements ChatBloc {}
+    implements ChatArchiveBloc {}
 
 void main() {
   late MockChatRepository mockRepository;
@@ -54,7 +54,7 @@ void main() {
             create: (context) => getChatList,
           ),
         ],
-        child: BlocProvider<ChatBloc>.value(
+        child: BlocProvider<ChatArchiveBloc>.value(
           value: mockChatBloc,
           child: const ArchivePage(),
         ),

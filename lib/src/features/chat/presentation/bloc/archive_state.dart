@@ -10,6 +10,8 @@ class ChatLoadedState extends ChatState {
   ChatLoadedState(this.chats);
 }
 
+class ArchivedChatLoadingState extends ChatState {}
+
 class ArchivedChatLoadedState extends ChatState {
   final List<Chat> archivedChats;
   ArchivedChatLoadedState(this.archivedChats);
@@ -18,5 +20,4 @@ class ArchivedChatLoadedState extends ChatState {
 class ChatErrorState extends ChatState {
   final String error;
   ChatErrorState(this.error);
-  List<Object?> get props => [error];
 }
