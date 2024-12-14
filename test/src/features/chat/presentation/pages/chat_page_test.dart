@@ -8,8 +8,11 @@ import 'package:doormer/src/features/chat/domain/usecases/archive_chat.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/archive_bloc.dart';
 
 class MockGetChatList extends Mock implements GetChatList {}
+
 class MockGetArchivedList extends Mock implements GetArchivedList {}
+
 class MockArchiveChat extends Mock implements ArchiveChat {}
+
 class MockDeleteChat extends Mock implements DeleteChat {}
 
 void main() {
@@ -23,7 +26,7 @@ void main() {
     mockGetArchivedList = MockGetArchivedList();
     mockArchiveChat = MockArchiveChat();
     mockDeleteChat = MockDeleteChat();
-    
+
     reset(mockGetChatList);
     reset(mockGetArchivedList);
     reset(mockArchiveChat);
@@ -54,12 +57,13 @@ void main() {
               deleteChat: context.read<DeleteChat>(),
             ),
             update: (context, getArchivedList, previous) =>
-              previous ?? ChatBloc(
-                getChatList: mockGetChatList,
-                getArchivedChatList: getArchivedList,
-                archiveChat: context.read<ArchiveChat>(),
-                deleteChat: context.read<DeleteChat>(),
-              ),
+                previous ??
+                ChatBloc(
+                  getChatList: mockGetChatList,
+                  getArchivedChatList: getArchivedList,
+                  archiveChat: context.read<ArchiveChat>(),
+                  deleteChat: context.read<DeleteChat>(),
+                ),
           ),
         ],
         child: MaterialApp(
@@ -83,7 +87,7 @@ void main() {
     testWidgets('navigates to ArchivePage when archive icon is tapped',
         (WidgetTester tester) async {
       await tester.pumpWidget(createWidgetUnderTest());
-      
+
       // 点击归档图标
       await tester.tap(find.byIcon(Icons.archive));
       await tester.pumpAndSettle();

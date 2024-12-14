@@ -1,5 +1,6 @@
+import 'package:doormer/src/core/utils/time.dart';
 import 'package:flutter/material.dart';
-import '../../domain/entities/chat_entity.dart';
+import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
 
 class ChatCard extends StatelessWidget {
   final Chat chat;
@@ -22,12 +23,13 @@ class ChatCard extends StatelessWidget {
       child: ListTile(
         leading: CircleAvatar(
           radius: 30,
-          backgroundImage: chat.avatarUrl.isEmpty
-              ? null
-              : NetworkImage(chat.avatarUrl),
+          backgroundImage:
+              chat.avatarUrl.isNotEmpty ? NetworkImage(chat.avatarUrl) : null,
           child: chat.avatarUrl.isEmpty
               ? Text(
-                  chat.userName.isNotEmpty ? chat.userName[0].toUpperCase() : '?',
+                  chat.userName.isNotEmpty
+                      ? chat.userName[0].toUpperCase()
+                      : '?',
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -41,7 +43,7 @@ class ChatCard extends StatelessWidget {
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
-          overflow: TextOverflow.ellipsis, 
+          overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
           chat.lastMessage,
@@ -49,11 +51,11 @@ class ChatCard extends StatelessWidget {
             color: Colors.grey,
             fontSize: 14,
           ),
-          overflow: TextOverflow.ellipsis, 
+          overflow: TextOverflow.ellipsis,
         ),
         trailing: chat.createdTime != null
             ? Text(
-                _formatTime(chat.createdTime!),
+                formatTime(chat.createdTime!),
                 style: const TextStyle(
                   fontSize: 12,
                   color: Colors.grey,
@@ -63,9 +65,5 @@ class ChatCard extends StatelessWidget {
         onTap: onTap, // Allow interaction on tap
       ),
     );
-  }
-
-  String _formatTime(DateTime dateTime) {
-    return '${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 }
