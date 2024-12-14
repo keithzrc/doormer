@@ -1,5 +1,4 @@
 /// Represents a chat entity in the system.
-///
 /// This class holds all the necessary information about a chat, including:
 /// - [id]: Unique identifier for the chat.
 /// - [userName]: Name of the user associated with the chat.
