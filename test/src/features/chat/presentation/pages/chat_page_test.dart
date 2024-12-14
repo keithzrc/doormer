@@ -5,7 +5,7 @@ import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart';
 import 'package:provider/provider.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat.dart';
-import 'package:doormer/src/features/chat/presentation/bloc/archive_bloc.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 
 class MockGetChatList extends Mock implements GetChatList {}
 

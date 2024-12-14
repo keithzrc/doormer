@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/core/theme/app_text_styles.dart';
-import 'package:doormer/src/features/chat/presentation/bloc/archive_bloc.dart';
-import 'package:doormer/src/features/chat/presentation/bloc/archive_event.dart'
+import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_event.dart'
     as archive_event; // Prefix for events
-import 'package:doormer/src/features/chat/presentation/bloc/archive_state.dart'
+import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart'
     as archive_state; // Prefix for states
 import 'package:doormer/src/features/chat/presentation/widgets/chat_card.dart';
 import 'package:doormer/src/features/chat/presentation/widgets/chat_bloc_provider.dart';

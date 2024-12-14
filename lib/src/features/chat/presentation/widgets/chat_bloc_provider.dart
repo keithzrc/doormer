@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:doormer/src/features/chat/presentation/bloc/archive_bloc.dart';
-import 'package:doormer/src/features/chat/presentation/bloc/archive_event.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_event.dart';
 
 class ChatBlocProvider extends StatelessWidget {
   final Widget child;

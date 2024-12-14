@@ -3,9 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bloc_test/bloc_test.dart';
 
-import 'package:doormer/src/features/chat/presentation/bloc/archive_bloc.dart';
-import 'package:doormer/src/features/chat/presentation/bloc/archive_event.dart';
-import 'package:doormer/src/features/chat/presentation/bloc/archive_state.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_event.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat.dart';
 
 // Mock dependencies

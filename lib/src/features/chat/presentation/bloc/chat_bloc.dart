@@ -3,8 +3,8 @@ import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat.dart';
-import 'archive_event.dart';
-import 'archive_state.dart';
+import 'chat_event.dart';
+import 'chat_state.dart';
 
 class ChatArchiveBloc extends Bloc<ChatEvent, ChatState> {
   final GetChatList getChatListUseCase;
