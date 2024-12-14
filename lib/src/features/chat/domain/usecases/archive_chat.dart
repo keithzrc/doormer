@@ -23,7 +23,7 @@ class UnarchiveChat {
   UnarchiveChat(this.repository);
 
   Future<void> call(String chatId) async {
-    await repository.unArchiveChat(chatId);
+    await repository.unarchiveChat(chatId);
   }
 }
 

@@ -20,6 +20,7 @@ class ChatBlocProvider extends StatelessWidget {
         getChatListUseCase: context.read(),
         getArchivedChatListUseCase: context.read(),
         archiveChatUseCase: context.read(),
+        unarchiveChatUseCase: context.read(),
         deleteChatUseCase: context.read(),
       )..add(event),
       child: child,

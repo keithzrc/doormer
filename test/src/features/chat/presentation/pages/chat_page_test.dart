@@ -54,6 +54,7 @@ void main() {
               getChatListUseCase: mockGetChatList,
               getArchivedChatListUseCase: context.read<GetArchivedList>(),
               archiveChatUseCase: context.read<ArchiveChat>(),
+              unarchiveChatUseCase: context.read<UnarchiveChat>(),
               deleteChatUseCase: context.read<DeleteChat>(),
             ),
             update: (context, getArchivedList, previous) =>
@@ -62,6 +63,7 @@ void main() {
                   getChatListUseCase: mockGetChatList,
                   getArchivedChatListUseCase: getArchivedList,
                   archiveChatUseCase: context.read<ArchiveChat>(),
+                  unarchiveChatUseCase: context.read<UnarchiveChat>(),
                   deleteChatUseCase: context.read<DeleteChat>(),
                 ),
           ),
