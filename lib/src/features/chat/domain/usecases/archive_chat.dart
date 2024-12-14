@@ -2,7 +2,6 @@ import '../repositories/chat_repository.dart';
 import '../entities/chat_entity.dart';
 
 /// Use case for archiving a chat.
-///
 /// This class interacts with the ChatRepository to archive a chat
 /// identified by its chatId.
 class ArchiveChat {
@@ -16,7 +15,6 @@ class ArchiveChat {
 }
 
 /// Use case for deleting a chat.
-///
 /// This class interacts with the ChatRepository to delete a chat
 /// identified by its [chatId].
 class DeleteChat {
@@ -30,7 +28,6 @@ class DeleteChat {
 }
 
 /// Use case for retrieving the list of archived chats.
-///
 /// This class interacts with the ChatRepository to fetch all archived chats.
 class GetArchivedList {
   final ChatRepository repository;
@@ -43,8 +40,7 @@ class GetArchivedList {
 }
 
 /// Use case for retrieving the list of active chats.
-///
-/// This class interacts with the [ChatRepository] to fetch all active chats
+/// This class interacts with the ChatRepository to fetch all active chats
 /// that are not archived.
 class GetChatList {
   final ChatRepository repository;
