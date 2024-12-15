@@ -10,7 +10,7 @@ class ChatArchiveBloc extends Bloc<ChatEvent, ChatState> {
   final GetChatList getChatListUseCase;
   final GetArchivedList getArchivedChatListUseCase;
   final ArchiveChat archiveChatUseCase;
-  final UnarchiveChat unarchiveChatUseCase;
+  final UnarchiveChatlist unarchiveChatUseCase;
   final DeleteChat deleteChatUseCase;
 
   ChatArchiveBloc({

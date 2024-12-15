@@ -1,3 +1,4 @@
+import 'package:uuid/uuid.dart';
 import '../repositories/chat_repository.dart';
 import '../entities/chat_entity.dart';
 
@@ -9,18 +10,15 @@ class ArchiveChat {
 
   ArchiveChat(this.repository);
 
-  Future<void> call(String chatId) async {
+  Future<void> call(Uuid chatId) async {
     await repository.archiveChat(chatId);
   }
 }
 
-/// Use case for unarchiving a chat.
-/// This class interacts with the ChatRepository to unarchive a chat
-/// identified by its chatId.
-class UnarchiveChat {
+class unarchiveChat {
   final ChatRepository repository;
 
-  UnarchiveChat(this.repository);
+  unarchiveChat(this.repository);
 
   Future<void> call(String chatId) async {
     await repository.unarchiveChat(chatId);
@@ -35,7 +33,7 @@ class DeleteChat {
 
   DeleteChat(this.repository);
 
-  Future<void> call(String chatId) async {
+  Future<void> call(Uuid chatId) async {
     await repository.deleteChat(chatId);
   }
 }
@@ -47,7 +45,7 @@ class GetArchivedList {
 
   GetArchivedList(this.repository);
 
-  Future<List<Chat>> call() async {
+  Future<List<Contact>> call() async {
     return await repository.getArchivedList();
   }
 }
@@ -60,7 +58,7 @@ class GetChatList {
 
   GetChatList(this.repository);
 
-  Future<List<Chat>> call() async {
-    return await repository.getChatList();
+  Future<List<Contact>> call() async {
+    return await repository.getUnarchivechatList();
   }
 }

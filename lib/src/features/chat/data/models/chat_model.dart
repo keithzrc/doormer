@@ -1,12 +1,16 @@
-import 'package:uuid/uuid.dart'; 
-import '../../domain/entities/chat_entity.dart';
+//no uuid import
+import 'package:logger/logger.dart';
+import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
 
-class ContactModel extends Chat {
-  // ignore: prefer_const_constructors
-  static final Uuid _uuid = Uuid(); 
+const String uuid = 'uuid';
+const String userName = 'userName';
+
+//no uuid
+class ContactModel extends Contact {
+  static final Logger _logger = Logger();
 
   ContactModel({
-    required super.id,
+    required super.uuid,
     required super.userName,
     required super.avatarUrl,
     required super.lastMessage,
@@ -16,34 +20,47 @@ class ContactModel extends Chat {
 
   factory ContactModel.fromJson(Map<String, dynamic> json) {
     DateTime? parsedTime;
+    final createdTime = json['createdTime'];
     try {
-      if (json['createdTime'] != null && json['createdTime'] is String) {
-        parsedTime = DateTime.parse(json['createdTime']).toUtc();
-      }
+      parsedTime = DateTime.parse(createdTime).toLocal();
     } catch (e) {
-      parsedTime = null; 
+      parsedTime = null;
+      _logger.e("Unable to parse createdTime");
+      throw FormatException('Unable to parse createdTime', e);
     }
-
-    
+    _validateRequiredFieldsOrThrow(json);
 
     return ContactModel(
-      id: json['id'] ?? _uuid.v4(), 
-      userName: json['userName'] ?? 'Unknown User',
-      avatarUrl: json['avatarUrl'] ?? '',
-      lastMessage: json['lastMessage'] ?? '',
+      uuid: json[uuid],
+      userName: json[userName],
+      avatarUrl: json['avatarUrl'],
+      lastMessage: json['lastMessage'],
       createdTime: parsedTime,
-      isArchived: json['isArchived'] ?? false,
+      isArchived: json['isArchived'],
     );
   }
 
   Map<String, dynamic> toJson() {
+    if (createdTime == null) {
+      _logger.e("createdTime is null");
+      throw const FormatException('Required field createdTime is null');
+    }
     return {
-      'id': id,
-      'userName': userName,
-      'avatarUrl': avatarUrl,
-      'lastMessage': lastMessage,
-      'createdTime': createdTime?.toLocal().toIso8601String() ?? '',
+      uuid: uuid,
+      userName: userName,
+      avatarUrl: avatarUrl,
+      lastMessage: lastMessage,
+      'createdTime': createdTime!.toUtc().toIso8601String(),
       'isArchived': isArchived,
     };
+  }
+}
+
+void _validateRequiredFieldsOrThrow(Map<String, dynamic> json) {
+  final fields = [uuid, userName, 'avatarUrl', 'lastMessage', 'isArchived'];
+  for (final field in fields) {
+    if (json[field] == null) {
+      throw FormatException('Missing required field: $field');
+    }
   }
 }

@@ -1,37 +1,48 @@
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:logger/logger.dart';
+import 'package:uuid/uuid.dart';
 import '../../../domain/entities/chat_entity.dart';
 import '../../../domain/repositories/chat_repository.dart';
 import '../../models/chat_model.dart';
 
+const fileDBPath =
+    'lib/src/features/chat/data/repositories/file/dummydata.json';
+
 class ChatRepositoryImpl implements ChatRepository {
   List<ContactModel> _chats = [];
   final Logger _logger = Logger();
-
-  ChatRepositoryImpl();
+  ChatRepositoryImpl() {
+    _loadDummyData().then((_) {
+      _logger.i('Data initialization completed');
+    }).catchError((error) {
+      _logger.e('Data initialization failed');
+    });
+  }
 
   Future<void> _loadDummyData() async {
     try {
-      final String response = await rootBundle.loadString(
-          'lib/src/features/chat/data/repositories/file/dummydata.json');
+      final String response = await rootBundle.loadString(fileDBPath);
       final List<dynamic> jsonData = json.decode(response);
+      if (jsonData.isEmpty) {
+        _logger.e('empty jason');
+      }
       _chats = jsonData.map((data) => ContactModel.fromJson(data)).toList();
       _logger.i('Dummy data loaded successfully.');
     } catch (e) {
       _logger.e('Error loading dummy data', e);
-      _chats = [];
+      rethrow;
     }
   }
 
   @override
-  Future<List<Chat>> getChatList() async {
+  Future<List<Contact>> getUnarchivechatList() async {
     await _ensureDataLoaded();
     return _chats.where((chat) => !chat.isArchived).toList();
   }
 
   @override
-  Future<List<Chat>> getArchivedList() async {
+  Future<List<Contact>> getArchivedList() async {
     await _ensureDataLoaded();
     return _chats.where((chat) => chat.isArchived).toList();
   }
@@ -39,27 +50,21 @@ class ChatRepositoryImpl implements ChatRepository {
   final int indexNotFound = -1;
 
   @override
-  Future<void> archiveChat(String chatId) async {
+  Future<void> archiveChat(Uuid uuid) async {
     await _ensureDataLoaded();
-    final index = _chats.indexWhere((chat) => chat.id == chatId);
+    final index = _chats.indexWhere((chat) => chat.uuid == uuid);
     if (index != indexNotFound) {
       final chat = _chats[index];
       _chats[index] = _mapToArchivedContact(chat);
-      _logger.i('Chat with ID $chatId archived successfully.');
+      _logger.i('Chat with ID $uuid archived successfully.');
     } else {
-      _logger.w('Chat with ID $chatId not found.');
+      _logger.w('Chat with ID $uuid not found.');
     }
   }
 
-  @override
-  Future<void> unarchiveChat(String chatId) {
-    // TODO: implement unArchiveChat
-    throw UnimplementedError();
-  }
-
-  ContactModel _mapToArchivedContact(Chat chat) {
+  ContactModel _mapToArchivedContact(Contact chat) {
     return ContactModel(
-      id: chat.id,
+      uuid: chat.uuid,
       userName: chat.userName,
       avatarUrl: chat.avatarUrl,
       lastMessage: chat.lastMessage,
@@ -69,12 +74,12 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<void> deleteChat(String chatId) async {
+  Future<void> deleteChat(Uuid chatId) async {
     await _ensureDataLoaded();
 
     final initialLength = _chats.length;
 
-    _chats.removeWhere((chat) => chat.id == chatId);
+    _chats.removeWhere((chat) => chat.uuid == chatId);
 
     if (_chats.length == initialLength) {
       _logger.w('Chat with ID $chatId not found.');
@@ -89,17 +94,16 @@ class ChatRepositoryImpl implements ChatRepository {
     for (int i = 0; i < _chats.length; i++) {
       final chat = _chats[i];
       if (!chat.isArchived &&
-          now.difference(chat.createdTime ?? DateTime(1970, 1, 1)) >
-              threshold) {
+          now.difference(chat.createdTime ?? DateTime.now()) > threshold) {
         _chats[i] = ContactModel(
-          id: chat.id,
+          uuid: chat.uuid,
           userName: chat.userName,
           avatarUrl: chat.avatarUrl,
           lastMessage: chat.lastMessage,
           createdTime: chat.createdTime,
           isArchived: true,
         );
-        _logger.i('Chat with ID ${chat.id} auto-archived.');
+        _logger.i('Chat with ID ${chat.uuid} auto-archived.');
       }
     }
   }
