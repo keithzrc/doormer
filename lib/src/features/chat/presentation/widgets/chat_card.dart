@@ -1,4 +1,4 @@
-import 'package:doormer/src/core/utils/time.dart';
+import 'package:doormer/src/features/chat/utils/time.dart';
 import 'package:flutter/material.dart';
 import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
 
