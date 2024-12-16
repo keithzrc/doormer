@@ -1,3 +1,5 @@
+import 'package:uuid/uuid.dart';
+
 abstract class ChatEvent {}
 
 class LoadChatsEvent extends ChatEvent {}

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:logger/logger.dart';
-import 'package:uuid/uuid.dart';
 import '../../../domain/entities/chat_entity.dart';
 import '../../../domain/repositories/chat_repository.dart';
 import '../../models/chat_model.dart';
@@ -25,7 +24,7 @@ class ChatRepositoryImpl implements ChatRepository {
       final String response = await rootBundle.loadString(fileDBPath);
       final List<dynamic> jsonData = json.decode(response);
       if (jsonData.isEmpty) {
-        _logger.e('empty jason');
+        _logger.e('empty json');
       }
       _chats = jsonData.map((data) => ContactModel.fromJson(data)).toList();
       _logger.i('Dummy data loaded successfully.');
@@ -36,7 +35,7 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<List<Contact>> getUnarchivechatList() async {
+  Future<List<Contact>> getUnarchivedchatList() async {
     await _ensureDataLoaded();
     return _chats.where((chat) => !chat.isArchived).toList();
   }
@@ -50,36 +49,31 @@ class ChatRepositoryImpl implements ChatRepository {
   final int indexNotFound = -1;
 
   @override
-  Future<void> archiveChat(Uuid uuid) async {
-    await _ensureDataLoaded();
-    final index = _chats.indexWhere((chat) => chat.uuid == uuid);
-    if (index != indexNotFound) {
-      final chat = _chats[index];
-      _chats[index] = _mapToArchivedContact(chat);
-      _logger.i('Chat with ID $uuid archived successfully.');
+  Future<void> toggleChat(String id) async {
+  await _ensureDataLoaded();
+  final index = _chats.indexWhere((chat) => chat.id.toString() == id);
+  if (index != indexNotFound) {
+    final chat = _chats[index];
+    if (chat.isArchived) {
+      _chats[index] = _mapToUnarchivedContact(chat);
+      _logger.i('Chat with ID $id unarchived successfully.');
     } else {
-      _logger.w('Chat with ID $uuid not found.');
+      _chats[index] = _mapToArchivedContact(chat);
+      _logger.i('Chat with ID $id archived successfully.');
     }
+  } else {
+    _logger.w('Chat with ID $id not found.');
   }
+}
 
-  ContactModel _mapToArchivedContact(Contact chat) {
-    return ContactModel(
-      uuid: chat.uuid,
-      userName: chat.userName,
-      avatarUrl: chat.avatarUrl,
-      lastMessage: chat.lastMessage,
-      createdTime: chat.createdTime,
-      isArchived: true,
-    );
-  }
 
   @override
-  Future<void> deleteChat(Uuid chatId) async {
+  Future<void> deleteChat(String chatId) async {
     await _ensureDataLoaded();
 
     final initialLength = _chats.length;
 
-    _chats.removeWhere((chat) => chat.uuid == chatId);
+    _chats.removeWhere((chat) => chat.id.toString() == chatId);
 
     if (_chats.length == initialLength) {
       _logger.w('Chat with ID $chatId not found.');
@@ -88,29 +82,30 @@ class ChatRepositoryImpl implements ChatRepository {
     }
   }
 
-  Future<void> autoArchiveInactiveChats(Duration threshold) async {
-    await _ensureDataLoaded();
-    final now = DateTime.now();
-    for (int i = 0; i < _chats.length; i++) {
-      final chat = _chats[i];
-      if (!chat.isArchived &&
-          now.difference(chat.createdTime ?? DateTime.now()) > threshold) {
-        _chats[i] = ContactModel(
-          uuid: chat.uuid,
-          userName: chat.userName,
-          avatarUrl: chat.avatarUrl,
-          lastMessage: chat.lastMessage,
-          createdTime: chat.createdTime,
-          isArchived: true,
-        );
-        _logger.i('Chat with ID ${chat.uuid} auto-archived.');
-      }
-    }
-  }
-
   Future<void> _ensureDataLoaded() async {
     if (_chats.isEmpty) {
       await _loadDummyData();
     }
+  }
+
+  ContactModel _mapToArchivedContact(Contact chat) {
+    return ContactModel(
+      id: chat.id,
+      userName: chat.userName,
+      avatarUrl: chat.avatarUrl,
+      lastMessage: chat.lastMessage,
+      createdTime: chat.createdTime,
+      isArchived: true,
+    );
+  }
+  ContactModel _mapToUnarchivedContact(Contact chat) {
+    return ContactModel(
+      id: chat.id,
+      userName: chat.userName,
+      avatarUrl: chat.avatarUrl,
+      lastMessage: chat.lastMessage,
+      createdTime: chat.createdTime,
+      isArchived: false,
+    );
   }
 }

@@ -34,7 +34,7 @@ void main() {
         if (initialChats.isEmpty) return;
 
         final chatToArchive = initialChats.first;
-        await repository.archiveChat(chatToArchive.id);
+        await repository.toggleChat(chatToArchive.id);
 
         final archivedChats = await repository.getArchivedList();
         final archivedChat = archivedChats.firstWhere(
@@ -46,7 +46,7 @@ void main() {
       });
 
       test('archiveChat should handle non-existent chat ID', () async {
-        await repository.archiveChat('non-existent-id');
+        await repository.toggleChat('non-existent-id');
         expect(true, true);
       });
     });

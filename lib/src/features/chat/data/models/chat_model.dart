@@ -1,8 +1,10 @@
 //no uuid import
+import 'dart:convert';
 import 'package:logger/logger.dart';
 import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
+import 'package:uuid/uuid.dart';
 
-const String uuid = 'uuid';
+const String id = 'id';
 const String userName = 'userName';
 
 //no uuid
@@ -10,7 +12,7 @@ class ContactModel extends Contact {
   static final Logger _logger = Logger();
 
   ContactModel({
-    required super.uuid,
+    required super.id,
     required super.userName,
     required super.avatarUrl,
     required super.lastMessage,
@@ -29,9 +31,9 @@ class ContactModel extends Contact {
       throw FormatException('Unable to parse createdTime', e);
     }
     _validateRequiredFieldsOrThrow(json);
-
     return ContactModel(
-      uuid: json[uuid],
+      //原本是json【uuid】
+      id: json[id],
       userName: json[userName],
       avatarUrl: json['avatarUrl'],
       lastMessage: json['lastMessage'],
@@ -46,7 +48,7 @@ class ContactModel extends Contact {
       throw const FormatException('Required field createdTime is null');
     }
     return {
-      uuid: uuid,
+      id: id,
       userName: userName,
       avatarUrl: avatarUrl,
       lastMessage: lastMessage,
@@ -57,7 +59,7 @@ class ContactModel extends Contact {
 }
 
 void _validateRequiredFieldsOrThrow(Map<String, dynamic> json) {
-  final fields = [uuid, userName, 'avatarUrl', 'lastMessage', 'isArchived'];
+  final fields = [id, userName, 'avatarUrl', 'lastMessage', 'isArchived'];
   for (final field in fields) {
     if (json[field] == null) {
       throw FormatException('Missing required field: $field');

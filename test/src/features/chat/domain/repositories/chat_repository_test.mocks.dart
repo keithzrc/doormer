@@ -43,7 +43,7 @@ class MockChatRepository extends _i1.Mock implements _i2.ChatRepository {
       ) as _i3.Future<List<_i4.Chat>>);
 
   @override
-  _i3.Future<void> archiveChat(String? chatId) => (super.noSuchMethod(
+  _i3.Future<void> toggleChat(String? chatId) => (super.noSuchMethod(
         Invocation.method(
           #archiveChat,
           [chatId],

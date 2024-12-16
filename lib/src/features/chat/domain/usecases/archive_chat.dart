@@ -1,27 +1,16 @@
-import 'package:uuid/uuid.dart';
 import '../repositories/chat_repository.dart';
 import '../entities/chat_entity.dart';
 
-/// Use case for archiving a chat.
-/// This class interacts with the ChatRepository to archive a chat
+/// Use case for toggle a chat.
+/// This class interacts with the ChatRepository to toggle a chat unarchived to archived
 /// identified by its chatId.
-class ArchiveChat {
+class ToggleChat {
   final ChatRepository repository;
 
-  ArchiveChat(this.repository);
-
-  Future<void> call(Uuid chatId) async {
-    await repository.archiveChat(chatId);
-  }
-}
-
-class unarchiveChat {
-  final ChatRepository repository;
-
-  unarchiveChat(this.repository);
+  ToggleChat(this.repository);
 
   Future<void> call(String chatId) async {
-    await repository.unarchiveChat(chatId);
+    await repository.toggleChat(chatId);
   }
 }
 
@@ -33,7 +22,7 @@ class DeleteChat {
 
   DeleteChat(this.repository);
 
-  Future<void> call(Uuid chatId) async {
+  Future<void> call(String chatId) async {
     await repository.deleteChat(chatId);
   }
 }
@@ -50,15 +39,15 @@ class GetArchivedList {
   }
 }
 
-/// Use case for retrieving the list of active chats.
-/// This class interacts with the ChatRepository to fetch all active chats
+/// Use case for retrieving the list of unactived chats.
+/// This class interacts with the ChatRepository to fetch all unactived chats
 /// that are not archived.
-class GetChatList {
+class GetUnarchivedchatList {
   final ChatRepository repository;
 
-  GetChatList(this.repository);
+  GetUnarchivedchatList(this.repository);
 
   Future<List<Contact>> call() async {
-    return await repository.getUnarchivechatList();
+    return await repository.getUnarchivedchatList();
   }
 }

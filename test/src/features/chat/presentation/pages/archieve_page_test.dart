@@ -20,20 +20,20 @@ class MockChatBloc extends MockBloc<ChatEvent, archive_state.ChatState>
 
 void main() {
   late MockChatRepository mockRepository;
-  late ArchiveChat archiveChat;
+  late ToggleChat archiveChat;
   late DeleteChat deleteChat;
   late GetArchivedList getArchivedList;
-  late GetChatList getChatList;
+  late GetUnarchivedchatList getChatList;
   late MockChatBloc mockChatBloc;
 
   setUp(() {
     TestWidgetsFlutterBinding.ensureInitialized();
 
     mockRepository = MockChatRepository();
-    archiveChat = ArchiveChat(mockRepository);
+    archiveChat = ToggleChat(mockRepository);
     deleteChat = DeleteChat(mockRepository);
     getArchivedList = GetArchivedList(mockRepository);
-    getChatList = GetChatList(mockRepository);
+    getChatList = GetUnarchivedchatList(mockRepository);
     mockChatBloc = MockChatBloc();
   });
 
@@ -41,7 +41,7 @@ void main() {
     return MaterialApp(
       home: MultiRepositoryProvider(
         providers: [
-          RepositoryProvider<ArchiveChat>(
+          RepositoryProvider<ToggleChat>(
             create: (context) => archiveChat,
           ),
           RepositoryProvider<DeleteChat>(
@@ -50,7 +50,7 @@ void main() {
           RepositoryProvider<GetArchivedList>(
             create: (context) => getArchivedList,
           ),
-          RepositoryProvider<GetChatList>(
+          RepositoryProvider<GetUnarchivedchatList>(
             create: (context) => getChatList,
           ),
         ],

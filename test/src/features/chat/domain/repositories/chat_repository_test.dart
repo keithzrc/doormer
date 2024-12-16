@@ -37,9 +37,9 @@ void main() {
     });
 
     test('archiveChat should call archiveChat with correct id', () async {
-      when(mockChatRepository.archiveChat('1')).thenAnswer((_) async {});
-      await mockChatRepository.archiveChat('1');
-      verify(mockChatRepository.archiveChat('1')).called(1);
+      when(mockChatRepository.toggleChat('1')).thenAnswer((_) async {});
+      await mockChatRepository.toggleChat('1');
+      verify(mockChatRepository.toggleChat('1')).called(1);
     });
 
     test('deleteChat should call deleteChat with correct id', () async {

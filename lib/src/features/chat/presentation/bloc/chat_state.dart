@@ -6,14 +6,14 @@ abstract class ChatState {}
 class ChatLoadingState extends ChatState {}
 
 class ChatLoadedState extends ChatState {
-  final List<Chat> chats;
+  final List<Contact> chats;
   ChatLoadedState(this.chats);
 }
 
 class ArchivedChatLoadingState extends ChatState {}
 
 class ArchivedChatLoadedState extends ChatState {
-  final List<Chat> archivedChats;
+  final List<Contact> archivedChats;
   ArchivedChatLoadedState(this.archivedChats);
 }
 

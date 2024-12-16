@@ -11,13 +11,13 @@ void main() {
   });
 
   test('ArchiveChat should call archiveChat on the repository', () async {
-    final useCase = ArchiveChat(mockChatRepository);
+    final useCase = ToggleChat(mockChatRepository);
     const chatId = '123';
 
-    when(mockChatRepository.archiveChat(chatId)).thenAnswer((_) async {});
+    when(mockChatRepository.toggleChat(chatId)).thenAnswer((_) async {});
 
     await useCase.call(chatId);
 
-    verify(mockChatRepository.archiveChat(chatId)).called(1);
+    verify(mockChatRepository.toggleChat(chatId)).called(1);
   });
 }

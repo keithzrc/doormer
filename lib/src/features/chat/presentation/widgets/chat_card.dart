@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
 
 class ChatCard extends StatelessWidget {
-  final Chat chat;
+  final Contact chat;
   final VoidCallback? onTap;
 
   const ChatCard({

@@ -42,16 +42,16 @@ Future<void> initDependencies() async {
   );
 
   // Register use cases
-  serviceLocator.registerLazySingleton<GetChatList>(
-    () => GetChatList(serviceLocator<ChatRepository>()),
+  serviceLocator.registerLazySingleton<GetUnarchivedchatList>(
+    () => GetUnarchivedchatList(serviceLocator<ChatRepository>()),
   );
 
   serviceLocator.registerLazySingleton<GetArchivedList>(
     () => GetArchivedList(serviceLocator<ChatRepository>()),
   );
 
-  serviceLocator.registerLazySingleton<ArchiveChat>(
-    () => ArchiveChat(serviceLocator<ChatRepository>()),
+  serviceLocator.registerLazySingleton<ToggleChat>(
+    () => ToggleChat(serviceLocator<ChatRepository>()),
   );
 
   serviceLocator.registerLazySingleton<DeleteChat>(

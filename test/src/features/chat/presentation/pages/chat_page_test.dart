@@ -7,11 +7,11 @@ import 'package:mocktail/mocktail.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 
-class MockGetChatList extends Mock implements GetChatList {}
+class MockGetChatList extends Mock implements GetUnarchivedchatList {}
 
 class MockGetArchivedList extends Mock implements GetArchivedList {}
 
-class MockArchiveChat extends Mock implements ArchiveChat {}
+class MockArchiveChat extends Mock implements ToggleChat {}
 
 class MockDeleteChat extends Mock implements DeleteChat {}
 
@@ -37,13 +37,13 @@ void main() {
     Widget createWidgetUnderTest({Widget? child}) {
       return MultiProvider(
         providers: [
-          Provider<GetChatList>(
+          Provider<GetUnarchivedchatList>(
             create: (_) => mockGetChatList,
           ),
           Provider<GetArchivedList>(
             create: (_) => mockGetArchivedList,
           ),
-          Provider<ArchiveChat>(
+          Provider<ToggleChat>(
             create: (_) => mockArchiveChat,
           ),
           Provider<DeleteChat>(
@@ -53,7 +53,7 @@ void main() {
             create: (context) => ChatArchiveBloc(
               getChatListUseCase: mockGetChatList,
               getArchivedChatListUseCase: context.read<GetArchivedList>(),
-              archiveChatUseCase: context.read<ArchiveChat>(),
+              archiveChatUseCase: context.read<ToggleChat>(),
               unarchiveChatUseCase: context.read<UnarchiveChat>(),
               deleteChatUseCase: context.read<DeleteChat>(),
             ),
@@ -62,7 +62,7 @@ void main() {
                 ChatArchiveBloc(
                   getChatListUseCase: mockGetChatList,
                   getArchivedChatListUseCase: getArchivedList,
-                  archiveChatUseCase: context.read<ArchiveChat>(),
+                  archiveChatUseCase: context.read<ToggleChat>(),
                   unarchiveChatUseCase: context.read<UnarchiveChat>(),
                   deleteChatUseCase: context.read<DeleteChat>(),
                 ),

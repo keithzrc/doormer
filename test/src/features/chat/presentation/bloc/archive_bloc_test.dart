@@ -9,11 +9,11 @@ import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat.dart';
 
 // Mock dependencies
-class MockGetChatList extends Mock implements GetChatList {}
+class MockGetChatList extends Mock implements GetUnarchivedchatList {}
 
 class MockGetArchivedList extends Mock implements GetArchivedList {}
 
-class MockArchiveChat extends Mock implements ArchiveChat {}
+class MockArchiveChat extends Mock implements ToggleChat {}
 
 class MockUnarchiveChat extends Mock implements UnarchiveChat {}
 

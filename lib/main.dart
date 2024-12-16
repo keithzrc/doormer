@@ -27,14 +27,14 @@ class MyApp extends StatelessWidget {
       builder: (_, child) {
         return MultiProvider(
           providers: [
-            Provider<GetChatList>(
-              create: (_) => serviceLocator<GetChatList>(),
+            Provider<GetUnarchivedchatList>(
+              create: (_) => serviceLocator<GetUnarchivedchatList>(),
             ),
             Provider<GetArchivedList>(
               create: (_) => serviceLocator<GetArchivedList>(),
             ),
-            Provider<ArchiveChat>(
-              create: (_) => serviceLocator<ArchiveChat>(),
+            Provider<ToggleChat>(
+              create: (_) => serviceLocator<ToggleChat>(),
             ),
             Provider<DeleteChat>(
               create: (_) => serviceLocator<DeleteChat>(),
