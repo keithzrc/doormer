@@ -15,8 +15,6 @@ class MockGetArchivedList extends Mock implements GetArchivedList {}
 
 class MockArchiveChat extends Mock implements ToggleChat {}
 
-class MockUnarchiveChat extends Mock implements UnarchiveChat {}
-
 class MockDeleteChat extends Mock implements DeleteChat {}
 
 void main() {
@@ -24,21 +22,18 @@ void main() {
   late MockGetChatList mockGetChatList;
   late MockGetArchivedList mockGetArchivedList;
   late MockArchiveChat mockArchiveChat;
-  late MockUnarchiveChat mockUnarchiveChat;
   late MockDeleteChat mockDeleteChat;
 
   setUp(() {
     mockGetChatList = MockGetChatList();
     mockGetArchivedList = MockGetArchivedList();
     mockArchiveChat = MockArchiveChat();
-    mockUnarchiveChat = MockUnarchiveChat();
     mockDeleteChat = MockDeleteChat();
 
     chatBloc = ChatArchiveBloc(
       getChatListUseCase: mockGetChatList,
       getArchivedChatListUseCase: mockGetArchivedList,
-      archiveChatUseCase: mockArchiveChat,
-      unarchiveChatUseCase: mockUnarchiveChat,
+      toggleChatUseCase: mockArchiveChat,
       deleteChatUseCase: mockDeleteChat,
     );
   });
@@ -53,8 +48,7 @@ void main() {
       final chatBloc = ChatArchiveBloc(
         getChatListUseCase: mockGetChatList,
         getArchivedChatListUseCase: mockGetArchivedList,
-        archiveChatUseCase: mockArchiveChat,
-        unarchiveChatUseCase: mockUnarchiveChat,
+        toggleChatUseCase: mockArchiveChat,
         deleteChatUseCase: mockDeleteChat,
         initialChats: null,
       );
@@ -64,8 +58,7 @@ void main() {
       final chatBloc = ChatArchiveBloc(
         getChatListUseCase: mockGetChatList,
         getArchivedChatListUseCase: mockGetArchivedList,
-        archiveChatUseCase: mockArchiveChat,
-        unarchiveChatUseCase: mockUnarchiveChat,
+        toggleChatUseCase: mockArchiveChat,
         deleteChatUseCase: mockDeleteChat,
         initialChats: [
           Chat(

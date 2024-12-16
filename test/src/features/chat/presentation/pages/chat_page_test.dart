@@ -53,7 +53,7 @@ void main() {
             create: (context) => ChatArchiveBloc(
               getChatListUseCase: mockGetChatList,
               getArchivedChatListUseCase: context.read<GetArchivedList>(),
-              archiveChatUseCase: context.read<ToggleChat>(),
+              toggleChatUseCase: context.read<ToggleChat>(),
               unarchiveChatUseCase: context.read<UnarchiveChat>(),
               deleteChatUseCase: context.read<DeleteChat>(),
             ),
@@ -62,7 +62,7 @@ void main() {
                 ChatArchiveBloc(
                   getChatListUseCase: mockGetChatList,
                   getArchivedChatListUseCase: getArchivedList,
-                  archiveChatUseCase: context.read<ToggleChat>(),
+                  toggleChatUseCase: context.read<ToggleChat>(),
                   unarchiveChatUseCase: context.read<UnarchiveChat>(),
                   deleteChatUseCase: context.read<DeleteChat>(),
                 ),

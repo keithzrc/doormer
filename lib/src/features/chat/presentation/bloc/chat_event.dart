@@ -1,19 +1,12 @@
-import 'package:uuid/uuid.dart';
-
 abstract class ChatEvent {}
 
 class LoadChatsEvent extends ChatEvent {}
 
 class LoadArchivedChatsEvent extends ChatEvent {}
 
-class ArchiveChatEvent extends ChatEvent {
+class ToggleChatEvent extends ChatEvent {
   final String chatId;
-  ArchiveChatEvent(this.chatId);
-}
-
-class UnArchiveChatEvent extends ChatEvent {
-  final String chatId;
-  UnArchiveChatEvent(this.chatId);
+  ToggleChatEvent(this.chatId);
 }
 
 class DeleteChatEvent extends ChatEvent {

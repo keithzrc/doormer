@@ -9,13 +9,13 @@ import 'chat_state.dart';
 class ChatArchiveBloc extends Bloc<ChatEvent, ChatState> {
   final GetUnarchivedchatList getChatListUseCase;
   final GetArchivedList getArchivedChatListUseCase;
-  final ToggleChat archiveChatUseCase;
+  final ToggleChat toggleChatUseCase;
   final DeleteChat deleteChatUseCase;
 
   ChatArchiveBloc({
     required this.getChatListUseCase,
     required this.getArchivedChatListUseCase,
-    required this.archiveChatUseCase,
+    required this.toggleChatUseCase,
     required this.deleteChatUseCase,
     List<Contact>? initialChats,
   }) : super(initialChats != null //simple logic so kept here
@@ -44,25 +44,18 @@ class ChatArchiveBloc extends Bloc<ChatEvent, ChatState> {
       }
     });
 
-    // on<ArchiveChatEvent>((event, emit) async {
-    //   try {
-    //     await archiveChatUseCase.call(event.chatId);
-    //     add(LoadChatsEvent());
-    //   } catch (e, stackTrace) {
-    //     emit(ChatErrorState(e.toString()));
-    //     AppLogger.error('Archived chat with error', e, stackTrace);
-    //   }
-    // });
-
-    // on<UnArchiveChatEvent>((event, emit) async {
-    //   try {
-    //     await unarchiveChatUseCase.call(event.chatId);
-    //     add(LoadArchivedChatsEvent());
-    //   } catch (e, stackTrace) {
-    //     emit(ChatErrorState(e.toString()));
-    //     AppLogger.error('Unarchived chat with error', e, stackTrace);
-    //   }
-    // });
+    on<ToggleChatEvent>((event, emit) async {
+      try {
+        if (state is ChatLoadedState) {
+          add(LoadChatsEvent()); // Reload normal chat list
+        } else if (state is ArchivedChatLoadedState) {
+          add(LoadArchivedChatsEvent()); // Reload archived chat list
+        }
+      } catch (e, stackTrace) {
+        emit(ChatErrorState(e.toString()));
+        AppLogger.error('Error toggling chat archive state', e, stackTrace);
+      }
+    });
 
     on<DeleteChatEvent>((event, emit) async {
       try {

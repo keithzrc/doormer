@@ -19,7 +19,7 @@ class ChatBlocProvider extends StatelessWidget {
       create: (context) => ChatArchiveBloc(
         getChatListUseCase: context.read(),
         getArchivedChatListUseCase: context.read(),
-        archiveChatUseCase: context.read(),
+        toggleChatUseCase: context.read(),
         // unarchiveChatUseCase: context.read(),
         deleteChatUseCase: context.read(),
       )..add(event),
