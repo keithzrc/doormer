@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:logger/logger.dart';
-import '../../../domain/entities/chat_entity.dart';
-import '../../../domain/repositories/chat_repository.dart';
-import '../../models/chat_model.dart';
+import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
+import 'package:doormer/src/features/chat/domain/repositories/chat_repository.dart';
+import 'package:doormer/src/features/chat/data/models/chat_model.dart';
 
 const fileDBPath =
     'lib/src/features/chat/data/repositories/file/dummydata.json';
@@ -49,30 +49,27 @@ class ChatRepositoryImpl implements ChatRepository {
   final int indexNotFound = -1;
 
   @override
-  Future<void> toggleChat(String id) async {
-  await _ensureDataLoaded();
-  final index = _chats.indexWhere((chat) => chat.id.toString() == id);
-  if (index != indexNotFound) {
-    final chat = _chats[index];
-    if (chat.isArchived) {
-      _chats[index] = _mapToUnarchivedContact(chat);
-      _logger.i('Chat with ID $id unarchived successfully.');
+  Future<void> toggleChat(String chatId) async {
+    await _ensureDataLoaded();
+    final index = _chats.indexWhere((chat) => chat.id.toString() == chatId);
+    if (index != indexNotFound) {
+      final chat = _chats[index];
+      if (chat.isArchived) {
+        _chats[index] = _mapToUnarchivedContact(chat);
+        _logger.i('Chat with ID $id unarchived successfully.');
+      } else {
+        _chats[index] = _mapToArchivedContact(chat);
+        _logger.i('Chat with ID $id archived successfully.');
+      }
     } else {
-      _chats[index] = _mapToArchivedContact(chat);
-      _logger.i('Chat with ID $id archived successfully.');
+      _logger.w('Chat with ID $id not found.');
     }
-  } else {
-    _logger.w('Chat with ID $id not found.');
   }
-}
-
 
   @override
   Future<void> deleteChat(String chatId) async {
     await _ensureDataLoaded();
-
     final initialLength = _chats.length;
-
     _chats.removeWhere((chat) => chat.id.toString() == chatId);
 
     if (_chats.length == initialLength) {
@@ -98,6 +95,7 @@ class ChatRepositoryImpl implements ChatRepository {
       isArchived: true,
     );
   }
+
   ContactModel _mapToUnarchivedContact(Contact chat) {
     return ContactModel(
       id: chat.id,

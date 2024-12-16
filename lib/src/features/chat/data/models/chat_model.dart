@@ -1,13 +1,10 @@
-//no uuid import
-import 'dart:convert';
 import 'package:logger/logger.dart';
-import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
 import 'package:uuid/uuid.dart';
+import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
 
 const String id = 'id';
 const String userName = 'userName';
 
-//no uuid
 class ContactModel extends Contact {
   static final Logger _logger = Logger();
 
@@ -31,24 +28,24 @@ class ContactModel extends Contact {
       throw FormatException('Unable to parse createdTime', e);
     }
     _validateRequiredFieldsOrThrow(json);
+
+    const uuid = Uuid();
     return ContactModel(
-      //原本是json【uuid】
-      id: json[id],
-      userName: json[userName],
-      avatarUrl: json['avatarUrl'],
-      lastMessage: json['lastMessage'],
+      id: uuid,
+      userName: json[userName] as String,
+      avatarUrl: json['avatarUrl'] as String,
+      lastMessage: json['lastMessage'] as String,
       createdTime: parsedTime,
-      isArchived: json['isArchived'],
+      isArchived: json['isArchived'] as bool,
     );
   }
-
   Map<String, dynamic> toJson() {
     if (createdTime == null) {
       _logger.e("createdTime is null");
       throw const FormatException('Required field createdTime is null');
     }
     return {
-      id: id,
+      id: id.toString(),
       userName: userName,
       avatarUrl: avatarUrl,
       lastMessage: lastMessage,
@@ -56,13 +53,13 @@ class ContactModel extends Contact {
       'isArchived': isArchived,
     };
   }
-}
 
-void _validateRequiredFieldsOrThrow(Map<String, dynamic> json) {
-  final fields = [id, userName, 'avatarUrl', 'lastMessage', 'isArchived'];
-  for (final field in fields) {
-    if (json[field] == null) {
-      throw FormatException('Missing required field: $field');
+  static void _validateRequiredFieldsOrThrow(Map<String, dynamic> json) {
+    final fields = [id, userName, 'avatarUrl', 'lastMessage', 'isArchived'];
+    for (final field in fields) {
+      if (json[field] == null) {
+        throw FormatException('Missing required field: $field');
+      }
     }
   }
 }
