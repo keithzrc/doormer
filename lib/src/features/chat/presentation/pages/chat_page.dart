@@ -1,4 +1,5 @@
 import 'package:doormer/src/core/di/service_locator.dart';
+import 'package:doormer/src/core/routes/web_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/core/theme/app_text_styles.dart';
@@ -9,6 +10,7 @@ import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart'
     as chat_state; // Prefix for states
 import 'package:doormer/src/features/chat/presentation/widgets/chat_card.dart';
 import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart';
+import 'package:go_router/go_router.dart';
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
@@ -77,13 +79,17 @@ class ChatPage extends StatelessWidget {
                       }
 
                       return Padding(
-                        padding:
-                            const EdgeInsets.all(16.0), // Consistent padding
+                        padding: const EdgeInsets.all(16.0),
                         child: ListView.builder(
                           itemCount: chats.length,
                           itemBuilder: (context, index) {
                             final chat = chats[index];
-                            return ChatCard(chat: chat);
+                            return InkWell(
+                              onTap: () {
+                                context.go('/chat/${chat.id}');
+                              },
+                              child: ChatCard(chat: chat),
+                            );
                           },
                         ),
                       );
