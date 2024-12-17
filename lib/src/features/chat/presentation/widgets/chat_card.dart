@@ -1,6 +1,7 @@
 import 'package:doormer/src/features/chat/utils/time.dart';
 import 'package:flutter/material.dart';
 import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
+import 'package:doormer/src/core/theme/app_text_styles.dart';
 
 class ChatCard extends StatelessWidget {
   final Contact chat;
@@ -21,48 +22,55 @@ class ChatCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(15.0),
       ),
       child: ListTile(
-        leading: CircleAvatar(
-          radius: 30,
-          backgroundImage:
-              chat.avatarUrl.isNotEmpty ? NetworkImage(chat.avatarUrl) : null,
-          child: chat.avatarUrl.isEmpty
-              ? Text(
-                  chat.userName.isNotEmpty
-                      ? chat.userName[0].toUpperCase()
-                      : '?',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+        leading: Stack(
+          children: [
+            CircleAvatar(
+              radius: 30,
+              backgroundImage: chat.avatarUrl.isNotEmpty
+                  ? NetworkImage(chat.avatarUrl)
+                  : null,
+              child: chat.avatarUrl.isEmpty
+                  ? Text(
+                      chat.userName.isNotEmpty
+                          ? chat.userName[0].toUpperCase()
+                          : '?',
+                      style: AppTextStyles.titleLarge,
+                    )
+                  : null,
+            ),
+            // Add red dot to users with unread messages
+            if (chat.isRead == false)
+              Positioned(
+                right: 0,
+                top: 0,
+                child: Container(
+                  width: 12,
+                  height: 12,
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
                   ),
-                )
-              : null,
+                ),
+              ),
+          ],
         ),
         title: Text(
           chat.userName,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
+          style: AppTextStyles.bodyLarge,
           overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
           chat.lastMessage,
-          style: const TextStyle(
-            color: Colors.grey,
-            fontSize: 14,
-          ),
+          style: AppTextStyles.bodyMedium,
           overflow: TextOverflow.ellipsis,
         ),
         trailing: chat.createdTime != null
             ? Text(
                 formatTime(chat.createdTime!),
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
+                style: AppTextStyles.bodySmall,
               )
             : null,
-        onTap: onTap, // Allow interaction on tap
+        onTap: onTap,
       ),
     );
   }
