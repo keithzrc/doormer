@@ -25,8 +25,10 @@ class ChatArchiveBloc extends Bloc<ChatEvent, ChatState> {
       emit(ChatLoadingState());
       try {
         final chats = await getChatListUseCase.call();
+        chats.sort((a, b) => b.createdTime!
+            .compareTo(a.createdTime!)); // sort chats according to createdTime
         emit(ChatLoadedState(chats));
-        AppLogger.debug('Chat list loaded successfully');
+        AppLogger.debug('Chat list loaded and sorted successfully');
       } catch (e, stackTrace) {
         emit(ChatErrorState(e.toString()));
         AppLogger.error('Chat list loaded with error', e, stackTrace);
@@ -37,7 +39,10 @@ class ChatArchiveBloc extends Bloc<ChatEvent, ChatState> {
       emit(ArchivedChatLoadingState());
       try {
         final archivedChats = await getArchivedChatListUseCase.call();
+        archivedChats.sort((a, b) => b.createdTime!
+            .compareTo(a.createdTime!)); // sort chats according to createdTime
         emit(ArchivedChatLoadedState(archivedChats));
+        AppLogger.debug('Archived chat list loaded and sorted successfully');
       } catch (e, stackTrace) {
         emit(ChatErrorState(e.toString()));
         AppLogger.error('Archived chat list loaded with error', e, stackTrace);
