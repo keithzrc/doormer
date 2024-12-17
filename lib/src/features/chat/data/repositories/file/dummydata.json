@@ -15,7 +15,7 @@
     "lastMessage": "Hi",
     "createdTime": "2024-11-22T00:00:00.000Z",
     "isArchived": true,
-    "isRead": true
+    "isRead": false
   },
   {
     "id": "123e4567-e89b-12d3-a456-426614174000",
@@ -42,7 +42,7 @@
     "lastMessage": "Let’s catch up!",
     "createdTime": "2024-11-30T00:00:00.000Z",
     "isArchived": false,
-    "isRead": true
+    "isRead": false
   },
   {
     "id": "5d8f1f4e-4e2a-4e29-9e92-1f5d4e0c9f8e",
@@ -51,7 +51,7 @@
     "lastMessage": "See you soon!",
     "createdTime": "2024-11-27T00:00:00.000Z",
     "isArchived": true,
-    "isRead": false
+    "isRead": true
   },
   {
     "id": "2d1f7f4a-8c1e-9c29-a145-4e7f5d8f1e92",
@@ -60,7 +60,7 @@
     "lastMessage": "Can you help me with this?",
     "createdTime": "2024-12-07T14:30:00.000Z",
     "isArchived": false,
-    "isRead": true
+    "isRead": false
   },
   {
     "id": "82c16e8f-4f7d-4e9c-a9d1-8e0c7f5d1f1e",
@@ -78,7 +78,7 @@
     "lastMessage": "Let me know.",
     "createdTime": "2024-12-06T19:00:00.000Z",
     "isArchived": true,
-    "isRead": false
+    "isRead": true
   },
   {
     "id": "1e7f4e9c-a1d8-4f5d-5d4e-0e92e9c1d8f7",
