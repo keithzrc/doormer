@@ -7,6 +7,9 @@ import 'package:doormer/src/core/utils/token_storage.dart';
 import 'package:doormer/src/features/chat/data/repositories/file/chat_repo_impl.dart';
 import 'package:doormer/src/features/chat/domain/repositories/chat_repository.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat.dart';
+import 'package:doormer/src/features/chatbox/domain/repositories/chatbox_repository.dart';
+import 'package:doormer/src/features/chatbox/data/repositories/chatbox_repository_impl.dart';
+import 'package:doormer/src/features/chatbox/domain/usecase/chatbox_usecase.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import '../../features/auth/di/auth_module.dart';
@@ -30,15 +33,34 @@ Future<void> initDependencies() async {
   serviceLocator.registerLazySingleton<SessionService>(
     () => SessionServiceImpl(
       tokenStorage: serviceLocator<TokenStorage>(),
-      // dio: serviceLocator<Dio>(),
     ),
   );
 
   // Register ChatRepository
   serviceLocator.registerLazySingleton<ChatRepository>(
-    () => ChatRepositoryImpl(
-      // Pass required dependencies to the repository if needed
-    ),
+    () => ChatRepositoryImpl(),
+  );
+
+  // Register ChatboxRepository
+  serviceLocator.registerLazySingleton<ChatboxRepository>(
+    () => ChatboxRepositoryImpl(),
+  );
+
+  // Register Chatbox Use Cases
+  serviceLocator.registerLazySingleton<GetMessages>(
+    () => GetMessages(serviceLocator<ChatboxRepository>()),
+  );
+
+  serviceLocator.registerLazySingleton<SendMessage>(
+    () => SendMessage(serviceLocator<ChatboxRepository>()),
+  );
+
+  serviceLocator.registerLazySingleton<SendFile>(
+    () => SendFile(serviceLocator<ChatboxRepository>()),
+  );
+
+  serviceLocator.registerLazySingleton<GetContactInfo>(
+    () => GetContactInfo(serviceLocator<ChatboxRepository>()),
   );
 
   // Register use cases
