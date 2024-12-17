@@ -9,6 +9,7 @@ import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart'
 import 'package:doormer/src/features/chat/presentation/widgets/chat_card.dart';
 import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart';
 import 'package:doormer/src/features/chat/presentation/widgets/chat_bloc_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
@@ -76,13 +77,17 @@ class ChatPage extends StatelessWidget {
                       }
 
                       return Padding(
-                        padding:
-                            const EdgeInsets.all(16.0), // Consistent padding
+                        padding: const EdgeInsets.all(16.0),
                         child: ListView.builder(
                           itemCount: chats.length,
                           itemBuilder: (context, index) {
                             final chat = chats[index];
-                            return ChatCard(chat: chat);
+                            return InkWell(
+                              onTap: () {
+                                context.go('/chat/${chat.id}');
+                              },
+                              child: ChatCard(chat: chat),
+                            );
                           },
                         ),
                       );
