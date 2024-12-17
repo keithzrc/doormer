@@ -5,7 +5,8 @@
     "avatarUrl": "https://example.com/avatar1.png",
     "lastMessage": "Hello",
     "createdTime": "2024-12-06T00:00:00.000Z",
-    "isArchived": true
+    "isArchived": true,
+    "isRead": false
   },
   {
     "id": "6f4922f4-676b-4e68-92e1-6a7b1dd3c1c7",
@@ -13,7 +14,8 @@
     "avatarUrl": "https://example.com/avatar2.png",
     "lastMessage": "Hi",
     "createdTime": "2024-11-22T00:00:00.000Z",
-    "isArchived": true
+    "isArchived": true,
+    "isRead": true
   },
   {
     "id": "123e4567-e89b-12d3-a456-426614174000",
@@ -21,7 +23,8 @@
     "avatarUrl": "https://example.com/avatar3.png",
     "lastMessage": "How are you?",
     "createdTime": "2024-12-04T00:00:00.000Z",
-    "isArchived": false
+    "isArchived": false,
+    "isRead": true
   },
   {
     "id": "e29b41d4-a716-4e68-9d1d-786a6dd2c1c8",
@@ -29,7 +32,8 @@
     "avatarUrl": "https://example.com/avatar4.png",
     "lastMessage": "Are you there?",
     "createdTime": "2024-12-07T05:00:00.000Z",
-    "isArchived": true
+    "isArchived": true,
+    "isRead": false
   },
   {
     "id": "72d145fa-4f7f-4f6b-8c16-6362c3c1e8a4",
@@ -37,7 +41,8 @@
     "avatarUrl": "https://example.com/avatar5.png",
     "lastMessage": "Let’s catch up!",
     "createdTime": "2024-11-30T00:00:00.000Z",
-    "isArchived": false
+    "isArchived": false,
+    "isRead": true
   },
   {
     "id": "5d8f1f4e-4e2a-4e29-9e92-1f5d4e0c9f8e",
@@ -45,7 +50,8 @@
     "avatarUrl": "https://example.com/avatar6.png",
     "lastMessage": "See you soon!",
     "createdTime": "2024-11-27T00:00:00.000Z",
-    "isArchived": true
+    "isArchived": true,
+    "isRead": false
   },
   {
     "id": "2d1f7f4a-8c1e-9c29-a145-4e7f5d8f1e92",
@@ -53,7 +59,8 @@
     "avatarUrl": "https://example.com/avatar7.png",
     "lastMessage": "Can you help me with this?",
     "createdTime": "2024-12-07T14:30:00.000Z",
-    "isArchived": false
+    "isArchived": false,
+    "isRead": true
   },
   {
     "id": "82c16e8f-4f7d-4e9c-a9d1-8e0c7f5d1f1e",
@@ -61,7 +68,8 @@
     "avatarUrl": "https://example.com/avatar8.png",
     "lastMessage": "Good morning!",
     "createdTime": "2024-12-05T00:00:00.000Z",
-    "isArchived": true
+    "isArchived": true,
+    "isRead": false
   },
   {
     "id": "92e1c1d8-5d4e-4e7f-a9d1-0f4e8e0c1f7e",
@@ -69,7 +77,8 @@
     "avatarUrl": "https://example.com/avatar9.png",
     "lastMessage": "Let me know.",
     "createdTime": "2024-12-06T19:00:00.000Z",
-    "isArchived": true
+    "isArchived": true,
+    "isRead": false
   },
   {
     "id": "1e7f4e9c-a1d8-4f5d-5d4e-0e92e9c1d8f7",
@@ -77,6 +86,7 @@
     "avatarUrl": "https://example.com/avatar10.png",
     "lastMessage": "Thanks!",
     "createdTime": "2024-12-07T14:00:00.000Z",
-    "isArchived": false
+    "isArchived": false,
+    "isRead": true
   }
 ]

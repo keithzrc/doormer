@@ -15,6 +15,7 @@ class ContactModel extends Contact {
     required super.lastMessage,
     required super.createdTime,
     required super.isArchived,
+    required super.isRead,
   });
 
   factory ContactModel.fromJson(Map<String, dynamic> json) {
@@ -31,13 +32,13 @@ class ContactModel extends Contact {
 
     const uuid = Uuid();
     return ContactModel(
-      id: uuid,
-      userName: json[userName] as String,
-      avatarUrl: json['avatarUrl'] as String,
-      lastMessage: json['lastMessage'] as String,
-      createdTime: parsedTime,
-      isArchived: json['isArchived'] as bool,
-    );
+        id: uuid,
+        userName: json[userName] as String,
+        avatarUrl: json['avatarUrl'] as String,
+        lastMessage: json['lastMessage'] as String,
+        createdTime: parsedTime,
+        isArchived: json['isArchived'] as bool,
+        isRead: json['isRead'] as bool);
   }
   Map<String, dynamic> toJson() {
     if (createdTime == null) {
@@ -51,11 +52,19 @@ class ContactModel extends Contact {
       lastMessage: lastMessage,
       'createdTime': createdTime!.toUtc().toIso8601String(),
       'isArchived': isArchived,
+      'isRead': isRead
     };
   }
 
   static void _validateRequiredFieldsOrThrow(Map<String, dynamic> json) {
-    final fields = [id, userName, 'avatarUrl', 'lastMessage', 'isArchived'];
+    final fields = [
+      id,
+      userName,
+      'avatarUrl',
+      'lastMessage',
+      'isArchived',
+      'isRead'
+    ];
     for (final field in fields) {
       if (json[field] == null) {
         throw FormatException('Missing required field: $field');

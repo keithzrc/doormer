@@ -87,23 +87,23 @@ class ChatRepositoryImpl implements ChatRepository {
 
   ContactModel _mapToArchivedContact(Contact chat) {
     return ContactModel(
-      id: chat.id,
-      userName: chat.userName,
-      avatarUrl: chat.avatarUrl,
-      lastMessage: chat.lastMessage,
-      createdTime: chat.createdTime,
-      isArchived: true,
-    );
+        id: chat.id,
+        userName: chat.userName,
+        avatarUrl: chat.avatarUrl,
+        lastMessage: chat.lastMessage,
+        createdTime: chat.createdTime,
+        isArchived: true,
+        isRead: chat.isRead);
   }
 
   ContactModel _mapToUnarchivedContact(Contact chat) {
     return ContactModel(
-      id: chat.id,
-      userName: chat.userName,
-      avatarUrl: chat.avatarUrl,
-      lastMessage: chat.lastMessage,
-      createdTime: chat.createdTime,
-      isArchived: false,
-    );
+        id: chat.id,
+        userName: chat.userName,
+        avatarUrl: chat.avatarUrl,
+        lastMessage: chat.lastMessage,
+        createdTime: chat.createdTime,
+        isArchived: false,
+        isRead: chat.isRead);
   }
 }

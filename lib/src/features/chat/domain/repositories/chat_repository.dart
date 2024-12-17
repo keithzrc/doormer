@@ -11,5 +11,4 @@ abstract class ChatRepository {
   Future<List<Contact>> getArchivedList();
   Future<void> toggleChat(String chatId);
   Future<void> deleteChat(String chatId);
-
 }

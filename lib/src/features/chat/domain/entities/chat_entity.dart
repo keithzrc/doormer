@@ -15,6 +15,7 @@ class Contact {
   final String lastMessage;
   final DateTime? createdTime;
   final bool isArchived;
+  final bool isRead;
 
   Contact({
     required this.id,
@@ -23,5 +24,6 @@ class Contact {
     required this.lastMessage,
     required this.createdTime,
     required this.isArchived,
+    required this.isRead,
   });
 }
