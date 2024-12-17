@@ -6,11 +6,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize all dependencies
+  // 初始化依赖
   await initDependencies();
 
-  // Run the app
-  runApp(const MyApp());
+  // // 初始化 SignalR 服务
+  // 启动应用
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(360, 690), // Set base design size
+      designSize: const Size(360, 690), // 设置设计尺寸
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (_, child) {
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
             fontFamily: 'Helvetica',
             useMaterial3: true,
           ),
-          routerConfig: AppRouter.router, // Use GoRouter for navigation
+          routerConfig: AppRouter.router, // 使用 GoRouter 进行导航
         );
       },
     );

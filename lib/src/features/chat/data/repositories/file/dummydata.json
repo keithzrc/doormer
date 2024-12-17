@@ -2,7 +2,7 @@
   {
     "id": "550e8400-e29b-41d4-a716-446655440000",
     "userName": "User 1",
-    "avatarUrl": "https://example.com/avatar1.png",
+    "avatarUrl": "https://ui-avatars.com/api/?name=User+1",
     "lastMessage": "Hello",
     "lastMessageCreatedTime": "2024-12-06T00:00:00.000Z",
     "isArchived": true,

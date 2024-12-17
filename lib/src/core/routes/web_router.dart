@@ -3,66 +3,60 @@ import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../features/auth/presentation/pages/auth_page.dart';
-import '../../features/auth/presentation/pages/login_page.dart';
-import '../../features/auth/presentation/pages/signup_page.dart';
-import '../../features/auth/presentation/pages/confirm_email_page.dart';
-import '../../features/home/presentation/pages/home_page.dart';
+
 import '../../features/chat/presentation/pages/chat_page.dart';
-
-/*
-
-WebRouter defines the routing structure and logic specifically for the web platform.
-
-*/
+import '../../features/chatbox/presentation/page/identity_selection_page.dart';
 
 class WebRouter {
-  // TODO: Change to th according web UI
   static final GoRouter router = GoRouter(
-    initialLocation: '/main/inbox',
+    initialLocation: '/select-identity', // 初始页面为身份选择页面
     routes: [
-      // Auth Routes
+      // 身份选择页面
       GoRoute(
-        path: '/auth',
-        builder: (context, state) => const AuthPage(),
-        routes: [
-          GoRoute(
-            path: 'login',
-            builder: (context, state) => LoginPage(),
-          ),
-          GoRoute(
-            path: 'signup',
-            builder: (context, state) => const SignupPage(),
-          ),
-          GoRoute(
-            path: 'confirm-email',
-            builder: (context, state) {
-              final email = state.uri.queryParameters['email'] ?? '';
-              return ConfirmEmailPage(email: email);
-            },
-          ),
-        ],
+        path: '/select-identity',
+        name: 'select-identity',
+        builder: (context, state) => const IdentitySelectionPage(),
       ),
 
-      // Main App Routes for Web
-
-      // TODO: Change to th according web UI
+      // 主聊天页面
       GoRoute(
-        path: '/main/home',
-        builder: (context, state) => const HomePage(),
+        path: '/chat',
+        builder: (context, state) {
+          final userId = state.uri.queryParameters['userId'];
+          if (userId == null || userId.isEmpty) {
+            return const IdentitySelectionPage();
+          }
+          return ChatPage(userId: userId);
+        },
       ),
+
+      // 具体聊天对话页面
       GoRoute(
-        path: '/main/inbox',
-        builder: (context, state) => MaterialApp(
-          home: BlocProvider(
-            create: (_) => serviceLocator<ChatBloc>(),
-            child: const ChatPage(),
-          ),
-        ),
+
+        path: '/chat/:id',
+        name: 'chat',
+        builder: (context, state) {
+          final userId = state.uri.queryParameters['userId'];
+          final chatId = state.pathParameters['id'];
+          if (userId == null || userId.isEmpty) {
+            return const IdentitySelectionPage();
+          }
+          return ChatPage(
+            userId: userId,
+            selectedChatId: chatId,
+          );
+        },
+
       ),
     ],
-    errorBuilder: (context, state) => const Scaffold(
-      body: Center(child: Text('Page not found!')),
-    ),
+    debugLogDiagnostics: true, // 开启调试日志
+    errorBuilder: (context, state) {
+      // 错误处理页面
+      return Scaffold(
+        body: Center(
+          child: Text('Navigation error: ${state.error}'),
+        ),
+      );
+    },
   );
 }

@@ -1,17 +1,27 @@
+import 'package:doormer/src/core/di/service_locator.dart';
+import 'package:doormer/src/core/signalr_service.dart';
+import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/core/theme/app_text_styles.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_event.dart'
-    as chat_event; // Prefix for events
+    as chat_event;
 import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart'
-    as chat_state; // Prefix for states
+    as chat_state;
 import 'package:doormer/src/features/chat/presentation/widgets/chat_card.dart';
-import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart';
+import 'package:doormer/src/features/chatbox/presentation/page/chatbox_page.dart';
+import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart';
+import 'package:doormer/src/features/chat/data/models/contact_model.dart';
+
+final _logger = Logger('ChatPage');
 
 class ChatPage extends StatelessWidget {
-  const ChatPage({super.key});
+  final String userId;
 
+  const ChatPage({super.key, required this.userId, String? selectedChatId});
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
@@ -31,12 +41,25 @@ class _ChatPageContent extends StatelessWidget {
     context.read<ChatBloc>().add(chat_event.LoadChatsEvent());
 
     final screenWidth = MediaQuery.of(context).size.width;
+    final String? selectedChatId =
+        GoRouterState.of(context).pathParameters['id'];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chat', style: AppTextStyles.displayMedium),
-        leading: Builder(
-          builder: (context) => IconButton(
+    _logger.info(
+        'Current route parameters: ${GoRouterState.of(context).pathParameters}');
+    _logger.info('Selected chat ID: $selectedChatId');
+
+    return BlocProvider(
+      create: (_) {
+        _logger.info('Creating ChatBloc...');
+        return serviceLocator<ChatBloc>()..add(chat_event.LoadChatsEvent());
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Chat as $userId',
+            style: AppTextStyles.displayMedium,
+          ),
+          leading: IconButton(
             icon: const Icon(Icons.archive),
             onPressed: () {
               final bloc = BlocProvider.of<ChatBloc>(context);
@@ -52,99 +75,129 @@ class _ChatPageContent extends StatelessWidget {
             },
           ),
         ),
-      ),
-      body: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1600),
-        child: Row(
-          children: [
-            // Left-side chat list with a fixed minimum width of 250px
-            SizedBox(
-              width: screenWidth > _breakpointWidth
-                  ? screenWidth * _chatListWidthRatio
-                  : _minChatListWidth,
-              child: BlocBuilder<ChatBloc, chat_state.ChatState>(
-                builder: (context, state) {
-                  if (state is chat_state.ChatLoadingState) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-
-                  if (state is chat_state.ChatErrorState) {
-                    return Center(
-                      child: Text(
-                        'Error: ${state.error}',
-                        style: AppTextStyles.bodyLarge, // Updated style
-                      ),
-                    );
-                  }
-
-                  if (state is chat_state.ChatLoadedState) {
-                    final chats = state.unarchivedChats;
-
-                    if (chats.isEmpty) {
+        body: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1600),
+          child: Row(
+            children: [
+              // Left-side chat list with a fixed minimum width
+              SizedBox(
+                width: screenWidth > _breakpointWidth
+                    ? screenWidth * _chatListWidthRatio
+                    : _minChatListWidth,
+                child: BlocBuilder<ChatBloc, chat_state.ChatState>(
+                  builder: (context, state) {
+                    if (state is chat_state.ChatLoadingState) {
                       return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    if (state is chat_state.ChatErrorState) {
+                      return Center(
                         child: Text(
-                          'No chats found.',
-                          style: AppTextStyles.bodyMedium, // Updated style
+                          'Error: ${state.error}',
+                          style: AppTextStyles.bodyLarge,
                         ),
                       );
                     }
 
-                    return Padding(
-                      padding: const EdgeInsets.all(16.0), // Consistent padding
-                      child: ListView.builder(
-                        itemCount: chats.length,
-                        itemBuilder: (context, index) {
-                          final chat = chats[index];
-                          return ChatCard(
-                            chat: chat,
-                            isInArchivePage: false,
-                            onTap: (contact) {
-                              // TODO: add chat box
-                            },
-                            onArchive: (contact) {
-                              context.read<ChatBloc>().add(
-                                    chat_event.ToggleArchiveStatusEvent(
-                                        contact),
+                    if (state is chat_state.ChatLoadedState) {
+                      final chats = state.unarchivedChats;
+                      
+                      _logger.info(
+                          'Available chat IDs: ${chats.map((c) => c.id).join(', ')}');
+
+                      if (chats.isEmpty) {
+                        return const Center(
+                          child: Text(
+                            'No chats found.',
+                            style: AppTextStyles.bodyMedium,
+                          ),
+                        );
+                      }
+
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: ListView.builder(
+                          itemCount: chats.length,
+                          itemBuilder: (context, index) {
+                            final chat = chats[index];
+                            return InkWell(
+                              onTap: () {
+                                _logger.info('Navigating to chat: ${chat.id}');
+                                context.pushReplacement(
+                                    '/chat/${chat.id.toString()}?userId=$userId');
+                              },
+                              child: ChatCard(
+                                chat: chat,
+                                isInArchivePage: false,
+                                onTap: (contact) {
+                                  _logger.info('Navigating to chat: ${contact.id}');
+                                  context.pushReplacement(
+                                      '/chat/${contact.id.toString()}?userId=$userId');
+                                },
+                                onArchive: (contact) {
+                                  context.read<ChatBloc>().add(
+                                    chat_event.ToggleArchiveStatusEvent(contact),
                                   );
-                            },
-                          );
-                        },
-                      ),
-                    );
-                  }
-
-                  return const SizedBox.shrink();
-                },
-              ),
-            ),
-
-            // Center chat content placeholder (dynamically adjusts to remaining width)
-            const Flexible(
-              flex: 2,
-              child: Center(
-                child: Text(
-                  'Chat Content Goes Here',
-                  style: AppTextStyles.bodyLarge, // Updated style
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
                 ),
               ),
-            ),
 
-            // Right-side user profile placeholder
-            Flexible(
-              flex: 1,
-              child: Container(
-                color: Colors.white,
-                child: const Center(
-                  child: Text(
-                    'User Profile Section',
-                    style: AppTextStyles.bodyLarge, // Updated style
+              // Center chatbox
+              Flexible(
+                flex: 2,
+                child: selectedChatId != null
+                    ? FutureBuilder<ContactModel?>(
+                        future: serviceLocator<LocalDataSource>()
+                            .getUserById(selectedChatId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+
+                          final contact = snapshot.data;
+                          return ChatboxPage(
+                            userId: userId.toString(),
+                            contactId: selectedChatId,
+                            contactName: contact?.userName ?? 'Unknown User',
+                            signalRService: serviceLocator<SignalRService>(),
+                          );
+                        },
+                      )
+                    : const Center(
+                        child: Text(
+                          'Select a chat to start messaging',
+                          style: AppTextStyles.bodyLarge,
+                        ),
+                      ),
+              ),
+
+              // Right-side user profile placeholder
+              Flexible(
+                flex: 1,
+                child: Container(
+                  color: Colors.white,
+                  child: const Center(
+                    child: Text(
+                      'User Profile Section',
+                      style: AppTextStyles.bodyLarge,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

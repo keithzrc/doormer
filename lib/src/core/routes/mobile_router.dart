@@ -73,7 +73,9 @@ class MobileRouter {
           GoRoute(
             path: '/main/inbox',
             pageBuilder: (context, state) => const CustomTransitionPage(
-              child: ChatPage(),
+              child: ChatPage(
+                userId: '',
+              ),
               transitionsBuilder: _fadeTransition,
             ),
           ),
@@ -82,6 +84,21 @@ class MobileRouter {
             pageBuilder: (context, state) => const CustomTransitionPage(
               child: ProfilePage(),
               transitionsBuilder: _fadeTransition,
+            ),
+          ),
+        ],
+      ),
+
+      GoRoute(
+        path: '/chat',
+        builder: (context, state) => const ChatPage(
+          userId: '',
+        ),
+        routes: [
+          GoRoute(
+            path: ':id',
+            builder: (context, state) => const ChatPage(
+              userId: '',
             ),
           ),
         ],
