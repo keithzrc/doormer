@@ -11,6 +11,7 @@ import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart'
 import 'package:doormer/src/features/chat/presentation/widgets/chat_card.dart';
 import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart';
 import 'package:go_router/go_router.dart';
+import 'package:doormer/src/features/chatbox/presentation/page/chatbox_page.dart';
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
@@ -18,6 +19,8 @@ class ChatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    // Get the current route parameters
+    final String? selectedChatId = GoRouterState.of(context).pathParameters['id'];
 
     return BlocProvider(
       create: (_) => serviceLocator<ChatBloc>()
@@ -100,15 +103,17 @@ class ChatPage extends StatelessWidget {
                 ),
               ),
 
-              // Center chat content placeholder (dynamically adjusts to remaining width)
-              const Flexible(
+              // Updated center section with proper error handling
+              Flexible(
                 flex: 2,
-                child: Center(
-                  child: Text(
-                    'Chat Content Goes Here',
-                    style: AppTextStyles.bodyLarge, // Updated style
-                  ),
-                ),
+                child: selectedChatId != null
+                    ? ChatboxPage(contactId: selectedChatId)
+                    : const Center(
+                        child: Text(
+                          'Select a chat to start messaging',
+                          style: AppTextStyles.bodyLarge,
+                        ),
+                      ),
               ),
 
               // Right-side user profile placeholder

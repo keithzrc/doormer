@@ -15,6 +15,27 @@ void initChatModule() {
       localDataSource: serviceLocator<LocalDataSource>(),
     ),
   );
+  // Register ChatboxRepository
+  serviceLocator.registerLazySingleton<ChatboxRepository>(
+    () => ChatboxRepositoryImpl(),
+  );
+
+  // Register Chatbox Use Cases
+  serviceLocator.registerLazySingleton<GetMessages>(
+    () => GetMessages(serviceLocator<ChatboxRepository>()),
+  );
+
+  serviceLocator.registerLazySingleton<SendMessage>(
+    () => SendMessage(serviceLocator<ChatboxRepository>()),
+  );
+
+  serviceLocator.registerLazySingleton<SendFile>(
+    () => SendFile(serviceLocator<ChatboxRepository>()),
+  );
+
+  serviceLocator.registerLazySingleton<GetContactInfo>(
+    () => GetContactInfo(serviceLocator<ChatboxRepository>()),
+  );
 
   // Register use cases
   serviceLocator.registerSingleton<GetSortedActiveChatList>(
