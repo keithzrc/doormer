@@ -7,6 +7,7 @@ import 'package:doormer/src/core/utils/token_storage.dart';
 import 'package:doormer/src/features/chat/data/repositories/file/chat_repo_impl.dart';
 import 'package:doormer/src/features/chat/domain/repositories/chat_repository.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import '../../features/auth/di/auth_module.dart';
@@ -57,6 +58,14 @@ Future<void> initDependencies() async {
   serviceLocator.registerLazySingleton<DeleteChat>(
     () => DeleteChat(serviceLocator<ChatRepository>()),
   );
+
+// Register ChatBloc
+  serviceLocator.registerFactory<ChatArchiveBloc>(() => ChatArchiveBloc(
+        getChatListUseCase: serviceLocator<GetActiveChatList>(),
+        getArchivedChatListUseCase: serviceLocator<GetArchivedChatList>(),
+        toggleChatUseCase: serviceLocator<ToggleChatArchivedStatus>(),
+        deleteChatUseCase: serviceLocator<DeleteChat>(),
+      ));
 
   // Initialize feature-specific modules
   initAuthModule(); // Initializes dependencies for the auth feature
