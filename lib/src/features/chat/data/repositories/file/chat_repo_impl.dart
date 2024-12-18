@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:logger/logger.dart';
-import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
+import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/features/chat/domain/repositories/chat_repository.dart';
-import 'package:doormer/src/features/chat/data/models/chat_model.dart';
+import 'package:doormer/src/features/chat/data/models/contact_model.dart';
 
 const fileDBPath =
     'lib/src/features/chat/data/repositories/file/dummydata.json';
@@ -34,42 +34,85 @@ class ChatRepositoryImpl implements ChatRepository {
     }
   }
 
-  @override
-  Future<List<Contact>> getUnarchivedchatList() async {
-    await _ensureDataLoaded();
-    return _chats.where((chat) => !chat.isArchived).toList();
+  Future<void> _ensureDataLoaded() async {
+    if (_chats.isEmpty) {
+      await _loadDummyData();
+    }
   }
 
+  /// Retrieves a list of unarchived chats as domain entities (`Contact`).
+  ///
+  /// Converts the internal `ContactModel` instances to `Contact` entities
+  /// before returning.
+  ///
+  /// Returns:
+  /// - A `Future` that resolves to a list of unarchived `Contact` entities.
   @override
-  Future<List<Contact>> getArchivedList() async {
+  Future<List<Contact>> getActiveChatList() async {
     await _ensureDataLoaded();
-    return _chats.where((chat) => chat.isArchived).toList();
+
+    // Filter unarchived chats and convert them to domain entities.
+    return _chats
+        .where((chat) => !chat.isArchived)
+        .map((chat) => chat.toEntity())
+        .toList();
+  }
+
+  /// Retrieves a list of archived chats as domain entities (`Contact`).
+  ///
+  /// Converts the internal `ContactModel` instances to `Contact` entities
+  /// before returning.
+  ///
+  /// Returns:
+  /// - A `Future` that resolves to a list of archived `Contact` entities.
+  @override
+  Future<List<Contact>> getArchivedChatList() async {
+    await _ensureDataLoaded();
+
+    // Filter archived chats and convert them to domain entities.
+    return _chats
+        .where((chat) => chat.isArchived)
+        .map((chat) => chat.toEntity())
+        .toList();
   }
 
   final int indexNotFound = -1;
 
+  /// Updates an existing chat with the data from the provided `Contact` entity.
+  ///
+  /// Converts the domain entity (`Contact`) to a data model (`ContactModel`)
+  /// and updates the corresponding chat in `_chats`.
+  ///
+  /// Parameters:
+  /// - [updatedContact]: The updated `Contact` entity.
   @override
-  Future<void> toggleChat(String chatId) async {
+  Future<void> updateChat(Contact updatedContact) async {
     await _ensureDataLoaded();
-    final index = _chats.indexWhere((chat) => chat.id.toString() == chatId);
+
+    // Convert the domain entity `Contact` to the data model `ContactModel`.
+    final updatedContactModel = ContactModel.fromEntity(updatedContact);
+
+    // Find the index of the existing chat and update it.
+    final index =
+        _chats.indexWhere((chat) => chat.id == updatedContactModel.id);
     if (index != indexNotFound) {
-      final chat = _chats[index];
-      if (chat.isArchived) {
-        _chats[index] = _mapToUnarchivedContact(chat);
-        _logger.i('Chat with ID $id unarchived successfully.');
-      } else {
-        _chats[index] = _mapToArchivedContact(chat);
-        _logger.i('Chat with ID $id archived successfully.');
-      }
+      _chats[index] = updatedContactModel;
+      _logger.i('Chat with ID ${updatedContact.id} updated successfully.');
     } else {
-      _logger.w('Chat with ID $id not found.');
+      _logger.w('Chat with ID ${updatedContact.id} not found.');
     }
   }
 
+  /// Deletes a chat by its ID.
+  ///
+  /// Parameters:
+  /// - [chatId]: The unique identifier of the chat to delete.
   @override
   Future<void> deleteChat(String chatId) async {
     await _ensureDataLoaded();
     final initialLength = _chats.length;
+
+    // Remove the chat with the specified ID.
     _chats.removeWhere((chat) => chat.id.toString() == chatId);
 
     if (_chats.length == initialLength) {
@@ -77,33 +120,5 @@ class ChatRepositoryImpl implements ChatRepository {
     } else {
       _logger.i('Chat with ID $chatId successfully removed.');
     }
-  }
-
-  Future<void> _ensureDataLoaded() async {
-    if (_chats.isEmpty) {
-      await _loadDummyData();
-    }
-  }
-
-  ContactModel _mapToArchivedContact(Contact chat) {
-    return ContactModel(
-        id: chat.id,
-        userName: chat.userName,
-        avatarUrl: chat.avatarUrl,
-        lastMessage: chat.lastMessage,
-        createdTime: chat.createdTime,
-        isArchived: true,
-        isRead: chat.isRead);
-  }
-
-  ContactModel _mapToUnarchivedContact(Contact chat) {
-    return ContactModel(
-        id: chat.id,
-        userName: chat.userName,
-        avatarUrl: chat.avatarUrl,
-        lastMessage: chat.lastMessage,
-        createdTime: chat.createdTime,
-        isArchived: false,
-        isRead: chat.isRead);
   }
 }
