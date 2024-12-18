@@ -3,7 +3,7 @@ import 'package:doormer/src/core/routes/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:doormer/src/features/chat/domain/usecases/archive_chat.dart';
+import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,14 +27,14 @@ class MyApp extends StatelessWidget {
       builder: (_, child) {
         return MultiProvider(
           providers: [
-            Provider<GetUnarchivedchatList>(
-              create: (_) => serviceLocator<GetUnarchivedchatList>(),
+            Provider<GetActiveChatList>(
+              create: (_) => serviceLocator<GetActiveChatList>(),
             ),
-            Provider<GetArchivedList>(
-              create: (_) => serviceLocator<GetArchivedList>(),
+            Provider<GetArchivedChatList>(
+              create: (_) => serviceLocator<GetArchivedChatList>(),
             ),
-            Provider<ToggleChat>(
-              create: (_) => serviceLocator<ToggleChat>(),
+            Provider<ToggleChatArchivedStatus>(
+              create: (_) => serviceLocator<ToggleChatArchivedStatus>(),
             ),
             Provider<DeleteChat>(
               create: (_) => serviceLocator<DeleteChat>(),
