@@ -2,14 +2,14 @@
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
-import 'package:doormer/src/features/chat/domain/usecases/archive_chat.dart';
+import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.dart';
 import 'chat_event.dart';
 import 'chat_state.dart';
 
 class ChatArchiveBloc extends Bloc<ChatEvent, ChatState> {
   final GetActiveChatList getChatListUseCase;
   final GetArchivedChatList getArchivedChatListUseCase;
-  final ToggleChat toggleChatUseCase;
+  final ToggleChatArchivedStatus toggleChatUseCase;
   final DeleteChat deleteChatUseCase;
 
   ChatArchiveBloc({

@@ -4,10 +4,10 @@ import '../entities/contact_entity.dart';
 /// Use case for toggle a chat.
 /// This class interacts with the ChatRepository to toggle a chat unarchived to archived
 /// identified by its chatId.
-class ToggleChat {
+class ToggleChatArchivedStatus {
   final ChatRepository repository;
 
-  ToggleChat(this.repository);
+  ToggleChatArchivedStatus(this.repository);
 
   Future<void> call(String chatId) async {
     await repository.toggleChat(chatId);
