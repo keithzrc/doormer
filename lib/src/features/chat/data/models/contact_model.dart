@@ -1,6 +1,6 @@
 import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
-import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
+import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 
 const String id = 'id';
 const String userName = 'userName';

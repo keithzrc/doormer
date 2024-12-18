@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_event.dart';
 
-class ChatBlocProvider extends StatelessWidget {
+class ChatArchiveBlocProvider extends StatelessWidget {
   final Widget child;
   final ChatEvent event;
 
-  const ChatBlocProvider({
+  const ChatArchiveBlocProvider({
     super.key,
     required this.child,
     required this.event,

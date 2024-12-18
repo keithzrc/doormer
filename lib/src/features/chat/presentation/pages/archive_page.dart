@@ -7,7 +7,7 @@ import 'package:doormer/src/features/chat/presentation/bloc/chat_event.dart'
 import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart'
     as archive_state; // Prefix for states
 import 'package:doormer/src/features/chat/presentation/widgets/chat_card.dart';
-import 'package:doormer/src/features/chat/presentation/widgets/chat_bloc_provider.dart';
+import 'package:doormer/src/features/chat/presentation/widgets/chat_archive_bloc_provider.dart';
 
 class ArchivePage extends StatelessWidget {
   const ArchivePage({super.key});
@@ -16,7 +16,7 @@ class ArchivePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return ChatBlocProvider(
+    return ChatArchiveBlocProvider(
       event: archive_event.LoadArchivedChatsEvent(), // Load archived chats
       child: Scaffold(
         appBar: AppBar(
