@@ -9,7 +9,7 @@ import 'package:uuid/uuid.dart';
 /// - [createdTime]: The timestamp of when the chat was created (optional).
 /// - [isArchived]: Indicates whether the chat is archived.
 class Contact {
-  final Uuid id;
+  final String id; // Uuid as String
   final String userName;
   final String avatarUrl;
   final String lastMessage;
@@ -26,4 +26,24 @@ class Contact {
     required this.isArchived,
     required this.isRead,
   });
+
+  Contact copyWith({
+    String? id,
+    String? userName,
+    String? avatarUrl,
+    String? lastMessage,
+    DateTime? createdTime,
+    bool? isArchived,
+    bool? isRead,
+  }) {
+    return Contact(
+      id: id ?? this.id,
+      userName: userName ?? this.userName,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      lastMessage: lastMessage ?? this.lastMessage,
+      createdTime: createdTime ?? this.createdTime,
+      isArchived: isArchived ?? this.isArchived,
+      isRead: isRead ?? this.isRead,
+    );
+  }
 }
