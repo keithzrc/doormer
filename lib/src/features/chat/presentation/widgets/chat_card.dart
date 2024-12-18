@@ -1,6 +1,6 @@
 import 'package:doormer/src/features/chat/utils/time.dart';
 import 'package:flutter/material.dart';
-import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
+import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/core/theme/app_text_styles.dart';
 
 class ChatCard extends StatelessWidget {

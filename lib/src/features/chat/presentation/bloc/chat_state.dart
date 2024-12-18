@@ -1,5 +1,5 @@
 // archieve_state.dart
-import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
+import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 
 abstract class ChatState {}
 

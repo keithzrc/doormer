@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
-import 'package:doormer/src/features/chat/data/models/chat_model.dart';
-import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
+import 'package:doormer/src/features/chat/data/models/contact_model.dart';
+import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 
 class ChatRemoteDatasource {
   final Dio dio;
