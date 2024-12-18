@@ -1,5 +1,5 @@
 import '../repositories/chat_repository.dart';
-import '../entities/chat_entity.dart';
+import '../entities/contact_entity.dart';
 
 /// Use case for toggle a chat.
 /// This class interacts with the ChatRepository to toggle a chat unarchived to archived
@@ -29,10 +29,10 @@ class DeleteChat {
 
 /// Use case for retrieving the list of archived chats.
 /// This class interacts with the ChatRepository to fetch all archived chats.
-class GetArchivedList {
+class GetArchivedChatList {
   final ChatRepository repository;
 
-  GetArchivedList(this.repository);
+  GetArchivedChatList(this.repository);
 
   Future<List<Contact>> call() async {
     return await repository.getArchivedList();
@@ -42,10 +42,10 @@ class GetArchivedList {
 /// Use case for retrieving the list of unactived chats.
 /// This class interacts with the ChatRepository to fetch all unactived chats
 /// that are not archived.
-class GetUnarchivedchatList {
+class GetActiveChatList {
   final ChatRepository repository;
 
-  GetUnarchivedchatList(this.repository);
+  GetActiveChatList(this.repository);
 
   Future<List<Contact>> call() async {
     return await repository.getUnarchivedchatList();
