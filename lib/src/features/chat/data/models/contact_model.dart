@@ -1,74 +1,82 @@
-import 'package:logger/logger.dart';
-import 'package:uuid/uuid.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
+import 'package:uuid/uuid.dart';
 
-const String id = 'id';
-const String userName = 'userName';
-
-class ContactModel extends Contact {
-  static final Logger _logger = Logger();
+class ContactModel {
+  final String id; // UUID as a string
+  final String userName;
+  final String avatarUrl;
+  final String lastMessage;
+  final DateTime createdTime;
+  final bool isArchived;
+  final bool isRead;
 
   ContactModel({
-    required super.id,
-    required super.userName,
-    required super.avatarUrl,
-    required super.lastMessage,
-    required super.createdTime,
-    required super.isArchived,
-    required super.isRead,
+    required this.id,
+    required this.userName,
+    required this.avatarUrl,
+    required this.lastMessage,
+    required this.createdTime,
+    required this.isArchived,
+    required this.isRead,
   });
 
+  /// Factory constructor to create a [ContactModel] from JSON.
   factory ContactModel.fromJson(Map<String, dynamic> json) {
-    DateTime? parsedTime;
-    final createdTime = json['createdTime'];
-    try {
-      parsedTime = DateTime.parse(createdTime).toLocal();
-    } catch (e) {
-      parsedTime = null;
-      _logger.e("Unable to parse createdTime");
-      throw FormatException('Unable to parse createdTime', e);
+    if (!Uuid.isValidUUID(fromString: json['id'])) {
+      throw FormatException('Invalid UUID format: ${json['id']}');
     }
-    _validateRequiredFieldsOrThrow(json);
 
-    const uuid = Uuid();
     return ContactModel(
-        id: uuid,
-        userName: json[userName] as String,
-        avatarUrl: json['avatarUrl'] as String,
-        lastMessage: json['lastMessage'] as String,
-        createdTime: parsedTime,
-        isArchived: json['isArchived'] as bool,
-        isRead: json['isRead'] as bool);
+      id: json['id'] as String,
+      userName: json['userName'] as String,
+      avatarUrl: json['avatarUrl'] as String,
+      lastMessage: json['lastMessage'] as String,
+      createdTime: DateTime.parse(json['createdTime'] as String),
+      isArchived: json['isArchived'] as bool,
+      isRead: json['isRead'] as bool,
+    );
   }
+
+  /// Converts the [ContactModel] to JSON format.
   Map<String, dynamic> toJson() {
-    if (createdTime == null) {
-      _logger.e("createdTime is null");
-      throw const FormatException('Required field createdTime is null');
-    }
     return {
-      id: id.toString(),
-      userName: userName,
-      avatarUrl: avatarUrl,
-      lastMessage: lastMessage,
-      'createdTime': createdTime!.toUtc().toIso8601String(),
+      'id': id,
+      'userName': userName,
+      'avatarUrl': avatarUrl,
+      'lastMessage': lastMessage,
+      'createdTime': createdTime.toIso8601String(),
       'isArchived': isArchived,
-      'isRead': isRead
+      'isRead': isRead,
     };
   }
 
-  static void _validateRequiredFieldsOrThrow(Map<String, dynamic> json) {
-    final fields = [
-      id,
-      userName,
-      'avatarUrl',
-      'lastMessage',
-      'isArchived',
-      'isRead'
-    ];
-    for (final field in fields) {
-      if (json[field] == null) {
-        throw FormatException('Missing required field: $field');
-      }
+  /// Converts this model to a domain entity [Contact].
+  Contact toEntity() {
+    if (!Uuid.isValidUUID(fromString: id)) {
+      throw FormatException('Invalid UUID format: $id');
     }
+
+    return Contact(
+      id: id, // Convert String to Uuid
+      userName: userName,
+      avatarUrl: avatarUrl,
+      lastMessage: lastMessage,
+      createdTime: createdTime,
+      isArchived: isArchived,
+      isRead: isRead,
+    );
+  }
+
+  /// Creates a [ContactModel] from a domain entity [Contact].
+  factory ContactModel.fromEntity(Contact contact) {
+    return ContactModel(
+      id: contact.id,
+      userName: contact.userName,
+      avatarUrl: contact.avatarUrl,
+      lastMessage: contact.lastMessage,
+      createdTime: contact.createdTime ?? DateTime.now(),
+      isArchived: contact.isArchived,
+      isRead: contact.isRead,
+    );
   }
 }
