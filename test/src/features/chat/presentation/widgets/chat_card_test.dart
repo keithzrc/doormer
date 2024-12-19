@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
+import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/features/chat/presentation/widgets/chat_card.dart';
 
-
 void main() {
-  final mockChat = Chat(
+  final mockChat = Contact(
     id: '1',
-    userName: '用户名',
+    userName: 'Username',
     avatarUrl: '',
-    lastMessage: '这是测试的mock数据',
-    createdTime: DateTime(2024, 3, 15, 14, 30), 
+    lastMessage: 'This is a test mock message',
+    createdTime: DateTime(2024, 3, 15, 14, 30),
     isArchived: true,
+    isRead: true,
   );
 
-  testWidgets('ChatCard 显示正确的用户信息', (WidgetTester tester) async {
+  testWidgets('ChatCard displays correct user information',
+      (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -23,19 +24,20 @@ void main() {
       ),
     );
 
-    // 验证用户名显示
-    expect(find.text('用户名'), findsOneWidget);
-    // 验证最后消息显示 - 修改为匹配 mockChat 中的实际消息
-    expect(find.text('这是测试的mock数据'), findsOneWidget);
-    // 验证时间显示 - 确保时间格式与实际显示匹配
+    // Verify username is displayed
+    expect(find.text('Username'), findsOneWidget);
+    // Verify the last message is displayed - matches mockChat
+    expect(find.text('This is a test mock message'), findsOneWidget);
+    // Verify time is displayed - matches format
     expect(find.text('14:30'), findsOneWidget);
-    // 验证头像组件存在
+    // Verify CircleAvatar exists
     expect(find.byType(CircleAvatar), findsOneWidget);
   });
 
-  testWidgets('ChatCard 点击回调正常工作', (WidgetTester tester) async {
+  testWidgets('ChatCard tap callback works correctly',
+      (WidgetTester tester) async {
     bool wasTapped = false;
-    
+
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -51,7 +53,7 @@ void main() {
     expect(wasTapped, true);
   });
 
-  testWidgets('ChatCard 样式验证', (WidgetTester tester) async {
+  testWidgets('ChatCard style verification', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -60,20 +62,20 @@ void main() {
       ),
     );
 
-    // 验证Card组件存在
+    // Verify Card widget exists
     final cardFinder = find.byType(Card);
     expect(cardFinder, findsOneWidget);
 
-    // 验证ListTile存在
+    // Verify ListTile exists
     expect(find.byType(ListTile), findsOneWidget);
 
-    // 验证文本样式
-    final titleFinder = find.text('用户名');
+    // Verify text styles
+    final titleFinder = find.text('Username');
     final Text titleWidget = tester.widget(titleFinder);
     expect(titleWidget.style?.fontWeight, FontWeight.bold);
     expect(titleWidget.style?.fontSize, 16);
 
-    final subtitleFinder = find.text('这是测试的mock数据');
+    final subtitleFinder = find.text('This is a test mock message');
     final Text subtitleWidget = tester.widget(subtitleFinder);
     expect(subtitleWidget.style?.color, Colors.grey);
     expect(subtitleWidget.style?.fontSize, 14);

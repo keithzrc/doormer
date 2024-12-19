@@ -4,32 +4,33 @@ import 'package:doormer/src/features/chat/presentation/pages/chat_page.dart';
 import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart';
 import 'package:provider/provider.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:doormer/src/features/chat/domain/usecases/archive_chat.dart';
+import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 
-class MockGetChatList extends Mock implements GetUnarchivedchatList {}
+class MockGetActiveChatList extends Mock implements GetActiveChatList {}
 
-class MockGetArchivedList extends Mock implements GetArchivedList {}
+class MockGetArchivedChatList extends Mock implements GetArchivedChatList {}
 
-class MockArchiveChat extends Mock implements ToggleChat {}
+class MockToggleChatArchivedStatus extends Mock
+    implements ToggleChatArchivedStatus {}
 
 class MockDeleteChat extends Mock implements DeleteChat {}
 
 void main() {
-  late MockGetChatList mockGetChatList;
-  late MockGetArchivedList mockGetArchivedList;
-  late MockArchiveChat mockArchiveChat;
+  late MockGetActiveChatList mockGetActiveChatList;
+  late MockGetArchivedChatList mockGetArchivedChatList;
+  late MockToggleChatArchivedStatus mockToggleChatArchivedStatus;
   late MockDeleteChat mockDeleteChat;
 
   setUp(() {
-    mockGetChatList = MockGetChatList();
-    mockGetArchivedList = MockGetArchivedList();
-    mockArchiveChat = MockArchiveChat();
+    mockGetActiveChatList = MockGetActiveChatList();
+    mockGetArchivedChatList = MockGetArchivedChatList();
+    mockToggleChatArchivedStatus = MockToggleChatArchivedStatus();
     mockDeleteChat = MockDeleteChat();
 
-    reset(mockGetChatList);
-    reset(mockGetArchivedList);
-    reset(mockArchiveChat);
+    reset(mockGetActiveChatList);
+    reset(mockGetArchivedChatList);
+    reset(mockToggleChatArchivedStatus);
     reset(mockDeleteChat);
   });
 
@@ -37,33 +38,31 @@ void main() {
     Widget createWidgetUnderTest({Widget? child}) {
       return MultiProvider(
         providers: [
-          Provider<GetUnarchivedchatList>(
-            create: (_) => mockGetChatList,
+          Provider<GetActiveChatList>(
+            create: (_) => mockGetActiveChatList,
           ),
-          Provider<GetArchivedList>(
-            create: (_) => mockGetArchivedList,
+          Provider<GetArchivedChatList>(
+            create: (_) => mockGetArchivedChatList,
           ),
-          Provider<ToggleChat>(
-            create: (_) => mockArchiveChat,
+          Provider<ToggleChatArchivedStatus>(
+            create: (_) => mockToggleChatArchivedStatus,
           ),
           Provider<DeleteChat>(
             create: (_) => mockDeleteChat,
           ),
-          ProxyProvider<GetArchivedList, ChatArchiveBloc>(
+          ProxyProvider<GetArchivedChatList, ChatArchiveBloc>(
             create: (context) => ChatArchiveBloc(
-              getChatListUseCase: mockGetChatList,
-              getArchivedChatListUseCase: context.read<GetArchivedList>(),
-              toggleChatUseCase: context.read<ToggleChat>(),
-              unarchiveChatUseCase: context.read<UnarchiveChat>(),
+              getChatListUseCase: mockGetActiveChatList,
+              getArchivedChatListUseCase: context.read<GetArchivedChatList>(),
+              toggleChatUseCase: context.read<ToggleChatArchivedStatus>(),
               deleteChatUseCase: context.read<DeleteChat>(),
             ),
-            update: (context, getArchivedList, previous) =>
+            update: (context, getArchivedChatList, previous) =>
                 previous ??
                 ChatArchiveBloc(
-                  getChatListUseCase: mockGetChatList,
-                  getArchivedChatListUseCase: getArchivedList,
-                  toggleChatUseCase: context.read<ToggleChat>(),
-                  unarchiveChatUseCase: context.read<UnarchiveChat>(),
+                  getChatListUseCase: mockGetActiveChatList,
+                  getArchivedChatListUseCase: getArchivedChatList,
+                  toggleChatUseCase: context.read<ToggleChatArchivedStatus>(),
                   deleteChatUseCase: context.read<DeleteChat>(),
                 ),
           ),

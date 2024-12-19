@@ -3,9 +3,9 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
+import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/features/chat/domain/repositories/chat_repository.dart';
-import 'package:doormer/src/features/chat/domain/usecases/archive_chat.dart';
+import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_event.dart';
@@ -20,20 +20,20 @@ class MockChatBloc extends MockBloc<ChatEvent, archive_state.ChatState>
 
 void main() {
   late MockChatRepository mockRepository;
-  late ToggleChat archiveChat;
+  late ToggleChatArchivedStatus archiveChat;
   late DeleteChat deleteChat;
-  late GetArchivedList getArchivedList;
-  late GetUnarchivedchatList getChatList;
+  late GetArchivedChatList getArchivedList;
+  late GetActiveChatList getChatList;
   late MockChatBloc mockChatBloc;
 
   setUp(() {
     TestWidgetsFlutterBinding.ensureInitialized();
 
     mockRepository = MockChatRepository();
-    archiveChat = ToggleChat(mockRepository);
+    archiveChat = ToggleChatArchivedStatus(mockRepository);
     deleteChat = DeleteChat(mockRepository);
-    getArchivedList = GetArchivedList(mockRepository);
-    getChatList = GetUnarchivedchatList(mockRepository);
+    getArchivedList = GetArchivedChatList(mockRepository);
+    getChatList = GetActiveChatList(mockRepository);
     mockChatBloc = MockChatBloc();
   });
 
@@ -41,16 +41,16 @@ void main() {
     return MaterialApp(
       home: MultiRepositoryProvider(
         providers: [
-          RepositoryProvider<ToggleChat>(
+          RepositoryProvider<ToggleChatArchivedStatus>(
             create: (context) => archiveChat,
           ),
           RepositoryProvider<DeleteChat>(
             create: (context) => deleteChat,
           ),
-          RepositoryProvider<GetArchivedList>(
+          RepositoryProvider<GetArchivedChatList>(
             create: (context) => getArchivedList,
           ),
-          RepositoryProvider<GetUnarchivedchatList>(
+          RepositoryProvider<GetActiveChatList>(
             create: (context) => getChatList,
           ),
         ],
@@ -85,7 +85,8 @@ void main() {
     });
 
     testWidgets('显示空消息当没有归档的聊天', (WidgetTester tester) async {
-      when(() => mockRepository.getArchivedList()).thenAnswer((_) async => []);
+      when(() => mockRepository.getArchivedChatList())
+          .thenAnswer((_) async => []);
       when(() => mockChatBloc.state)
           .thenReturn(archive_state.ArchivedChatLoadedState([]));
 
@@ -107,26 +108,30 @@ void main() {
 
     testWidgets('显示聊天列表当有归档的聊天', (WidgetTester tester) async {
       final archivedChats = [
-        Chat(
-            id: '1',
-            userName: 'Alice',
-            avatarUrl: '',
-            createdTime: DateTime.now(),
-            lastMessage: 'Hello',
-            isArchived: true),
-        Chat(
-            id: '2',
-            userName: 'Bob',
-            avatarUrl: '',
-            createdTime: DateTime.now(),
-            lastMessage: 'Hi',
-            isArchived: true),
+        Contact(
+          id: '1',
+          userName: 'Alice',
+          avatarUrl: '',
+          createdTime: DateTime.now(),
+          lastMessage: 'Hello',
+          isArchived: true,
+          isRead: true,
+        ),
+        Contact(
+          id: '2',
+          userName: 'Bob',
+          avatarUrl: '',
+          createdTime: DateTime.now(),
+          lastMessage: 'Hi',
+          isArchived: true,
+          isRead: true,
+        ),
       ];
 
       when(() => mockChatBloc.state)
           .thenReturn(archive_state.ArchivedChatLoadedState(archivedChats));
 
-      when(() => mockRepository.getArchivedList())
+      when(() => mockRepository.getArchivedChatList())
           .thenAnswer((_) async => archivedChats);
 
       await tester.pumpWidget(createWidgetUnderTest());
