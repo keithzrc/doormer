@@ -8,9 +8,10 @@ import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.dart';
 
 // Mock dependencies
-class MockGetActiveChatList extends Mock implements GetActiveChatList {}
+class MockGetActiveChatList extends Mock implements GetSortedActiveChatList {}
 
-class MockGetArchivedChatList extends Mock implements GetArchivedChatList {}
+class MockGetArchivedChatList extends Mock
+    implements GetSortedArchivedChatList {}
 
 class MockToggleChatArchivedStatus extends Mock
     implements ToggleChatArchivedStatus {}
@@ -71,7 +72,7 @@ void main() {
               userName: 'John Doe',
               avatarUrl: '',
               lastMessage: '',
-              createdTime: DateTime.now(),
+              lastMessageCreatedTime: DateTime.now(),
               isArchived: false,
               isRead: false),
         ],
@@ -153,7 +154,7 @@ void main() {
           userName: 'John Doe',
           avatarUrl: '',
           lastMessage: '',
-          createdTime: DateTime.now(),
+          lastMessageCreatedTime: DateTime.now(),
           isArchived: false,
           isRead: false,
         ),
@@ -165,7 +166,7 @@ void main() {
                 userName: 'John Doe',
                 avatarUrl: '',
                 lastMessage: '',
-                createdTime: DateTime.now(),
+                lastMessageCreatedTime: DateTime.now(),
                 isArchived: true,
                 isRead: false,
               ),
@@ -190,7 +191,7 @@ void main() {
           userName: 'John Doe',
           avatarUrl: '',
           lastMessage: '',
-          createdTime: DateTime.now(),
+          lastMessageCreatedTime: DateTime.now(),
           isArchived: true,
           isRead: false,
         ),
@@ -202,7 +203,7 @@ void main() {
                 userName: 'John Doe',
                 avatarUrl: '',
                 lastMessage: '',
-                createdTime: DateTime.now(),
+                lastMessageCreatedTime: DateTime.now(),
                 isArchived: false,
                 isRead: false,
               ),
@@ -230,7 +231,7 @@ void main() {
                 userName: 'Archived User',
                 avatarUrl: '',
                 lastMessage: '',
-                createdTime: DateTime.now(),
+                lastMessageCreatedTime: DateTime.now(),
                 isArchived: true,
                 isRead: false,
               )

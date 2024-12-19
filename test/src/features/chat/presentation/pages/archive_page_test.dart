@@ -33,8 +33,8 @@ void main() {
     // Register mocks in GetIt
     serviceLocator
         .registerLazySingleton<ContactRepository>(() => mockRepository);
-    serviceLocator.registerLazySingleton<GetArchivedChatList>(
-      () => GetArchivedChatList(serviceLocator<ContactRepository>()),
+    serviceLocator.registerLazySingleton<GetSortedArchivedChatList>(
+      () => GetSortedArchivedChatList(serviceLocator<ContactRepository>()),
     );
     serviceLocator.registerLazySingleton<ToggleChatArchivedStatus>(
       () => ToggleChatArchivedStatus(serviceLocator<ContactRepository>()),
@@ -121,7 +121,7 @@ void main() {
           id: '1',
           userName: 'Alice',
           avatarUrl: '',
-          createdTime: DateTime.now(),
+          lastMessageCreatedTime: DateTime.now(),
           lastMessage: 'Hello',
           isArchived: true,
           isRead: true,
@@ -130,7 +130,7 @@ void main() {
           id: '2',
           userName: 'Bob',
           avatarUrl: '',
-          createdTime: DateTime.now(),
+          lastMessageCreatedTime: DateTime.now(),
           lastMessage: 'Hi',
           isArchived: true,
           isRead: true,

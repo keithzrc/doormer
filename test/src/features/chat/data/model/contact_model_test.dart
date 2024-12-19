@@ -137,7 +137,7 @@ void main() {
         expect(entity.userName, 'John Doe');
         expect(entity.avatarUrl, 'https://example.com/avatar.jpg');
         expect(entity.lastMessage, 'Hello');
-        expect(entity.createdTime, testDateTime);
+        expect(entity.lastMessageCreatedTime, testDateTime);
         expect(entity.isArchived, false);
         expect(entity.isRead, true);
       });

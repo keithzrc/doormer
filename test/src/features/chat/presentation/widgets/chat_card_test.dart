@@ -10,7 +10,7 @@ void main() {
     userName: 'Username',
     avatarUrl: '',
     lastMessage: 'This is a test mock message',
-    createdTime: DateTime(2024, 3, 15, 14, 30),
+    lastMessageCreatedTime: DateTime(2024, 3, 15, 14, 30),
     isArchived: true,
     isRead: false,
   );

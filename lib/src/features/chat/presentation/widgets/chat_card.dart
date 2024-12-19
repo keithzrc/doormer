@@ -64,9 +64,9 @@ class ChatCard extends StatelessWidget {
           style: AppTextStyles.bodyMedium,
           overflow: TextOverflow.ellipsis,
         ),
-        trailing: chat.createdTime != null
+        trailing: chat.lastMessageCreatedTime != null
             ? Text(
-                formatTime(chat.createdTime!),
+                formatTime(chat.lastMessageCreatedTime!),
                 style: AppTextStyles.bodySmall,
               )
             : null,

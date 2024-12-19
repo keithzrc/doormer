@@ -49,14 +49,13 @@ void main() {
 
       test('updateChat should handle non-existent chat', () async {
         final nonExistentChat = Contact(
-          id: 'non-existent-id',
-          userName: 'Test User',
-          avatarUrl: 'test.jpg',
-          lastMessage: 'Test message',
-          createdTime: DateTime.now(),
-          isArchived: true,
-          isRead: true
-        );
+            id: 'non-existent-id',
+            userName: 'Test User',
+            avatarUrl: 'test.jpg',
+            lastMessage: 'Test message',
+            lastMessageCreatedTime: DateTime.now(),
+            isArchived: true,
+            isRead: true);
         await repository.updateChat(nonExistentChat);
         expect(true, true);
       });
@@ -72,7 +71,8 @@ void main() {
         await repository.deleteChat(chatToDelete.id);
 
         final updatedChats = await repository.getActiveChatList();
-        final deletedChat = updatedChats.where((chat) => chat.id == chatToDelete.id);
+        final deletedChat =
+            updatedChats.where((chat) => chat.id == chatToDelete.id);
         expect(deletedChat.isEmpty, true);
       });
 
@@ -81,8 +81,6 @@ void main() {
         expect(true, true);
       });
     });
-
-  
 
     // 5. 数据加载测试
     group('Data Loading Tests', () {

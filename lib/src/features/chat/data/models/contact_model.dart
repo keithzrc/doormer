@@ -61,7 +61,7 @@ class ContactModel {
       userName: userName,
       avatarUrl: avatarUrl,
       lastMessage: lastMessage,
-      createdTime: createdTime,
+      lastMessageCreatedTime: createdTime,
       isArchived: isArchived,
       isRead: isRead,
     );
@@ -74,7 +74,7 @@ class ContactModel {
       userName: contact.userName,
       avatarUrl: contact.avatarUrl,
       lastMessage: contact.lastMessage,
-      createdTime: contact.createdTime ?? DateTime.now(),
+      createdTime: contact.lastMessageCreatedTime ?? DateTime.now(),
       isArchived: contact.isArchived,
       isRead: contact.isRead,
     );

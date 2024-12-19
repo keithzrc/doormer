@@ -11,15 +11,15 @@ void main() {
   late MockContactRepository mockRepository;
   late ToggleChatArchivedStatus toggleChatStatus;
   late DeleteChat deleteChat;
-  late GetArchivedChatList getArchivedList;
-  late GetActiveChatList getActiveChatList;
+  late GetSortedArchivedChatList getArchivedList;
+  late GetSortedActiveChatList getActiveChatList;
 
   setUp(() {
     mockRepository = MockContactRepository();
     toggleChatStatus = ToggleChatArchivedStatus(mockRepository);
     deleteChat = DeleteChat(mockRepository);
-    getArchivedList = GetArchivedChatList(mockRepository);
-    getActiveChatList = GetActiveChatList(mockRepository);
+    getArchivedList = GetSortedArchivedChatList(mockRepository);
+    getActiveChatList = GetSortedActiveChatList(mockRepository);
   });
 
   group('ToggleChatArchivedStatus', () {
@@ -28,14 +28,13 @@ void main() {
       userName: 'Test User',
       avatarUrl: 'test.jpg',
       lastMessage: 'Hello',
-      createdTime: DateTime.now(),
+      lastMessageCreatedTime: DateTime.now(),
       isArchived: false,
       isRead: true,
     );
 
     test('should toggle chat archive status', () async {
-      when(mockRepository.updateChat(any))
-          .thenAnswer((_) async {});
+      when(mockRepository.updateChat(any)).thenAnswer((_) async {});
 
       final result = await toggleChatStatus.call(testContact);
 
@@ -48,8 +47,7 @@ void main() {
   group('DeleteChat', () {
     test('should call repository to delete chat', () async {
       const chatId = '1';
-      when(mockRepository.deleteChat(chatId))
-          .thenAnswer((_) async {});
+      when(mockRepository.deleteChat(chatId)).thenAnswer((_) async {});
 
       await deleteChat.call(chatId);
 
@@ -65,7 +63,7 @@ void main() {
           userName: 'User 1',
           avatarUrl: 'test1.jpg',
           lastMessage: 'Hello',
-          createdTime: DateTime.now(),
+          lastMessageCreatedTime: DateTime.now(),
           isArchived: true,
           isRead: true,
         ),
@@ -89,7 +87,7 @@ void main() {
           userName: 'User 2',
           avatarUrl: 'test2.jpg',
           lastMessage: 'Hi',
-          createdTime: DateTime.now(),
+          lastMessageCreatedTime: DateTime.now(),
           isArchived: false,
           isRead: true,
         ),

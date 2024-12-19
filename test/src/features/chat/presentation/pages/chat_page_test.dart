@@ -11,9 +11,10 @@ import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_event.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart';
 
-class MockGetActiveChatList extends Mock implements GetActiveChatList {}
+class MockGetActiveChatList extends Mock implements GetSortedActiveChatList {}
 
-class MockGetArchivedChatList extends Mock implements GetArchivedChatList {}
+class MockGetArchivedChatList extends Mock
+    implements GetSortedArchivedChatList {}
 
 class MockToggleChatArchivedStatus extends Mock
     implements ToggleChatArchivedStatus {}
@@ -37,9 +38,9 @@ void main() {
     mockDeleteChat = MockDeleteChat();
 
     // Register mocks in the service locator
-    serviceLocator
-        .registerLazySingleton<GetActiveChatList>(() => mockGetActiveChatList);
-    serviceLocator.registerLazySingleton<GetArchivedChatList>(
+    serviceLocator.registerLazySingleton<GetSortedActiveChatList>(
+        () => mockGetActiveChatList);
+    serviceLocator.registerLazySingleton<GetSortedArchivedChatList>(
         () => mockGetArchivedChatList);
     serviceLocator.registerLazySingleton<ToggleChatArchivedStatus>(
         () => mockToggleChatArchivedStatus);
@@ -47,8 +48,9 @@ void main() {
 
     // Register ChatBloc with mocked use cases
     serviceLocator.registerFactory<ChatBloc>(() => ChatBloc(
-          getChatListUseCase: serviceLocator<GetActiveChatList>(),
-          getArchivedChatListUseCase: serviceLocator<GetArchivedChatList>(),
+          getChatListUseCase: serviceLocator<GetSortedActiveChatList>(),
+          getArchivedChatListUseCase:
+              serviceLocator<GetSortedArchivedChatList>(),
           toggleChatUseCase: serviceLocator<ToggleChatArchivedStatus>(),
           deleteChatUseCase: serviceLocator<DeleteChat>(),
         ));

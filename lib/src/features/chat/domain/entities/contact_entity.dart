@@ -11,7 +11,7 @@ class Contact {
   final String userName;
   final String avatarUrl;
   final String lastMessage;
-  final DateTime? createdTime;
+  final DateTime? lastMessageCreatedTime;
   final bool isArchived;
   final bool isRead;
 
@@ -20,7 +20,7 @@ class Contact {
     required this.userName,
     required this.avatarUrl,
     required this.lastMessage,
-    required this.createdTime,
+    required this.lastMessageCreatedTime,
     required this.isArchived,
     required this.isRead,
   });
@@ -30,7 +30,7 @@ class Contact {
     String? userName,
     String? avatarUrl,
     String? lastMessage,
-    DateTime? createdTime,
+    DateTime? lastMessageCreatedTime,
     bool? isArchived,
     bool? isRead,
   }) {
@@ -39,7 +39,8 @@ class Contact {
       userName: userName ?? this.userName,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       lastMessage: lastMessage ?? this.lastMessage,
-      createdTime: createdTime ?? this.createdTime,
+      lastMessageCreatedTime:
+          lastMessageCreatedTime ?? this.lastMessageCreatedTime,
       isArchived: isArchived ?? this.isArchived,
       isRead: isRead ?? this.isRead,
     );

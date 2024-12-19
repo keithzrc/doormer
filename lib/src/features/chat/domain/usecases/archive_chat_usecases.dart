@@ -34,23 +34,27 @@ class DeleteChat {
 
 /// Use case for retrieving the list of archived chats.
 /// This class interacts with the ChatRepository to fetch all archived chats.
-class GetArchivedChatList {
+class GetSortedArchivedChatList {
   final ContactRepository repository;
 
-  GetArchivedChatList(this.repository);
+  GetSortedArchivedChatList(this.repository);
 
   Future<List<Contact>> call() async {
-    return await repository.getArchivedChatList();
+    final chats = await repository.getArchivedChatList();
+    chats.sort((a, b) =>
+        b.lastMessageCreatedTime!.compareTo(a.lastMessageCreatedTime!));
+    return chats;
+    //改class名字
   }
 }
 
 /// Use case for retrieving the list of Active chats.
 /// This class interacts with the ChatRepository to fetch all Active chats
 // TODO: Move to centralized/ active chat usecase file
-class GetActiveChatList {
+class GetSortedActiveChatList {
   final ContactRepository repository;
 
-  GetActiveChatList(this.repository);
+  GetSortedActiveChatList(this.repository);
 
   Future<List<Contact>> call() async {
     return await repository.getActiveChatList();

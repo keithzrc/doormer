@@ -11,12 +11,12 @@ void initChatModule() {
   );
 
   // Register use cases
-  serviceLocator.registerLazySingleton<GetActiveChatList>(
-    () => GetActiveChatList(serviceLocator<ContactRepository>()),
+  serviceLocator.registerLazySingleton<GetSortedActiveChatList>(
+    () => GetSortedActiveChatList(serviceLocator<ContactRepository>()),
   );
 
-  serviceLocator.registerLazySingleton<GetArchivedChatList>(
-    () => GetArchivedChatList(serviceLocator<ContactRepository>()),
+  serviceLocator.registerLazySingleton<GetSortedArchivedChatList>(
+    () => GetSortedArchivedChatList(serviceLocator<ContactRepository>()),
   );
 
   serviceLocator.registerLazySingleton<ToggleChatArchivedStatus>(
@@ -29,8 +29,8 @@ void initChatModule() {
 
   // Register ChatBloc
   serviceLocator.registerFactory<ChatBloc>(() => ChatBloc(
-        getChatListUseCase: serviceLocator<GetActiveChatList>(),
-        getArchivedChatListUseCase: serviceLocator<GetArchivedChatList>(),
+        getChatListUseCase: serviceLocator<GetSortedActiveChatList>(),
+        getArchivedChatListUseCase: serviceLocator<GetSortedArchivedChatList>(),
         toggleChatUseCase: serviceLocator<ToggleChatArchivedStatus>(),
         deleteChatUseCase: serviceLocator<DeleteChat>(),
       ));

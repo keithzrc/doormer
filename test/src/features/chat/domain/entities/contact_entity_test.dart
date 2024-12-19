@@ -3,13 +3,14 @@ import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 
 void main() {
   group('Contact class tests', () {
-    test('should create a Contact object with all fields correctly assigned', () {
+    test('should create a Contact object with all fields correctly assigned',
+        () {
       final contact = Contact(
         id: '1',
         userName: 'John Doe',
         avatarUrl: 'https://example.com/avatar.png',
         lastMessage: 'Hello!',
-        createdTime: DateTime(2024, 12, 10, 10, 0, 0),
+        lastMessageCreatedTime: DateTime(2024, 12, 10, 10, 0, 0),
         isArchived: false,
         isRead: true,
       );
@@ -18,7 +19,7 @@ void main() {
       expect(contact.userName, 'John Doe');
       expect(contact.avatarUrl, 'https://example.com/avatar.png');
       expect(contact.lastMessage, 'Hello!');
-      expect(contact.createdTime, DateTime(2024, 12, 10, 10, 0, 0));
+      expect(contact.lastMessageCreatedTime, DateTime(2024, 12, 10, 10, 0, 0));
       expect(contact.isArchived, isFalse);
       expect(contact.isRead, isTrue);
     });
@@ -29,7 +30,7 @@ void main() {
         userName: 'Jane Smith',
         avatarUrl: 'https://example.com/avatar2.png',
         lastMessage: 'Hi!',
-        createdTime: null,
+        lastMessageCreatedTime: null,
         isArchived: true,
         isRead: false,
       );
@@ -38,18 +39,19 @@ void main() {
       expect(contact.userName, 'Jane Smith');
       expect(contact.avatarUrl, 'https://example.com/avatar2.png');
       expect(contact.lastMessage, 'Hi!');
-      expect(contact.createdTime, isNull);
+      expect(contact.lastMessageCreatedTime, isNull);
       expect(contact.isArchived, isTrue);
       expect(contact.isRead, isFalse);
     });
 
-    test('copyWith should create a new Contact with specified fields updated', () {
+    test('copyWith should create a new Contact with specified fields updated',
+        () {
       final originalContact = Contact(
         id: '3',
         userName: 'Alice',
         avatarUrl: 'https://example.com/avatar3.png',
         lastMessage: 'What\'s up?',
-        createdTime: DateTime(2024, 12, 10, 12, 0, 0),
+        lastMessageCreatedTime: DateTime(2024, 12, 10, 12, 0, 0),
         isArchived: false,
         isRead: true,
       );
@@ -68,7 +70,8 @@ void main() {
       // 验证未更新的字段保持不变
       expect(updatedContact.id, originalContact.id);
       expect(updatedContact.avatarUrl, originalContact.avatarUrl);
-      expect(updatedContact.createdTime, originalContact.createdTime);
+      expect(updatedContact.lastMessageCreatedTime,
+          originalContact.lastMessageCreatedTime);
       expect(updatedContact.isRead, originalContact.isRead);
     });
 
@@ -78,7 +81,7 @@ void main() {
         userName: 'Bob',
         avatarUrl: 'https://example.com/avatar4.png',
         lastMessage: 'Original message',
-        createdTime: DateTime(2024, 12, 10, 14, 0, 0),
+        lastMessageCreatedTime: DateTime(2024, 12, 10, 14, 0, 0),
         isArchived: false,
         isRead: true,
       );
@@ -89,7 +92,8 @@ void main() {
       expect(copiedContact.userName, originalContact.userName);
       expect(copiedContact.avatarUrl, originalContact.avatarUrl);
       expect(copiedContact.lastMessage, originalContact.lastMessage);
-      expect(copiedContact.createdTime, originalContact.createdTime);
+      expect(copiedContact.lastMessageCreatedTime,
+          originalContact.lastMessageCreatedTime);
       expect(copiedContact.isArchived, originalContact.isArchived);
       expect(copiedContact.isRead, originalContact.isRead);
     });
