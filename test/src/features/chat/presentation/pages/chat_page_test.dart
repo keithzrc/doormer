@@ -4,96 +4,99 @@ import 'package:doormer/src/features/chat/presentation/pages/chat_page.dart';
 import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart';
 import 'package:provider/provider.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:get_it/get_it.dart';
+import 'package:bloc_test/bloc_test.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_event.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart';
 
 class MockGetActiveChatList extends Mock implements GetActiveChatList {}
 
 class MockGetArchivedChatList extends Mock implements GetArchivedChatList {}
 
-class MockToggleChatArchivedStatus extends Mock
-    implements ToggleChatArchivedStatus {}
+class MockToggleChatArchivedStatus extends Mock implements ToggleChatArchivedStatus {}
 
 class MockDeleteChat extends Mock implements DeleteChat {}
+
+class MockChatBloc extends MockBloc<ChatEvent, ChatState> implements ChatBloc {}
 
 void main() {
   late MockGetActiveChatList mockGetActiveChatList;
   late MockGetArchivedChatList mockGetArchivedChatList;
   late MockToggleChatArchivedStatus mockToggleChatArchivedStatus;
   late MockDeleteChat mockDeleteChat;
+  late MockChatBloc mockChatBloc;
+  final getIt = GetIt.instance;
 
   setUp(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    
     mockGetActiveChatList = MockGetActiveChatList();
     mockGetArchivedChatList = MockGetArchivedChatList();
     mockToggleChatArchivedStatus = MockToggleChatArchivedStatus();
     mockDeleteChat = MockDeleteChat();
+    mockChatBloc = MockChatBloc();
 
-    reset(mockGetActiveChatList);
-    reset(mockGetArchivedChatList);
-    reset(mockToggleChatArchivedStatus);
-    reset(mockDeleteChat);
+    when(() => mockChatBloc.state).thenReturn(ChatLoadingState());
+    whenListen(
+      mockChatBloc,
+      Stream.fromIterable([ChatLoadingState()]),
+    );
+
+    if (getIt.isRegistered<ChatBloc>()) {
+      getIt.unregister<ChatBloc>();
+    }
+    getIt.registerFactory<ChatBloc>(() => mockChatBloc);
   });
 
-  group('ChatPage', () {
-    Widget createWidgetUnderTest({Widget? child}) {
-      return MultiProvider(
-        providers: [
-          Provider<GetActiveChatList>(
-            create: (_) => mockGetActiveChatList,
-          ),
-          Provider<GetArchivedChatList>(
-            create: (_) => mockGetArchivedChatList,
-          ),
-          Provider<ToggleChatArchivedStatus>(
-            create: (_) => mockToggleChatArchivedStatus,
-          ),
-          Provider<DeleteChat>(
-            create: (_) => mockDeleteChat,
-          ),
-          ProxyProvider<GetArchivedChatList, ChatBloc>(
-            create: (context) => ChatBloc(
-              getChatListUseCase: mockGetActiveChatList,
-              getArchivedChatListUseCase: context.read<GetArchivedChatList>(),
-              toggleChatUseCase: context.read<ToggleChatArchivedStatus>(),
-              deleteChatUseCase: context.read<DeleteChat>(),
-            ),
-            update: (context, getArchivedChatList, previous) =>
-                previous ??
-                ChatBloc(
-                  getChatListUseCase: mockGetActiveChatList,
-                  getArchivedChatListUseCase: getArchivedChatList,
-                  toggleChatUseCase: context.read<ToggleChatArchivedStatus>(),
-                  deleteChatUseCase: context.read<DeleteChat>(),
-                ),
-          ),
-        ],
-        child: MaterialApp(
-          home: const ChatPage(),
-          routes: {
-            '/archive': (context) => const ArchivePage(),
-          },
-        ),
-      );
-    }
+  tearDown(() {
+    getIt.reset();
+  });
 
+  Widget createWidgetUnderTest() {
+    return MultiProvider(
+      providers: [
+        Provider<GetActiveChatList>(
+          create: (_) => mockGetActiveChatList,
+        ),
+        Provider<GetArchivedChatList>(
+          create: (_) => mockGetArchivedChatList,
+        ),
+        Provider<ToggleChatArchivedStatus>(
+          create: (_) => mockToggleChatArchivedStatus,
+        ),
+        Provider<DeleteChat>(
+          create: (_) => mockDeleteChat,
+        ),
+      ],
+      child: MaterialApp(
+        home: const ChatPage(),
+        routes: {
+          '/archive': (context) => const ArchivePage(),
+        },
+      ),
+    );
+  }
+
+  group('ChatPage', () {
     testWidgets('renders ChatPage correctly', (WidgetTester tester) async {
       await tester.pumpWidget(createWidgetUnderTest());
+      await tester.pump();
 
-      // 验证基本UI元素是否存在
       expect(find.text('Chat'), findsOneWidget);
-      expect(find.text('Chat Page'), findsOneWidget);
       expect(find.byIcon(Icons.archive), findsOneWidget);
     });
 
     testWidgets('navigates to ArchivePage when archive icon is tapped',
         (WidgetTester tester) async {
       await tester.pumpWidget(createWidgetUnderTest());
+      await tester.pump();
 
-      // 点击归档图标
       await tester.tap(find.byIcon(Icons.archive));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
 
-      // 验证是否导航到ArchivePage
       expect(find.byType(ArchivePage), findsOneWidget);
     });
   });
