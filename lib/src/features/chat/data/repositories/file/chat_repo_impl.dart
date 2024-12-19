@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:logger/logger.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
@@ -10,12 +11,11 @@ const fileDBPath =
 
 class ChatRepositoryImpl implements ContactRepository {
   List<ContactModel> _chats = [];
-  final Logger _logger = Logger();
   ChatRepositoryImpl() {
     _loadDummyData().then((_) {
-      _logger.i('Data initialization completed');
+      AppLogger.info('Data initialization completed');
     }).catchError((error) {
-      _logger.e('Data initialization failed');
+      AppLogger.error('Data initialization failed');
     });
   }
 
@@ -24,12 +24,12 @@ class ChatRepositoryImpl implements ContactRepository {
       final String response = await rootBundle.loadString(fileDBPath);
       final List<dynamic> jsonData = json.decode(response);
       if (jsonData.isEmpty) {
-        _logger.e('empty json');
+        AppLogger.error('empty json');
       }
       _chats = jsonData.map((data) => ContactModel.fromJson(data)).toList();
-      _logger.i('Dummy data loaded successfully.');
+      AppLogger.info('Dummy data loaded successfully.');
     } catch (e) {
-      _logger.e('Error loading dummy data', e);
+      AppLogger.error('Error loading dummy data', e);
       rethrow;
     }
   }
@@ -97,9 +97,9 @@ class ChatRepositoryImpl implements ContactRepository {
         _chats.indexWhere((chat) => chat.id == updatedContactModel.id);
     if (index != indexNotFound) {
       _chats[index] = updatedContactModel;
-      _logger.i('Chat with ID ${updatedContact.id} updated successfully.');
+      AppLogger.info('Chat with ID ${updatedContact.id} updated successfully.');
     } else {
-      _logger.w('Chat with ID ${updatedContact.id} not found.');
+      AppLogger.warn('Chat with ID ${updatedContact.id} not found.');
     }
   }
 
@@ -116,9 +116,9 @@ class ChatRepositoryImpl implements ContactRepository {
     _chats.removeWhere((chat) => chat.id.toString() == chatId);
 
     if (_chats.length == initialLength) {
-      _logger.w('Chat with ID $chatId not found.');
+      AppLogger.warn('Chat with ID $chatId not found.');
     } else {
-      _logger.i('Chat with ID $chatId successfully removed.');
+      AppLogger.info('Chat with ID $chatId successfully removed.');
     }
   }
 }
