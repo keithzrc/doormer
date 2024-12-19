@@ -60,7 +60,7 @@ Future<void> initDependencies() async {
   );
 
 // Register ChatBloc
-  serviceLocator.registerFactory<ChatArchiveBloc>(() => ChatArchiveBloc(
+  serviceLocator.registerFactory<ChatBloc>(() => ChatBloc(
         getChatListUseCase: serviceLocator<GetActiveChatList>(),
         getArchivedChatListUseCase: serviceLocator<GetArchivedChatList>(),
         toggleChatUseCase: serviceLocator<ToggleChatArchivedStatus>(),

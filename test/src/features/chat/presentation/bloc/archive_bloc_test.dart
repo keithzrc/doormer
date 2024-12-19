@@ -18,7 +18,7 @@ class MockArchiveChat extends Mock implements ToggleChat {}
 class MockDeleteChat extends Mock implements DeleteChat {}
 
 void main() {
-  late ChatArchiveBloc chatBloc;
+  late ChatBloc chatBloc;
   late MockGetChatList mockGetChatList;
   late MockGetArchivedList mockGetArchivedList;
   late MockArchiveChat mockArchiveChat;
@@ -30,7 +30,7 @@ void main() {
     mockArchiveChat = MockArchiveChat();
     mockDeleteChat = MockDeleteChat();
 
-    chatBloc = ChatArchiveBloc(
+    chatBloc = ChatBloc(
       getChatListUseCase: mockGetChatList,
       getArchivedChatListUseCase: mockGetArchivedList,
       toggleChatUseCase: mockArchiveChat,
@@ -45,7 +45,7 @@ void main() {
   group('ChatBloc Tests', () {
     test('initial state should be ChatLoadingState if no chats are preloaded',
         () {
-      final chatBloc = ChatArchiveBloc(
+      final chatBloc = ChatBloc(
         getChatListUseCase: mockGetChatList,
         getArchivedChatListUseCase: mockGetArchivedList,
         toggleChatUseCase: mockArchiveChat,
@@ -55,7 +55,7 @@ void main() {
       expect(chatBloc.state, isA<ChatLoadingState>());
     });
     test('initial state should be ChatLoadedState if chats are preloaded', () {
-      final chatBloc = ChatArchiveBloc(
+      final chatBloc = ChatBloc(
         getChatListUseCase: mockGetChatList,
         getArchivedChatListUseCase: mockGetArchivedList,
         toggleChatUseCase: mockArchiveChat,
@@ -74,7 +74,7 @@ void main() {
       expect((chatBloc.state as ChatLoadedState).chats.length, 1);
     });
 
-    blocTest<ChatArchiveBloc, ChatState>(
+    blocTest<ChatBloc, ChatState>(
       'should emit [ChatLoadingState, ChatLoadedState] when LoadChatsEvent is successfully handled',
       setUp: () {
         when(() => mockGetChatList.call()).thenAnswer((_) async => []);
@@ -90,7 +90,7 @@ void main() {
       },
     );
 
-    blocTest<ChatArchiveBloc, ChatState>(
+    blocTest<ChatBloc, ChatState>(
       'should emit [ChatLoadingState, ChatErrorState] when LoadChatsEvent fails to fetch the chat list data',
       setUp: () {
         when(() => mockGetChatList.call())
@@ -107,7 +107,7 @@ void main() {
       },
     );
 
-    blocTest<ChatArchiveBloc, ChatState>(
+    blocTest<ChatBloc, ChatState>(
       'should emit [ArchivedChatLoadingState, ArchivedChatLoadedState] when LoadArchivedChatsEvent is successfully handled',
       setUp: () {
         when(() => mockGetArchivedList.call()).thenAnswer((_) async => []);
@@ -122,7 +122,7 @@ void main() {
         verify(() => mockGetArchivedList.call()).called(1);
       },
     );
-    blocTest<ChatArchiveBloc, ChatState>(
+    blocTest<ChatBloc, ChatState>(
       'should emit [ArchivedChatLoadingState, ChatErrorState] when LoadArchivedChatsEvent fails to fetch the archived chat list data',
       setUp: () {
         when(() => mockGetArchivedList.call())
@@ -138,7 +138,7 @@ void main() {
         verify(() => mockGetArchivedList.call()).called(1);
       },
     );
-    blocTest<ChatArchiveBloc, ChatState>(
+    blocTest<ChatBloc, ChatState>(
       'should call archiveChat and then emit [ChatLoadingState, ChatLoadedState] to refresh the chat list after ArchiveChatEvent is handled',
       setUp: () {
         when(() => mockArchiveChat.call('1')).thenAnswer((_) async => {});
@@ -155,7 +155,7 @@ void main() {
         verify(() => mockGetChatList.call()).called(1);
       },
     );
-    blocTest<ChatArchiveBloc, ChatState>(
+    blocTest<ChatBloc, ChatState>(
       'should call unArchiveChat and then emit [ArchivedChatLoadingState, ArchivedChatLoadedState] to refresh the archived chat list after UnArchiveChatEvent is handled',
       setUp: () {
         when(() => mockUnarchiveChat.call('1')).thenAnswer((_) async => {});
@@ -173,7 +173,7 @@ void main() {
       },
     );
 
-    blocTest<ChatArchiveBloc, ChatState>(
+    blocTest<ChatBloc, ChatState>(
       'should call deleteChat and then emit [ArchivedChatLoadingState, ArchivedChatLoadedState] to refresh the archived chat list after DeleteChatEvent is handled',
       setUp: () {
         when(() => mockDeleteChat.call('1')).thenAnswer((_) async => {});

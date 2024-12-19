@@ -6,13 +6,13 @@ import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.
 import 'chat_event.dart';
 import 'chat_state.dart';
 
-class ChatArchiveBloc extends Bloc<ChatEvent, ChatState> {
+class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetActiveChatList getChatListUseCase;
   final GetArchivedChatList getArchivedChatListUseCase;
   final ToggleChatArchivedStatus toggleChatUseCase;
   final DeleteChat deleteChatUseCase;
 
-  ChatArchiveBloc({
+  ChatBloc({
     required this.getChatListUseCase,
     required this.getArchivedChatListUseCase,
     required this.toggleChatUseCase,

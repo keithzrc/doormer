@@ -44,7 +44,7 @@ class ChatPage extends StatelessWidget {
                 width: screenWidth > 1000
                     ? screenWidth * 0.25
                     : 250, // Minimum 250px
-                child: BlocBuilder<ChatArchiveBloc, chat_state.ChatState>(
+                child: BlocBuilder<ChatBloc, chat_state.ChatState>(
                   builder: (context, state) {
                     if (state is chat_state.ChatLoadingState) {
                       return const Center(

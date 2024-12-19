@@ -16,7 +16,7 @@ class ChatArchiveBlocProvider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ChatArchiveBloc(
+      create: (context) => ChatBloc(
         getChatListUseCase: context.read(),
         getArchivedChatListUseCase: context.read(),
         toggleChatUseCase: context.read(),

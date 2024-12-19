@@ -50,8 +50,8 @@ void main() {
           Provider<DeleteChat>(
             create: (_) => mockDeleteChat,
           ),
-          ProxyProvider<GetArchivedChatList, ChatArchiveBloc>(
-            create: (context) => ChatArchiveBloc(
+          ProxyProvider<GetArchivedChatList, ChatBloc>(
+            create: (context) => ChatBloc(
               getChatListUseCase: mockGetActiveChatList,
               getArchivedChatListUseCase: context.read<GetArchivedChatList>(),
               toggleChatUseCase: context.read<ToggleChatArchivedStatus>(),
@@ -59,7 +59,7 @@ void main() {
             ),
             update: (context, getArchivedChatList, previous) =>
                 previous ??
-                ChatArchiveBloc(
+                ChatBloc(
                   getChatListUseCase: mockGetActiveChatList,
                   getArchivedChatListUseCase: getArchivedChatList,
                   toggleChatUseCase: context.read<ToggleChatArchivedStatus>(),
