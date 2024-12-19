@@ -1,5 +1,3 @@
-import 'package:uuid/uuid.dart';
-
 /// Represents a chat entity in the system.
 /// This class holds all the necessary information about a chat, including:
 /// - [uuid]: Unique identifier for the chat.

@@ -5,7 +5,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
 
-import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart'
+import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart'
     as _i4;
 import 'package:doormer/src/features/chat/domain/repositories/contact_repository.dart'
     as _i2;
@@ -27,25 +27,34 @@ import 'package:mockito/mockito.dart' as _i1;
 /// A class which mocks [ChatRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockChatRepository extends _i1.Mock implements _i2.ContactRepository {
-  MockChatRepository() {
+class MockContactRepository extends _i1.Mock implements _i2.ContactRepository {
+  MockContactRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<List<_i4.Chat>> getChatList() => (super.noSuchMethod(
+  _i3.Future<List<_i4.Contact>> getActiveChatList() => (super.noSuchMethod(
         Invocation.method(
-          #getChatList,
+          #getActiveChatList,
           [],
         ),
-        returnValue: _i3.Future<List<_i4.Chat>>.value(<_i4.Chat>[]),
-      ) as _i3.Future<List<_i4.Chat>>);
+        returnValue: _i3.Future<List<_i4.Contact>>.value(<_i4.Contact>[]),
+      ) as _i3.Future<List<_i4.Contact>>);
 
   @override
-  _i3.Future<void> toggleChat(String? chatId) => (super.noSuchMethod(
+  _i3.Future<List<_i4.Contact>> getArchivedChatList() => (super.noSuchMethod(
         Invocation.method(
-          #archiveChat,
-          [chatId],
+          #getArchivedChatList,
+          [],
+        ),
+        returnValue: _i3.Future<List<_i4.Contact>>.value(<_i4.Contact>[]),
+      ) as _i3.Future<List<_i4.Contact>>);
+
+  @override
+  _i3.Future<void> updateChat(_i4.Contact? contact) => (super.noSuchMethod(
+        Invocation.method(
+          #updateChat,
+          [contact],
         ),
         returnValue: _i3.Future<void>.value(),
         returnValueForMissingStub: _i3.Future<void>.value(),
@@ -60,13 +69,4 @@ class MockChatRepository extends _i1.Mock implements _i2.ContactRepository {
         returnValue: _i3.Future<void>.value(),
         returnValueForMissingStub: _i3.Future<void>.value(),
       ) as _i3.Future<void>);
-
-  @override
-  _i3.Future<List<_i4.Chat>> getArchivedList() => (super.noSuchMethod(
-        Invocation.method(
-          #getArchivedList,
-          [],
-        ),
-        returnValue: _i3.Future<List<_i4.Chat>>.value(<_i4.Chat>[]),
-      ) as _i3.Future<List<_i4.Chat>>);
 }
