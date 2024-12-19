@@ -1,10 +1,10 @@
+import 'package:doormer/src/core/di/service_locator.dart';
+import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:doormer/src/features/chat/presentation/pages/chat_page.dart';
 import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart';
-import 'package:provider/provider.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:get_it/get_it.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
@@ -15,7 +15,8 @@ class MockGetActiveChatList extends Mock implements GetActiveChatList {}
 
 class MockGetArchivedChatList extends Mock implements GetArchivedChatList {}
 
-class MockToggleChatArchivedStatus extends Mock implements ToggleChatArchivedStatus {}
+class MockToggleChatArchivedStatus extends Mock
+    implements ToggleChatArchivedStatus {}
 
 class MockDeleteChat extends Mock implements DeleteChat {}
 
@@ -26,56 +27,52 @@ void main() {
   late MockGetArchivedChatList mockGetArchivedChatList;
   late MockToggleChatArchivedStatus mockToggleChatArchivedStatus;
   late MockDeleteChat mockDeleteChat;
-  late MockChatBloc mockChatBloc;
-  final getIt = GetIt.instance;
 
   setUp(() {
-    TestWidgetsFlutterBinding.ensureInitialized();
-    
+    serviceLocator.reset(); // Reset the service locator before each test
+
     mockGetActiveChatList = MockGetActiveChatList();
     mockGetArchivedChatList = MockGetArchivedChatList();
     mockToggleChatArchivedStatus = MockToggleChatArchivedStatus();
     mockDeleteChat = MockDeleteChat();
-    mockChatBloc = MockChatBloc();
 
-    when(() => mockChatBloc.state).thenReturn(ChatLoadingState());
-    whenListen(
-      mockChatBloc,
-      Stream.fromIterable([ChatLoadingState()]),
-    );
+    // Register mocks in the service locator
+    serviceLocator
+        .registerLazySingleton<GetActiveChatList>(() => mockGetActiveChatList);
+    serviceLocator.registerLazySingleton<GetArchivedChatList>(
+        () => mockGetArchivedChatList);
+    serviceLocator.registerLazySingleton<ToggleChatArchivedStatus>(
+        () => mockToggleChatArchivedStatus);
+    serviceLocator.registerLazySingleton<DeleteChat>(() => mockDeleteChat);
 
-    if (getIt.isRegistered<ChatBloc>()) {
-      getIt.unregister<ChatBloc>();
-    }
-    getIt.registerFactory<ChatBloc>(() => mockChatBloc);
+    // Register ChatBloc with mocked use cases
+    serviceLocator.registerFactory<ChatBloc>(() => ChatBloc(
+          getChatListUseCase: serviceLocator<GetActiveChatList>(),
+          getArchivedChatListUseCase: serviceLocator<GetArchivedChatList>(),
+          toggleChatUseCase: serviceLocator<ToggleChatArchivedStatus>(),
+          deleteChatUseCase: serviceLocator<DeleteChat>(),
+        ));
+
+    reset(mockGetActiveChatList);
+    reset(mockGetArchivedChatList);
+    reset(mockToggleChatArchivedStatus);
+    reset(mockDeleteChat);
+
+    // Mock behavior for the use cases => Returning a list of Contact
+    when(() => mockGetActiveChatList()).thenAnswer((_) async => <Contact>[]);
+    when(() => mockGetArchivedChatList()).thenAnswer((_) async => <Contact>[]);
   });
 
   tearDown(() {
-    getIt.reset();
+    serviceLocator.reset();
   });
 
   Widget createWidgetUnderTest() {
-    return MultiProvider(
-      providers: [
-        Provider<GetActiveChatList>(
-          create: (_) => mockGetActiveChatList,
-        ),
-        Provider<GetArchivedChatList>(
-          create: (_) => mockGetArchivedChatList,
-        ),
-        Provider<ToggleChatArchivedStatus>(
-          create: (_) => mockToggleChatArchivedStatus,
-        ),
-        Provider<DeleteChat>(
-          create: (_) => mockDeleteChat,
-        ),
-      ],
-      child: MaterialApp(
-        home: const ChatPage(),
-        routes: {
-          '/archive': (context) => const ArchivePage(),
-        },
-      ),
+    return MaterialApp(
+      home: const ChatPage(),
+      routes: {
+        '/archive': (context) => const ArchivePage(),
+      },
     );
   }
 

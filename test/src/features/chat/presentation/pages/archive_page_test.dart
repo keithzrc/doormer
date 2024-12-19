@@ -1,14 +1,13 @@
+import 'package:doormer/src/core/di/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:get_it/get_it.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/features/chat/domain/repositories/contact_repository.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
-import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart';  // 修改这里
+import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart'; // 修改这里
 import 'package:doormer/src/features/chat/presentation/bloc/chat_event.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart'
     as archive_state;
@@ -21,82 +20,66 @@ class MockChatBloc extends MockBloc<ChatEvent, archive_state.ChatState>
 
 void main() {
   late MockChatRepository mockRepository;
-  late ToggleChatArchivedStatus archiveChat;
-  late DeleteChat deleteChat;
-  late GetArchivedChatList getArchivedList;
-  late GetActiveChatList getChatList;
   late MockChatBloc mockChatBloc;
-  final getIt = GetIt.instance;
 
   setUp(() {
     TestWidgetsFlutterBinding.ensureInitialized();
+    serviceLocator.reset(); // Reset GetIt before each test
 
+    // Create mock instances
     mockRepository = MockChatRepository();
-    archiveChat = ToggleChatArchivedStatus(mockRepository);
-    deleteChat = DeleteChat(mockRepository);
-    getArchivedList = GetArchivedChatList(mockRepository);
-    getChatList = GetActiveChatList(mockRepository);
     mockChatBloc = MockChatBloc();
 
-    if (getIt.isRegistered<ChatBloc>()) {
-      getIt.unregister<ChatBloc>();
-    }
-    getIt.registerFactory<ChatBloc>(() => mockChatBloc);
+    // Register mocks in GetIt
+    serviceLocator
+        .registerLazySingleton<ContactRepository>(() => mockRepository);
+    serviceLocator.registerLazySingleton<GetArchivedChatList>(
+      () => GetArchivedChatList(serviceLocator<ContactRepository>()),
+    );
+    serviceLocator.registerLazySingleton<ToggleChatArchivedStatus>(
+      () => ToggleChatArchivedStatus(serviceLocator<ContactRepository>()),
+    );
+    serviceLocator.registerLazySingleton<DeleteChat>(
+      () => DeleteChat(serviceLocator<ContactRepository>()),
+    );
+    serviceLocator.registerFactory<ChatBloc>(() => mockChatBloc);
   });
 
   tearDown(() {
-    getIt.reset();
+    serviceLocator.reset(); // Ensure a clean state after each test
   });
 
   Widget createWidgetUnderTest() {
-    return MaterialApp(
-      home: MultiRepositoryProvider(
-        providers: [
-          RepositoryProvider<ToggleChatArchivedStatus>(
-            create: (context) => archiveChat,
-          ),
-          RepositoryProvider<DeleteChat>(
-            create: (context) => deleteChat,
-          ),
-          RepositoryProvider<GetArchivedChatList>(
-            create: (context) => getArchivedList,
-          ),
-          RepositoryProvider<GetActiveChatList>(
-            create: (context) => getChatList,
-          ),
-        ],
-        child: BlocProvider<ChatBloc>.value(
-          value: mockChatBloc,
-          child: const ArchivePage(),
-        ),
-      ),
+    return const MaterialApp(
+      home: ArchivePage(),
     );
   }
 
   group('ArchivePage Tests', () {
-    testWidgets('should display loading indicator when state is ArchivedChatLoadingState', 
+    testWidgets(
+        'should display loading indicator when state is ArchivedChatLoadingState',
         (WidgetTester tester) async {
       // Arrange
       when(() => mockChatBloc.state)
           .thenReturn(archive_state.ArchivedChatLoadingState());
-      
+
       // Act
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pump();
-      
+
       // Debug
       debugPrint('Current Bloc State: ${mockChatBloc.state}');
       debugPrint('Current Rendered Widgets:');
       for (var widget in tester.allWidgets) {
         debugPrint('Widget Type: ${widget.runtimeType}');
       }
-      
+
       // Assert
       expect(find.byType(CircularProgressIndicator), findsOneWidget,
           reason: 'Loading state should display CircularProgressIndicator');
     });
 
-    testWidgets('should display error message when state is ChatErrorState', 
+    testWidgets('should display error message when state is ChatErrorState',
         (WidgetTester tester) async {
       const errorMessage =
           "type 'Null' is not a subtype of type 'Future<List<Chat>>'";
@@ -108,7 +91,7 @@ void main() {
       expect(find.text('Error: $errorMessage'), findsOneWidget);
     });
 
-    testWidgets('should display empty message when no archived chats', 
+    testWidgets('should display empty message when no archived chats',
         (WidgetTester tester) async {
       when(() => mockRepository.getArchivedChatList())
           .thenAnswer((_) async => []);
@@ -131,7 +114,7 @@ void main() {
           reason: 'Should display empty state text');
     });
 
-    testWidgets('should display chat list when there are archived chats', 
+    testWidgets('should display chat list when there are archived chats',
         (WidgetTester tester) async {
       final archivedChats = [
         Contact(
