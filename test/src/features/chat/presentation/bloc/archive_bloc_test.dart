@@ -1,4 +1,4 @@
-import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart';
+import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -6,14 +6,14 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_event.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart';
-import 'package:doormer/src/features/chat/domain/usecases/archive_chat.dart';
+import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.dart';
 
 // Mock dependencies
-class MockGetChatList extends Mock implements GetUnarchivedchatList {}
+class MockGetChatList extends Mock implements GetActiveChatList {}
 
-class MockGetArchivedList extends Mock implements GetArchivedList {}
+class MockGetArchivedList extends Mock implements GetArchivedChatList {}
 
-class MockArchiveChat extends Mock implements ToggleChat {}
+class MockArchiveChat extends Mock implements ToggleChatArchivedStatus {}
 
 class MockDeleteChat extends Mock implements DeleteChat {}
 
@@ -61,7 +61,7 @@ void main() {
         toggleChatUseCase: mockArchiveChat,
         deleteChatUseCase: mockDeleteChat,
         initialChats: [
-          Chat(
+          Contact(
               id: '1',
               userName: 'John Doe',
               avatarUrl: '',
