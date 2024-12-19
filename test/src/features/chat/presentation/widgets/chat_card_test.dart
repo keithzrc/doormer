@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/features/chat/presentation/widgets/chat_card.dart';
+import 'package:doormer/src/core/theme/app_text_styles.dart';
 
 void main() {
   final mockChat = Contact(
@@ -11,7 +12,7 @@ void main() {
     lastMessage: 'This is a test mock message',
     createdTime: DateTime(2024, 3, 15, 14, 30),
     isArchived: true,
-    isRead: true,
+    isRead: false,
   );
 
   testWidgets('ChatCard displays correct user information',
@@ -69,15 +70,35 @@ void main() {
     // Verify ListTile exists
     expect(find.byType(ListTile), findsOneWidget);
 
-    // Verify text styles
+    // Verify leading CircleAvatar exists
+    expect(find.byType(CircleAvatar), findsOneWidget);
+
+    // Verify red dot exists for unread messages
+    final redDotFinder = find.byWidgetPredicate(
+      (widget) =>
+          widget is Container &&
+          widget.decoration is BoxDecoration &&
+          (widget.decoration as BoxDecoration).color == Colors.red &&
+          (widget.decoration as BoxDecoration).shape == BoxShape.circle,
+    );
+    expect(redDotFinder, findsOneWidget);
+
+    // Verify title text styles
     final titleFinder = find.text('Username');
     final Text titleWidget = tester.widget(titleFinder);
-    expect(titleWidget.style?.fontWeight, FontWeight.bold);
-    expect(titleWidget.style?.fontSize, 16);
+    expect(titleWidget.style?.fontWeight, AppTextStyles.bodyLarge.fontWeight);
+    expect(titleWidget.style?.fontSize, AppTextStyles.bodyLarge.fontSize);
 
+    // Verify subtitle text styles
     final subtitleFinder = find.text('This is a test mock message');
     final Text subtitleWidget = tester.widget(subtitleFinder);
-    expect(subtitleWidget.style?.color, Colors.grey);
-    expect(subtitleWidget.style?.fontSize, 14);
+    expect(subtitleWidget.style?.color, AppTextStyles.bodyMedium.color);
+    expect(subtitleWidget.style?.fontSize, AppTextStyles.bodyMedium.fontSize);
+
+    // Verify trailing time format
+    final trailingFinder = find.text('14:30');
+    expect(trailingFinder, findsOneWidget);
+    final Text trailingWidget = tester.widget(trailingFinder);
+    expect(trailingWidget.style?.fontSize, AppTextStyles.bodySmall.fontSize);
   });
 }
