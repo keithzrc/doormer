@@ -1,10 +1,10 @@
-import '../repositories/chat_repository.dart';
+import '../repositories/contact_repository.dart';
 import '../entities/contact_entity.dart';
 
 /// Use case for toggle a chat.
 /// This class toggles the isArchived status of chat and updates with the ChatRepository
 class ToggleChatArchivedStatus {
-  final ChatRepository repository;
+  final ContactRepository repository;
 
   ToggleChatArchivedStatus(this.repository);
 
@@ -23,7 +23,7 @@ class ToggleChatArchivedStatus {
 /// identified by its chatId.
 // TODO: Move to centralized/ active chat usecase file
 class DeleteChat {
-  final ChatRepository repository;
+  final ContactRepository repository;
 
   DeleteChat(this.repository);
 
@@ -35,7 +35,7 @@ class DeleteChat {
 /// Use case for retrieving the list of archived chats.
 /// This class interacts with the ChatRepository to fetch all archived chats.
 class GetArchivedChatList {
-  final ChatRepository repository;
+  final ContactRepository repository;
 
   GetArchivedChatList(this.repository);
 
@@ -48,7 +48,7 @@ class GetArchivedChatList {
 /// This class interacts with the ChatRepository to fetch all Active chats
 // TODO: Move to centralized/ active chat usecase file
 class GetActiveChatList {
-  final ChatRepository repository;
+  final ContactRepository repository;
 
   GetActiveChatList(this.repository);
 

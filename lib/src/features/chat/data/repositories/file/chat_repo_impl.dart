@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:logger/logger.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
-import 'package:doormer/src/features/chat/domain/repositories/chat_repository.dart';
+import 'package:doormer/src/features/chat/domain/repositories/contact_repository.dart';
 import 'package:doormer/src/features/chat/data/models/contact_model.dart';
 
 const fileDBPath =
     'lib/src/features/chat/data/repositories/file/dummydata.json';
 
-class ChatRepositoryImpl implements ChatRepository {
+class ChatRepositoryImpl implements ContactRepository {
   List<ContactModel> _chats = [];
   final Logger _logger = Logger();
   ChatRepositoryImpl() {

@@ -8,7 +8,7 @@ import 'dart:async' as _i3;
 
 import 'package:doormer/src/features/chat/domain/entities/chat_entity.dart'
     as _i4;
-import 'package:doormer/src/features/chat/domain/repositories/chat_repository.dart'
+import 'package:doormer/src/features/chat/domain/repositories/contact_repository.dart'
     as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
@@ -28,7 +28,7 @@ import 'package:mockito/mockito.dart' as _i1;
 /// A class which mocks [ChatRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockChatRepository extends _i1.Mock implements _i2.ChatRepository {
+class MockChatRepository extends _i1.Mock implements _i2.ContactRepository {
   MockChatRepository() {
     _i1.throwOnMissingStub(this);
   }
