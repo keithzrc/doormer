@@ -44,7 +44,6 @@ class GetSortedArchivedChatList {
     chats.sort((a, b) =>
         b.lastMessageCreatedTime!.compareTo(a.lastMessageCreatedTime!));
     return chats;
-    //改class名字
   }
 }
 
@@ -57,6 +56,9 @@ class GetSortedActiveChatList {
   GetSortedActiveChatList(this.repository);
 
   Future<List<Contact>> call() async {
-    return await repository.getActiveChatList();
+    final chats = await repository.getActiveChatList();
+    chats.sort((a, b) =>
+        b.lastMessageCreatedTime!.compareTo(a.lastMessageCreatedTime!));
+    return chats;
   }
 }
