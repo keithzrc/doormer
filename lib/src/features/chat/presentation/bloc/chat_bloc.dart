@@ -5,6 +5,7 @@ import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.
 import 'chat_event.dart';
 import 'chat_state.dart';
 
+// TODO: split archive and centralized.
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetSortedActiveChatList getChatListUseCase;
   final GetSortedArchivedChatList getArchivedChatListUseCase;
@@ -44,6 +45,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       }
     });
 
+    // TODO: use routes
     on<ToggleChatEvent>((event, emit) async {
       try {
         if (state is ChatLoadedState) {

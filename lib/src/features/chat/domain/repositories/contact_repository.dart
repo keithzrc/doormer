@@ -6,6 +6,8 @@ import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 /// fetching archived chats. Implementations of this class should handle the
 /// actual data access logic, such as interacting with a database, API, or
 /// other data sources.
+///
+// TODO: Move description from repo_impl to here
 abstract class ContactRepository {
   Future<List<Contact>> getActiveChatList();
   Future<List<Contact>> getArchivedChatList();

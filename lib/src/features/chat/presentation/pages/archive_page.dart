@@ -38,6 +38,7 @@ class ArchivePage extends StatelessWidget {
                     : 250, // Minimum 250px
                 child: BlocBuilder<ChatBloc, archive_state.ChatState>(
                   builder: (context, state) {
+                    //TODO: switch()
                     if (state is archive_state.ChatLoadingState ||
                         state is archive_state.ArchivedChatLoadingState) {
                       return const Center(

@@ -6,6 +6,8 @@
 /// - [lastMessage]: The last message sent or received in the chat.
 /// - [createdTime]: The timestamp of when the chat was created (optional).
 /// - [isArchived]: Indicates whether the chat is archived.
+
+// TODO: User inside of Contact?
 class Contact {
   final String id; // Uuid as String
   final String userName;

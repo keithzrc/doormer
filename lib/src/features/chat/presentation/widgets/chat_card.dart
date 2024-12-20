@@ -39,6 +39,7 @@ class ChatCard extends StatelessWidget {
                   : null,
             ),
             // Add red dot to users with unread messages
+            // TODO: take it out, reusable
             if (chat.isRead == false)
               Positioned(
                 right: 0,
@@ -47,7 +48,7 @@ class ChatCard extends StatelessWidget {
                   width: 12,
                   height: 12,
                   decoration: const BoxDecoration(
-                    color: Colors.red,
+                    color: Colors.red, //TODO: AppColors
                     shape: BoxShape.circle,
                   ),
                 ),

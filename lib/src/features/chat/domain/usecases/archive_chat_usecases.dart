@@ -50,6 +50,7 @@ class GetSortedArchivedChatList {
 /// Use case for retrieving the list of Active chats.
 /// This class interacts with the ChatRepository to fetch all Active chats
 // TODO: Move to centralized/ active chat usecase file
+// TODO: Maybe move sorting to presentation UI pages
 class GetSortedActiveChatList {
   final ContactRepository repository;
 

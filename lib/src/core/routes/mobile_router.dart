@@ -19,7 +19,7 @@ MobileRouter defines the routing structure and logic specifically for the mobile
 
 class MobileRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/main/home', // Initial Page
+    initialLocation: '/auth', // Initial Page
     routes: [
       // Auth Routes
       GoRoute(

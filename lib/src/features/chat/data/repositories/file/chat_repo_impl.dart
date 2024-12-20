@@ -6,6 +6,7 @@ import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/features/chat/domain/repositories/contact_repository.dart';
 import 'package:doormer/src/features/chat/data/models/contact_model.dart';
 
+// TODO: move to datasource, no reinitialize data loading
 const fileDBPath =
     'lib/src/features/chat/data/repositories/file/dummydata.json';
 
@@ -49,7 +50,7 @@ class ChatRepositoryImpl implements ContactRepository {
   /// - A `Future` that resolves to a list of unarchived `Contact` entities.
   @override
   Future<List<Contact>> getActiveChatList() async {
-    await _ensureDataLoaded();
+    await _ensureDataLoaded(); //TODO: duplicated
 
     // Filter unarchived chats and convert them to domain entities.
     return _chats
