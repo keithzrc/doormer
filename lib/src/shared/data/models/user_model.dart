@@ -47,15 +47,12 @@ class UserModel {
 }
 
 class UserInfo extends User {
-  final String id;
-  final String name;
-  final String email;
 
   UserInfo({
-    required this.id,
-    required this.name,
-    required this.email,
-  }) : super(id: id, email: email, name: name);
+    required super.id,
+    required super.email,
+    required String super.name,
+  });
 
   // Parse UserInfo from JSON
   factory UserInfo.fromJson(Map<String, dynamic> json) {

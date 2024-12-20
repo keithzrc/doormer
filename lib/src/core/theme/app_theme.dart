@@ -15,7 +15,7 @@ class AppTheme {
         error: AppColors.error,
         onError: AppColors.onError,
       ),
-      textTheme: TextTheme(
+      textTheme: const TextTheme(
         displayLarge: AppTextStyles.displayLarge,
         displayMedium: AppTextStyles.displayMedium,
         titleLarge: AppTextStyles.titleLarge,
