@@ -4,14 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/core/theme/app_text_styles.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_event.dart'
-    as chat_event; // Prefix for events
+    as archive_event; // Prefix for events
 import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart'
-    as chat_state; // Prefix for states
+    as archive_state; // Prefix for states
 import 'package:doormer/src/features/chat/presentation/widgets/chat_card.dart';
-import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart';
 
-class ChatPage extends StatelessWidget {
-  const ChatPage({super.key});
+class ArchivePage extends StatelessWidget {
+  const ArchivePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,25 +18,17 @@ class ChatPage extends StatelessWidget {
 
     return BlocProvider(
       create: (_) => serviceLocator<ChatBloc>()
-        ..add(chat_event.LoadChatsEvent()), // Provide the event to load chats
+        ..add(archive_event.LoadArchivedChatsEvent()), // Load archived chats
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            'Chat',
-            style: AppTextStyles.displayMedium, // Updated style
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.archive),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ArchivePage()),
-              );
-            },
+            'Archive',
+            style: AppTextStyles.displayMedium,
           ),
         ),
         body: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1600),
+          constraints:
+              const BoxConstraints(maxWidth: 1600), // Constrain maximum width
           child: Row(
             children: [
               // Left-side chat list with a fixed minimum width of 250px
@@ -45,15 +36,16 @@ class ChatPage extends StatelessWidget {
                 width: screenWidth > 1000
                     ? screenWidth * 0.25
                     : 250, // Minimum 250px
-                child: BlocBuilder<ChatBloc, chat_state.ChatState>(
+                child: BlocBuilder<ChatBloc, archive_state.ChatState>(
                   builder: (context, state) {
-                    if (state is chat_state.ChatLoadingState) {
+                    //TODO: switch()
+                    if (state is archive_state.ChatLoadingState ||
+                        state is archive_state.ArchivedChatLoadingState) {
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
                     }
-
-                    if (state is chat_state.ChatErrorState) {
+                    if (state is archive_state.ChatErrorState) {
                       return Center(
                         child: Text(
                           'Error: ${state.error}',
@@ -62,15 +54,13 @@ class ChatPage extends StatelessWidget {
                       );
                     }
 
-                    if (state is chat_state.ChatLoadedState) {
-                      final chats = state.chats
-                          .where((chat) => !chat.isArchived)
-                          .toList();
+                    if (state is archive_state.ArchivedChatLoadedState) {
+                      final archivedChats = state.archivedChats;
 
-                      if (chats.isEmpty) {
+                      if (archivedChats.isEmpty) {
                         return const Center(
                           child: Text(
-                            'No chats found.',
+                            'No archived chats found.',
                             style: AppTextStyles.bodyMedium, // Updated style
                           ),
                         );
@@ -80,9 +70,9 @@ class ChatPage extends StatelessWidget {
                         padding:
                             const EdgeInsets.all(16.0), // Consistent padding
                         child: ListView.builder(
-                          itemCount: chats.length,
+                          itemCount: archivedChats.length,
                           itemBuilder: (context, index) {
-                            final chat = chats[index];
+                            final chat = archivedChats[index];
                             return ChatCard(chat: chat);
                           },
                         ),

@@ -1,12 +1,11 @@
-// lib/src/core/di/service_locator.dart
-
 import 'package:dio/dio.dart';
 import 'package:doormer/src/core/network/dio_client.dart';
 import 'package:doormer/src/core/services/sessions/session_service.dart';
 import 'package:doormer/src/core/utils/token_storage.dart';
+import 'package:doormer/src/features/chat/di/chat_module.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
-import '../../features/auth/di/auth_module.dart';
+import 'package:doormer/src/features/auth/di/auth_module.dart';
 
 final serviceLocator = GetIt.instance;
 
@@ -34,5 +33,5 @@ Future<void> initDependencies() async {
   // Initialize feature-specific modules
   initAuthModule(); // Initializes dependencies for the auth feature
 
-  // Initialize other feature dependencies here as needed
+  initChatModule(); // Initialize Chat feature dependencies
 }

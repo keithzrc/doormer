@@ -19,12 +19,12 @@ MobileRouter defines the routing structure and logic specifically for the mobile
 
 class MobileRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/main/home', // Initial Page
+    initialLocation: '/auth', // Initial Page
     routes: [
       // Auth Routes
       GoRoute(
         path: '/auth',
-        builder: (context, state) => AuthPage(),
+        builder: (context, state) => const AuthPage(),
         routes: [
           GoRoute(
             path: 'login',
@@ -32,7 +32,7 @@ class MobileRouter {
           ),
           GoRoute(
             path: 'signup',
-            builder: (context, state) => SignupPage(),
+            builder: (context, state) => const SignupPage(),
           ),
           GoRoute(
             path: 'confirm-email',
