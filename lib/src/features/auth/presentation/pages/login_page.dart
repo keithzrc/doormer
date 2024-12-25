@@ -10,10 +10,12 @@ class LoginPage extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  LoginPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
+      appBar: AppBar(title: const Text('Login')),
       body: BlocProvider(
         create: (_) =>
             serviceLocator<AuthBloc>(), // Get AuthBloc from service locator
@@ -37,17 +39,17 @@ class LoginPage extends StatelessWidget {
                 children: [
                   TextField(
                     controller: _emailController,
-                    decoration: InputDecoration(labelText: 'Email'),
+                    decoration: const InputDecoration(labelText: 'Email'),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   TextField(
                     controller: _passwordController,
-                    decoration: InputDecoration(labelText: 'Password'),
+                    decoration: const InputDecoration(labelText: 'Password'),
                     obscureText: true,
                   ),
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
                   state is LoginLoading
-                      ? CircularProgressIndicator()
+                      ? const CircularProgressIndicator()
                       : ElevatedButton(
                           onPressed: () {
                             // Trigger login event
@@ -57,7 +59,7 @@ class LoginPage extends StatelessWidget {
                                   LoginRequested(email, password),
                                 );
                           },
-                          child: Text('Login'),
+                          child: const Text('Login'),
                         ),
                 ],
               ),

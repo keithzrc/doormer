@@ -21,7 +21,7 @@ class WebRouter {
       // Auth Routes
       GoRoute(
         path: '/auth',
-        builder: (context, state) => AuthPage(),
+        builder: (context, state) => const AuthPage(),
         routes: [
           GoRoute(
             path: 'login',
@@ -29,7 +29,7 @@ class WebRouter {
           ),
           GoRoute(
             path: 'signup',
-            builder: (context, state) => SignupPage(),
+            builder: (context, state) => const SignupPage(),
           ),
           GoRoute(
             path: 'confirm-email',

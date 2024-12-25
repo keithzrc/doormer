@@ -1,16 +1,14 @@
-import 'package:doormer/src/core/routes/web_router.dart';
 import 'package:doormer/src/features/auth/di/auth_module.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
-import '../bloc/auth_state.dart';
 
 class AuthPage extends StatelessWidget {
+  const AuthPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -21,7 +19,7 @@ class AuthPage extends StatelessWidget {
 }
 
 class _AuthPage extends StatelessWidget {
-  const _AuthPage({super.key});
+  const _AuthPage();
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +68,7 @@ class _AuthPage extends StatelessWidget {
                           padding: EdgeInsets.only(
                               left:
                                   12.w), // Add padding to the left of the icon
-                          child: Icon(Icons.mail_outline, color: Colors.white),
+                          child: const Icon(Icons.mail_outline, color: Colors.white),
                         ),
                       ),
                       Center(
