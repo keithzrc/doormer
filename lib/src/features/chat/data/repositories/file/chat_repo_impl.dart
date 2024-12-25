@@ -1,78 +1,65 @@
-import 'dart:convert';
+import 'dart:async';
+
 import 'package:doormer/src/core/utils/app_logger.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:logger/logger.dart';
+import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/features/chat/domain/repositories/contact_repository.dart';
 import 'package:doormer/src/features/chat/data/models/contact_model.dart';
 
-// TODO: move to datasource, no reinitialize data loading
-const fileDBPath =
-    'lib/src/features/chat/data/repositories/file/dummydata.json';
-
+/// Implementation of the [ContactRepository] interface.
 class ChatRepositoryImpl implements ContactRepository {
-  List<ContactModel> _chats = [];
-  ChatRepositoryImpl() {
-    _loadDummyData().then((_) {
-      AppLogger.info('Data initialization completed');
+  final LocalDataSource localDataSource;
+  final List<ContactModel> _chats = [];
+  final Completer<void> _dataLoaded = Completer<void>();
+
+  ChatRepositoryImpl({required this.localDataSource}) {
+    _initializeData();
+  }
+
+  /// Initializes data and completes the `_dataLoaded` completer when done.
+  void _initializeData() {
+    AppLogger.info('Initializing data in ChatRepositoryImpl.');
+    localDataSource.loadDummyData().then((data) {
+      _chats.addAll(data);
+      AppLogger.info('Data initialized in ChatRepositoryImpl');
+      _dataLoaded.complete(); // Signal that data is ready
     }).catchError((error) {
-      AppLogger.error('Data initialization failed');
+      AppLogger.error(
+          'Data initialization failed in ChatRepositoryImpl', error);
+      _dataLoaded.completeError(error); // Signal failure
     });
   }
 
-  Future<void> _loadDummyData() async {
-    try {
-      final String response = await rootBundle.loadString(fileDBPath);
-      final List<dynamic> jsonData = json.decode(response);
-      if (jsonData.isEmpty) {
-        AppLogger.error('empty json');
-      }
-      _chats = jsonData.map((data) => ContactModel.fromJson(data)).toList();
-      AppLogger.info('Dummy data loaded successfully.');
-    } catch (e) {
-      AppLogger.error('Error loading dummy data', e);
-      rethrow;
-    }
-  }
-
-  Future<void> _ensureDataLoaded() async {
-    if (_chats.isEmpty) {
-      await _loadDummyData();
-    }
-  }
+  /// Ensures data is loaded before initialization is completed.
+  Future<void> _ensureDataLoaded() => _dataLoaded.future;
 
   @override
   Future<List<Contact>> getActiveChatList() async {
-    await _ensureDataLoaded(); //TODO: duplicated
-
-    // Filter unarchived chats and convert them to domain entities.
-    return _chats
+    await _ensureDataLoaded();
+    final activeChats = _chats
         .where((chat) => !chat.isArchived)
         .map((chat) => chat.toEntity())
         .toList();
+    AppLogger.info('Active chat list: $activeChats');
+    return activeChats;
   }
 
   @override
   Future<List<Contact>> getArchivedChatList() async {
     await _ensureDataLoaded();
-
-    // Filter archived chats and convert them to domain entities.
-    return _chats
+    final archivedChats = _chats
         .where((chat) => chat.isArchived)
         .map((chat) => chat.toEntity())
         .toList();
+    AppLogger.info('Archived chat list: $archivedChats');
+    return archivedChats;
   }
 
   final int indexNotFound = -1;
 
   @override
   Future<void> updateChat(Contact updatedContact) async {
-    await _ensureDataLoaded();
-
-    // Convert the domain entity `Contact` to the data model `ContactModel`.
     final updatedContactModel = ContactModel.fromEntity(updatedContact);
-
-    // Find the index of the existing chat and update it.
     final index =
         _chats.indexWhere((chat) => chat.id == updatedContactModel.id);
     if (index != indexNotFound) {
@@ -85,10 +72,7 @@ class ChatRepositoryImpl implements ContactRepository {
 
   @override
   Future<void> deleteChat(String chatId) async {
-    await _ensureDataLoaded();
     final initialLength = _chats.length;
-
-    // Remove the chat with the specified ID.
     _chats.removeWhere((chat) => chat.id.toString() == chatId);
 
     if (_chats.length == initialLength) {
