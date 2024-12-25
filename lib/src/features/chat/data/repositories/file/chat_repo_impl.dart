@@ -41,13 +41,6 @@ class ChatRepositoryImpl implements ContactRepository {
     }
   }
 
-  /// Retrieves a list of unarchived chats as domain entities (`Contact`).
-  ///
-  /// Converts the internal `ContactModel` instances to `Contact` entities
-  /// before returning.
-  ///
-  /// Returns:
-  /// - A `Future` that resolves to a list of unarchived `Contact` entities.
   @override
   Future<List<Contact>> getActiveChatList() async {
     await _ensureDataLoaded(); //TODO: duplicated
@@ -59,13 +52,6 @@ class ChatRepositoryImpl implements ContactRepository {
         .toList();
   }
 
-  /// Retrieves a list of archived chats as domain entities (`Contact`).
-  ///
-  /// Converts the internal `ContactModel` instances to `Contact` entities
-  /// before returning.
-  ///
-  /// Returns:
-  /// - A `Future` that resolves to a list of archived `Contact` entities.
   @override
   Future<List<Contact>> getArchivedChatList() async {
     await _ensureDataLoaded();
@@ -79,13 +65,6 @@ class ChatRepositoryImpl implements ContactRepository {
 
   final int indexNotFound = -1;
 
-  /// Updates an existing chat with the data from the provided `Contact` entity.
-  ///
-  /// Converts the domain entity (`Contact`) to a data model (`ContactModel`)
-  /// and updates the corresponding chat in `_chats`.
-  ///
-  /// Parameters:
-  /// - [updatedContact]: The updated `Contact` entity.
   @override
   Future<void> updateChat(Contact updatedContact) async {
     await _ensureDataLoaded();
@@ -104,10 +83,6 @@ class ChatRepositoryImpl implements ContactRepository {
     }
   }
 
-  /// Deletes a chat by its ID.
-  ///
-  /// Parameters:
-  /// - [chatId]: The unique identifier of the chat to delete.
   @override
   Future<void> deleteChat(String chatId) async {
     await _ensureDataLoaded();

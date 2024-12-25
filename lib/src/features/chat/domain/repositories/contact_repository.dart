@@ -1,16 +1,37 @@
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 
-/// Abstract class that defines the contract for managing chat data.
-/// This repository provides methods to interact with chat-related data,
-/// including retrieving chat lists, updating chats, deleting chats, and
-/// fetching archived chats. Implementations of this class should handle the
-/// actual data access logic, such as interacting with a database, API, or
-/// other data sources.
+/// Defines the contract for the Chat repository.
 ///
-// TODO: Move description from repo_impl to here
+/// This interface provides methods to manage chats in the domain layer.
 abstract class ContactRepository {
+  /// Retrieves a list of unarchived chats as domain entities (`Contact`).
+  ///
+  /// Converts internal data models to `Contact` entities before returning.
+  ///
+  /// Returns:
+  /// - A `Future` that resolves to a list of unarchived `Contact` entities.
   Future<List<Contact>> getActiveChatList();
+
+  /// Retrieves a list of archived chats as domain entities (`Contact`).
+  ///
+  /// Converts internal data models to `Contact` entities before returning.
+  ///
+  /// Returns:
+  /// - A `Future` that resolves to a list of archived `Contact` entities.
   Future<List<Contact>> getArchivedChatList();
-  Future<void> updateChat(Contact contact);
+
+  /// Updates an existing chat with the data from the provided `Contact` entity.
+  ///
+  /// Converts the domain entity (`Contact`) to a data model and updates
+  /// the corresponding data source entry.
+  ///
+  /// Parameters:
+  /// - [updatedContact]: The updated `Contact` entity.
+  Future<void> updateChat(Contact updatedContact);
+
+  /// Deletes a chat by its ID.
+  ///
+  /// Parameters:
+  /// - [chatId]: The unique identifier of the chat to delete.
   Future<void> deleteChat(String chatId);
 }
