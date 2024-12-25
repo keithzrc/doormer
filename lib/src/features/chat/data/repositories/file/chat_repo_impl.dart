@@ -13,13 +13,14 @@ class ChatRepositoryImpl implements ContactRepository {
   final Completer<void> _dataLoaded = Completer<void>();
 
   ChatRepositoryImpl({required this.localDataSource}) {
+    // Constructor cannot await, not a problem when using API
     _initializeData();
   }
 
   /// Initializes data and completes the `_dataLoaded` completer when done.
-  void _initializeData() {
+  void _initializeData() async {
     AppLogger.info('Initializing data in ChatRepositoryImpl.');
-    localDataSource.loadDummyData().then((data) {
+    await localDataSource.loadDummyData().then((data) {
       _chats.addAll(data);
       AppLogger.info('Data initialized in ChatRepositoryImpl');
       _dataLoaded.complete(); // Signal that data is ready

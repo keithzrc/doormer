@@ -7,20 +7,18 @@ import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 
 void initChatModule() {
   // Register LocalDataSource
-  serviceLocator.registerLazySingleton<LocalDataSource>(
-    () => LocalDataSource(),
-  );
+  serviceLocator.registerSingleton<LocalDataSource>(LocalDataSource());
 
   // Register ChatRepository
-  serviceLocator.registerLazySingleton<ContactRepository>(
-    () => ChatRepositoryImpl(
+  serviceLocator.registerSingleton<ContactRepository>(
+    ChatRepositoryImpl(
       localDataSource: serviceLocator<LocalDataSource>(),
     ),
   );
 
   // Register use cases
-  serviceLocator.registerLazySingleton<GetSortedActiveChatList>(
-    () => GetSortedActiveChatList(serviceLocator<ContactRepository>()),
+  serviceLocator.registerSingleton<GetSortedActiveChatList>(
+    GetSortedActiveChatList(serviceLocator<ContactRepository>()),
   );
 
   serviceLocator.registerLazySingleton<GetSortedArchivedChatList>(
