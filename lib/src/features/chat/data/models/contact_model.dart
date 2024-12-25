@@ -88,7 +88,7 @@ class ContactModel {
       userName: contact.userName,
       avatarUrl: contact.avatarUrl,
       lastMessage: contact.lastMessage,
-      lastMessageCreatedTime: contact.lastMessageCreatedTime ?? DateTime.now(),
+      lastMessageCreatedTime: contact.lastMessageCreatedTime,
       isArchived: contact.isArchived,
       isRead: contact.isRead,
     );

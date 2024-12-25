@@ -29,7 +29,7 @@ mixin _$Contact {
   String get lastMessage => throw _privateConstructorUsedError;
 
   /// The timestamp of when the last message was created.
-  DateTime? get lastMessageCreatedTime => throw _privateConstructorUsedError;
+  DateTime get lastMessageCreatedTime => throw _privateConstructorUsedError;
 
   /// Indicates whether the contact's chat is archived.
   bool get isArchived => throw _privateConstructorUsedError;
@@ -53,7 +53,7 @@ abstract class $ContactCopyWith<$Res> {
       String userName,
       String avatarUrl,
       String lastMessage,
-      DateTime? lastMessageCreatedTime,
+      DateTime lastMessageCreatedTime,
       bool isArchived,
       bool isRead});
 }
@@ -77,7 +77,7 @@ class _$ContactCopyWithImpl<$Res, $Val extends Contact>
     Object? userName = null,
     Object? avatarUrl = null,
     Object? lastMessage = null,
-    Object? lastMessageCreatedTime = freezed,
+    Object? lastMessageCreatedTime = null,
     Object? isArchived = null,
     Object? isRead = null,
   }) {
@@ -98,10 +98,10 @@ class _$ContactCopyWithImpl<$Res, $Val extends Contact>
           ? _value.lastMessage
           : lastMessage // ignore: cast_nullable_to_non_nullable
               as String,
-      lastMessageCreatedTime: freezed == lastMessageCreatedTime
+      lastMessageCreatedTime: null == lastMessageCreatedTime
           ? _value.lastMessageCreatedTime
           : lastMessageCreatedTime // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
+              as DateTime,
       isArchived: null == isArchived
           ? _value.isArchived
           : isArchived // ignore: cast_nullable_to_non_nullable
@@ -126,7 +126,7 @@ abstract class _$$ContactImplCopyWith<$Res> implements $ContactCopyWith<$Res> {
       String userName,
       String avatarUrl,
       String lastMessage,
-      DateTime? lastMessageCreatedTime,
+      DateTime lastMessageCreatedTime,
       bool isArchived,
       bool isRead});
 }
@@ -148,7 +148,7 @@ class __$$ContactImplCopyWithImpl<$Res>
     Object? userName = null,
     Object? avatarUrl = null,
     Object? lastMessage = null,
-    Object? lastMessageCreatedTime = freezed,
+    Object? lastMessageCreatedTime = null,
     Object? isArchived = null,
     Object? isRead = null,
   }) {
@@ -169,10 +169,10 @@ class __$$ContactImplCopyWithImpl<$Res>
           ? _value.lastMessage
           : lastMessage // ignore: cast_nullable_to_non_nullable
               as String,
-      lastMessageCreatedTime: freezed == lastMessageCreatedTime
+      lastMessageCreatedTime: null == lastMessageCreatedTime
           ? _value.lastMessageCreatedTime
           : lastMessageCreatedTime // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
+              as DateTime,
       isArchived: null == isArchived
           ? _value.isArchived
           : isArchived // ignore: cast_nullable_to_non_nullable
@@ -193,7 +193,7 @@ class _$ContactImpl implements _Contact {
       required this.userName,
       required this.avatarUrl,
       required this.lastMessage,
-      this.lastMessageCreatedTime,
+      required this.lastMessageCreatedTime,
       required this.isArchived,
       required this.isRead});
 
@@ -215,7 +215,7 @@ class _$ContactImpl implements _Contact {
 
   /// The timestamp of when the last message was created.
   @override
-  final DateTime? lastMessageCreatedTime;
+  final DateTime lastMessageCreatedTime;
 
   /// Indicates whether the contact's chat is archived.
   @override
@@ -268,7 +268,7 @@ abstract class _Contact implements Contact {
       required final String userName,
       required final String avatarUrl,
       required final String lastMessage,
-      final DateTime? lastMessageCreatedTime,
+      required final DateTime lastMessageCreatedTime,
       required final bool isArchived,
       required final bool isRead}) = _$ContactImpl;
 
@@ -290,7 +290,7 @@ abstract class _Contact implements Contact {
 
   /// The timestamp of when the last message was created.
   @override
-  DateTime? get lastMessageCreatedTime;
+  DateTime get lastMessageCreatedTime;
 
   /// Indicates whether the contact's chat is archived.
   @override

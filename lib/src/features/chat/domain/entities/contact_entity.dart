@@ -22,7 +22,7 @@ class Contact with _$Contact {
     required String lastMessage,
 
     /// The timestamp of when the last message was created.
-    DateTime? lastMessageCreatedTime,
+    required DateTime lastMessageCreatedTime,
 
     /// Indicates whether the contact's chat is archived.
     required bool isArchived,
