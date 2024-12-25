@@ -1,13 +1,21 @@
 import 'package:doormer/src/core/di/service_locator.dart';
+import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart';
 import 'package:doormer/src/features/chat/data/repositories/file/chat_repo_impl.dart';
 import 'package:doormer/src/features/chat/domain/repositories/contact_repository.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 
 void initChatModule() {
+  // Register LocalDataSource
+  serviceLocator.registerLazySingleton<LocalDataSource>(
+    () => LocalDataSource(),
+  );
+
   // Register ChatRepository
   serviceLocator.registerLazySingleton<ContactRepository>(
-    () => ChatRepositoryImpl(),
+    () => ChatRepositoryImpl(
+      localDataSource: serviceLocator<LocalDataSource>(),
+    ),
   );
 
   // Register use cases
