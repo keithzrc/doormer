@@ -1,4 +1,3 @@
-import 'package:doormer/src/features/chat/utils/time.dart';
 import 'package:flutter/material.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/core/theme/app_text_styles.dart';
@@ -65,12 +64,10 @@ class ChatCard extends StatelessWidget {
           style: AppTextStyles.bodyMedium,
           overflow: TextOverflow.ellipsis,
         ),
-        trailing: chat.lastMessageCreatedTime != null
-            ? Text(
-                formatTime(chat.lastMessageCreatedTime!),
-                style: AppTextStyles.bodySmall,
-              )
-            : null,
+        trailing: Text(
+          chat.lastMessageCreatedTime.toIso8601String(),
+          style: AppTextStyles.bodySmall,
+        ),
         onTap: onTap,
       ),
     );

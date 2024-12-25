@@ -41,8 +41,8 @@ class GetSortedArchivedChatList {
 
   Future<List<Contact>> call() async {
     final chats = await repository.getArchivedChatList();
-    chats.sort((a, b) =>
-        b.lastMessageCreatedTime!.compareTo(a.lastMessageCreatedTime!));
+    chats.sort(
+        (a, b) => b.lastMessageCreatedTime.compareTo(a.lastMessageCreatedTime));
     return chats;
   }
 }
@@ -58,8 +58,8 @@ class GetSortedActiveChatList {
 
   Future<List<Contact>> call() async {
     final chats = await repository.getActiveChatList();
-    chats.sort((a, b) =>
-        b.lastMessageCreatedTime!.compareTo(a.lastMessageCreatedTime!));
+    chats.sort(
+        (a, b) => b.lastMessageCreatedTime.compareTo(a.lastMessageCreatedTime));
     return chats;
   }
 }
