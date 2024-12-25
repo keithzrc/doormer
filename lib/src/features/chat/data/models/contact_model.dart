@@ -1,80 +1,94 @@
+import 'package:doormer/src/core/utils/uuid_converter.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 
+part 'contact_model.g.dart';
+
+/// Data model representing a contact in the data layer.
+///
+/// This class is used for:
+/// - Handling JSON serialization and deserialization.
+/// - Mapping raw data to/from the domain entity [Contact].
+@JsonSerializable()
 class ContactModel {
-  final String id; // UUID as a string
+  /// Unique identifier for the contact, represented as a UUID.
+  @UuidValueConverter()
+  final UuidValue id;
+
+  /// Name of the user associated with the contact.
   final String userName;
+
+  /// URL of the user's avatar image.
   final String avatarUrl;
+
+  /// The last message sent or received in the chat associated with the contact.
   final String lastMessage;
-  final DateTime createdTime;
+
+  /// The timestamp of when the last message was created.
+  final DateTime lastMessageCreatedTime;
+
+  /// Indicates whether the contact's chat is archived.
   final bool isArchived;
+
+  /// Indicates whether the contact's chat has been read.
   final bool isRead;
 
+  /// Constructor for [ContactModel].
   ContactModel({
     required this.id,
     required this.userName,
     required this.avatarUrl,
     required this.lastMessage,
-    required this.createdTime,
+    required this.lastMessageCreatedTime,
     required this.isArchived,
     required this.isRead,
-  });
+  }) {
+    // Perform validations
+    _validateFields();
+  }
 
-  /// Factory constructor to create a [ContactModel] from JSON.
-  factory ContactModel.fromJson(Map<String, dynamic> json) {
-    if (!Uuid.isValidUUID(fromString: json['id'])) {
-      throw FormatException('Invalid UUID format: ${json['id']}');
+  /// Private method to validate fields.
+  void _validateFields() {
+    if (id.toString().isEmpty) {
+      throw ArgumentError('ID cannot be null or empty.');
     }
-
-    return ContactModel(
-      id: json['id'] as String,
-      userName: json['userName'] as String,
-      avatarUrl: json['avatarUrl'] as String,
-      lastMessage: json['lastMessage'] as String,
-      createdTime: DateTime.parse(json['createdTime'] as String),
-      isArchived: json['isArchived'] as bool,
-      isRead: json['isRead'] as bool,
-    );
+    if (userName.trim().isEmpty) {
+      throw ArgumentError('User name cannot be empty.');
+    }
+    if (avatarUrl.trim().isEmpty) {
+      throw ArgumentError('Avatar URL cannot be empty.');
+    }
   }
 
-  /// Converts the [ContactModel] to JSON format.
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'userName': userName,
-      'avatarUrl': avatarUrl,
-      'lastMessage': lastMessage,
-      'createdTime': createdTime.toIso8601String(),
-      'isArchived': isArchived,
-      'isRead': isRead,
-    };
-  }
+  /// Creates a `ContactModel` instance from JSON.
+  factory ContactModel.fromJson(Map<String, dynamic> json) =>
+      _$ContactModelFromJson(json);
+
+  /// Converts a `ContactModel` instance to JSON.
+  Map<String, dynamic> toJson() => _$ContactModelToJson(this);
 
   /// Converts this model to a domain entity [Contact].
   Contact toEntity() {
-    if (!Uuid.isValidUUID(fromString: id)) {
-      throw FormatException('Invalid UUID format: $id');
-    }
-
     return Contact(
-      id: id, // Convert String to Uuid
+      id: id,
       userName: userName,
       avatarUrl: avatarUrl,
       lastMessage: lastMessage,
-      lastMessageCreatedTime: createdTime,
+      lastMessageCreatedTime: lastMessageCreatedTime,
       isArchived: isArchived,
       isRead: isRead,
     );
   }
 
-  /// Creates a [ContactModel] from a domain entity [Contact].
-  factory ContactModel.fromEntity(Contact contact) {
+  /// Constructs a `ContactModel` from a domain entity [Contact].
+  static ContactModel fromEntity(Contact contact) {
     return ContactModel(
       id: contact.id,
       userName: contact.userName,
       avatarUrl: contact.avatarUrl,
       lastMessage: contact.lastMessage,
-      createdTime: contact.lastMessageCreatedTime ?? DateTime.now(),
+      lastMessageCreatedTime: contact.lastMessageCreatedTime ?? DateTime.now(),
       isArchived: contact.isArchived,
       isRead: contact.isRead,
     );
