@@ -4,6 +4,10 @@ import 'package:doormer/src/features/chat/data/repositories/file/chat_repo_impl.
 import 'package:doormer/src/features/chat/domain/repositories/contact_repository.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:doormer/src/features/chatbox/domain/repositories/chatbox_repository.dart';
+import 'package:doormer/src/features/chatbox/data/repositories/chatbox_repository_impl.dart';
+import 'package:doormer/src/features/chatbox/domain/usecase/chatbox_usecase.dart';
+
 
 void initChatModule() {
   // Register LocalDataSource
