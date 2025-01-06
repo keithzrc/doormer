@@ -1,0 +1,60 @@
+name: Flutter CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run Flutter Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: 'stable'
+
+    - name: Install Dependencies
+      run: flutter pub get
+
+    - name: Run Tests
+      run: flutter test
+
+  build:
+    name: Build Flutter App
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: 'stable'
+
+    - name: Install Dependencies
+      run: flutter pub get
+
+    - name: Build APK (Android)
+      run: flutter build apk --release
+
+    - name: Build IPA (iOS)
+      if: runner.os == 'macOS'
+      run: flutter build ipa --release
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: flutter-build
+        path: |
+          build/app/outputs/flutter-apk/*.apk
+          build/ios/ipa/*.ipa
