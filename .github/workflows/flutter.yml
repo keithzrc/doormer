@@ -45,18 +45,12 @@ jobs:
 
     - name: Install Dependencies
       run: flutter pub get
+    - name: Build Web
+      run: flutter build web --release
 
-    - name: Build APK (Android)
-      run: flutter build apk --release
+    # - name: Build APK (Android)
+    #   run: flutter build apk --release
 
-    - name: Build IPA (iOS)
-      if: runner.os == 'macOS'
-      run: flutter build ipa --release
-
-    - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: flutter-build
-        path: |
-          build/app/outputs/flutter-apk/*.apk
-          build/ios/ipa/*.ipa
+    # - name: Build IPA (iOS)
+    #   if: runner.os == 'macOS'
+    #   run: flutter build ipa --release
