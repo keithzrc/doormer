@@ -1,4 +1,11 @@
-enum MessageType { text, image, file, voice, emoji }
+enum MessageType {
+  text,
+  image,
+  file,
+  voice,
+  emoji,
+  audio,
+}
 
 class Message {
   final String id;

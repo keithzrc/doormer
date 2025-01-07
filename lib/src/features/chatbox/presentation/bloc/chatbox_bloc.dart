@@ -19,7 +19,18 @@ class ChatboxBloc extends Bloc<ChatboxEvent, ChatboxState> {
     on<LoadMessages>(_onLoadMessages);
     on<SendMessageEvent>(_onSendMessage);
     on<SendFileEvent>(_onSendFile);
-    on<LoadContactInfo>(_onLoadContactInfo);
+    on<LoadContactInfo>((event, emit) async {
+      try {
+        print('Loading contact info for ID: ${event.contactId}');
+        final contactInfo = await getContactInfo(event.contactId);
+        print('Contact info loaded successfully: ${contactInfo.name}');
+        emit(ContactInfoLoaded(contactInfo));
+        print('Emitted ContactInfoLoaded state');
+      } catch (e) {
+        print('Error loading contact info: $e');
+        emit(ChatboxError(e.toString()));
+      }
+    });
   }
 
   void _onLoadMessages(LoadMessages event, Emitter<ChatboxState> emit) async {
@@ -55,13 +66,25 @@ class ChatboxBloc extends Bloc<ChatboxEvent, ChatboxState> {
     }
   }
 
-  void _onLoadContactInfo(
-      LoadContactInfo event, Emitter<ChatboxState> emit) async {
-    try {
-      final contactInfo = await getContactInfo(event.contactId);
-      emit(ContactInfoLoaded(contactInfo));
-    } catch (e) {
-      emit(ChatboxError(e.toString()));
-    }
+  void resetState() {
+    emit(ChatboxInitial());
+  }
+
+  @override
+  void onTransition(Transition<ChatboxEvent, ChatboxState> transition) {
+    super.onTransition(transition);
+    print('ChatboxBloc transition: $transition');
+  }
+
+  @override
+  void onChange(Change<ChatboxState> change) {
+    super.onChange(change);
+    print('ChatboxBloc state changed: ${change.currentState} -> ${change.nextState}');
+  }
+
+  @override
+  Future<void> close() async {
+    print('Closing ChatboxBloc');
+    await super.close();
   }
 }

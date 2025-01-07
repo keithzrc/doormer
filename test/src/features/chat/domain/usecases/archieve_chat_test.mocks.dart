@@ -24,7 +24,7 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-/// A class which mocks [ChatRepository].
+/// A class which mocks [ContactRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockContactRepository extends _i1.Mock implements _i2.ContactRepository {
@@ -51,10 +51,11 @@ class MockContactRepository extends _i1.Mock implements _i2.ContactRepository {
       ) as _i3.Future<List<_i4.Contact>>);
 
   @override
-  _i3.Future<void> updateChat(_i4.Contact? contact) => (super.noSuchMethod(
+  _i3.Future<void> updateChat(_i4.Contact? updatedContact) =>
+      (super.noSuchMethod(
         Invocation.method(
           #updateChat,
-          [contact],
+          [updatedContact],
         ),
         returnValue: _i3.Future<void>.value(),
         returnValueForMissingStub: _i3.Future<void>.value(),

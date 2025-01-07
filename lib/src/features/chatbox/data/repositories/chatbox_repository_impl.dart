@@ -1,48 +1,91 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart';
 import '../../domain/entities/message_entity.dart';
 import '../../domain/entities/contact_info_entity.dart';
 import '../../domain/repositories/chatbox_repository.dart';
 import '../models/message_model.dart';
 import '../models/contact_info_model.dart';
+import 'package:doormer/src/features/chat/data/models/contact_model.dart';
 
 class ChatboxRepositoryImpl implements ChatboxRepository {
-  Map<String, dynamic>? _dummyData;
+  final LocalDataSource _localDataSource;
   final _messageController = StreamController<List<Message>>.broadcast();
-  
-  Future<void> _loadDummyData() async {
-    if (_dummyData != null) return;
-    
+  List<ContactModel>? _contacts;
+
+  ChatboxRepositoryImpl({
+    required LocalDataSource localDataSource,
+  }) : _localDataSource = localDataSource;
+
+  Future<void> _loadContacts() async {
+    if (_contacts != null) return;
     try {
-      final jsonString = await rootBundle.loadString(
-        'lib/src/features/chat/data/repositories/file/dummydata.json'
-      );
-      _dummyData = {'chats': json.decode(jsonString)};
+      print('Loading contacts from LocalDataSource...');
+      _contacts = await _localDataSource.loadDummyData();
+      print('Contacts loaded: ${_contacts?.length} items');
     } catch (e) {
+      print('Error loading contacts: $e');
       throw Exception('Failed to load chat data: $e');
     }
   }
 
-  Map<String, dynamic>? _findChatById(String contactId) {
-    if (_dummyData == null) return null;
-    
-    final chats = _dummyData!['chats'] as List;
+  ContactModel? _findContactById(String contactId) {
+    if (_contacts == null) return null;
     try {
-      return chats.firstWhere(
-        (chat) => chat['id'] == contactId,
-        orElse: () => null,
-      ) as Map<String, dynamic>?;
+      print('Searching for contact with ID: $contactId');
+      print('Available contacts: ${_contacts!.map((c) => c.id.toString()).join(', ')}');
+      
+      final contact = _contacts!.firstWhere(
+        (contact) {
+          print('Comparing ${contact.id.toString()} with $contactId');
+          return contact.id.toString() == contactId;
+        },
+      );
+      
+      print('Found contact: ${contact.userName}');
+      return contact;
     } catch (e) {
+      print('Error finding contact: $e');
       return null;
     }
+  }
+
+  @override
+  Future<ContactInfo> getContactInfo(String contactId) async {
+    print('Getting contact info for ID: $contactId');
+    await _loadContacts();
+    final contact = _findContactById(contactId);
+    
+    if (contact != null) {
+      print('Creating ContactInfo for ${contact.userName}');
+      print('Contact ID type: ${contact.id.runtimeType}');
+      return ContactInfoModel(
+        id: contact.id.toString(),
+        name: contact.userName,
+        avatarUrl: contact.avatarUrl,
+        position: 'Chat User',
+        expectedSalary: 'Not Available',
+        status: _getContactStatus(contact),
+      );
+    }
+    print('Contact not found for ID: $contactId');
+    throw Exception('Contact not found');
+  }
+
+  String _getContactStatus(ContactModel contact) {
+    if (contact.isArchived) {
+      return 'Archived';
+    }
+    if (!contact.isRead) {
+      return 'Unread Messages';
+    }
+    return 'Active';
   }
 
   @override
   Stream<List<Message>> getMessages(String contactId) async* {
     await _loadDummyData();
     final chat = _findChatById(contactId);
-    
+
     if (chat != null) {
       final messages = <Message>[
         MessageModel(
@@ -53,7 +96,7 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
           type: MessageType.text,
         ),
       ];
-      
+
       yield messages;
       _messageController.add(messages);
     } else {
@@ -66,7 +109,7 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
     await _loadDummyData();
     // 模拟网络延迟
     await Future.delayed(const Duration(milliseconds: 500));
-    
+
     final chat = _findChatById(message.id);
     if (chat != null) {
       final messagesList = chat['messages'] as List;
@@ -77,15 +120,14 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
         'isFromMe': message.isFromMe,
         'type': message.type.toString().split('.').last,
         if (message.mediaUrl != null) 'mediaUrl': message.mediaUrl,
-        if (message.audioDuration != null) 
+        if (message.audioDuration != null)
           'audioDuration': message.audioDuration!.inMilliseconds,
       };
-      
+
       messagesList.add(newMessage);
-      
-      final updatedMessages = messagesList
-          .map((json) => MessageModel.fromJson(json))
-          .toList();
+
+      final updatedMessages =
+          messagesList.map((json) => MessageModel.fromJson(json)).toList();
       _messageController.add(updatedMessages);
     }
   }
@@ -94,7 +136,7 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
   Future<void> sendFile(String path, MessageType type) async {
     // 模拟文件上传
     await Future.delayed(const Duration(seconds: 1));
-    
+
     final message = MessageModel(
       id: DateTime.now().toString(),
       content: path.split('/').last,
@@ -103,26 +145,8 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
       type: type,
       mediaUrl: 'https://example.com/files/${path.split('/').last}',
     );
-    
-    await sendMessage(message);
-  }
 
-  @override
-  Future<ContactInfo> getContactInfo(String contactId) async {
-    await _loadDummyData();
-    final chat = _findChatById(contactId);
-    
-    if (chat != null) {
-      return ContactInfoModel(
-        id: chat['id'] as String,
-        name: chat['userName'] as String,
-        avatarUrl: chat['avatarUrl'] as String,
-        position: 'User',
-        expectedSalary: 'Not specified',
-        status: chat['isRead'] ? 'Read' : 'Unread',
-      );
-    }
-    throw Exception('Contact not found');
+    await sendMessage(message);
   }
 
   @override
@@ -142,4 +166,8 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
   void dispose() {
     _messageController.close();
   }
+
+  _findChatById(String contactId) {}
 }
+
+class _loadDummyData {}

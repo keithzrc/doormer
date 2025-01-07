@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart';
 import '../data/repositories/chatbox_repository_impl.dart';
 import '../domain/repositories/chatbox_repository.dart';
 import '../domain/usecase/chatbox_usecase.dart';
@@ -6,16 +7,23 @@ import '../domain/usecase/chatbox_usecase.dart';
 final sl = GetIt.instance;
 
 void initChatboxDependencies() {
+  // LocalDataSource (如果还没注册)
+  if (!sl.isRegistered<LocalDataSource>()) {
+    sl.registerSingleton<LocalDataSource>(LocalDataSource());
+  }
+
   // Repository
-  if (!GetIt.I.isRegistered<ChatboxRepository>()) {
-    GetIt.I.registerLazySingleton<ChatboxRepository>(
-      () => ChatboxRepositoryImpl(),
+  if (!sl.isRegistered<ChatboxRepository>()) {
+    sl.registerLazySingleton<ChatboxRepository>(
+      () => ChatboxRepositoryImpl(
+        localDataSource: sl<LocalDataSource>(),
+      ),
     );
 
     // Use cases
-    GetIt.I.registerLazySingleton(() => GetMessages(GetIt.I()));
-    GetIt.I.registerLazySingleton(() => SendMessage(GetIt.I()));
-    GetIt.I.registerLazySingleton(() => SendFile(GetIt.I()));
-    GetIt.I.registerLazySingleton(() => GetContactInfo(GetIt.I()));
+    sl.registerLazySingleton(() => GetMessages(sl()));
+    sl.registerLazySingleton(() => SendMessage(sl()));
+    sl.registerLazySingleton(() => SendFile(sl()));
+    sl.registerLazySingleton(() => GetContactInfo(sl()));
   }
 }

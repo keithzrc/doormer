@@ -21,7 +21,9 @@ void initChatModule() {
   );
   // Register ChatboxRepository
   serviceLocator.registerLazySingleton<ChatboxRepository>(
-    () => ChatboxRepositoryImpl(),
+    () => ChatboxRepositoryImpl(
+      localDataSource: serviceLocator<LocalDataSource>(),
+    ),
   );
 
   // Register Chatbox Use Cases

@@ -1,5 +1,4 @@
 import 'package:doormer/src/core/di/service_locator.dart';
-import 'package:doormer/src/core/routes/web_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/core/theme/app_text_styles.dart';
@@ -19,12 +18,18 @@ class ChatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    // Get the current route parameters
-    final String? selectedChatId = GoRouterState.of(context).pathParameters['id'];
+    final String? selectedChatId =
+        GoRouterState.of(context).pathParameters['id'];
+
+    print(
+        'Current route parameters: ${GoRouterState.of(context).pathParameters}');
+    print('Selected chat ID: $selectedChatId');
 
     return BlocProvider(
-      create: (_) => serviceLocator<ChatBloc>()
-        ..add(chat_event.LoadChatsEvent()), // Provide the event to load chats
+      create: (_) {
+        print('Creating ChatBloc...');
+        return serviceLocator<ChatBloc>()..add(chat_event.LoadChatsEvent());
+      },
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
@@ -72,6 +77,9 @@ class ChatPage extends StatelessWidget {
                           .where((chat) => !chat.isArchived)
                           .toList();
 
+                      print(
+                          'Available chat IDs: ${chats.map((c) => c.id).join(', ')}');
+
                       if (chats.isEmpty) {
                         return const Center(
                           child: Text(
@@ -89,7 +97,8 @@ class ChatPage extends StatelessWidget {
                             final chat = chats[index];
                             return InkWell(
                               onTap: () {
-                                context.go('/chat/${chat.id}');
+                                print('Navigating to chat: ${chat.id}');
+                                context.pushReplacement('/chat/${chat.id}');
                               },
                               child: ChatCard(chat: chat),
                             );
@@ -107,7 +116,13 @@ class ChatPage extends StatelessWidget {
               Flexible(
                 flex: 2,
                 child: selectedChatId != null
-                    ? ChatboxPage(contactId: selectedChatId)
+                    ? Builder(
+                        builder: (context) {
+                          print(
+                              'Creating ChatboxPage with ID: $selectedChatId');
+                          return ChatboxPage(contactId: selectedChatId);
+                        },
+                      )
                     : const Center(
                         child: Text(
                           'Select a chat to start messaging',

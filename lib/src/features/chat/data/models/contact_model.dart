@@ -65,6 +65,12 @@ class ContactModel {
   factory ContactModel.fromJson(Map<String, dynamic> json) =>
       _$ContactModelFromJson(json);
 
+  get position => null;
+
+  get expectedSalary => null;
+
+  get status => null;
+
   /// Converts a `ContactModel` instance to JSON.
   Map<String, dynamic> toJson() => _$ContactModelToJson(this);
 

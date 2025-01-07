@@ -22,11 +22,45 @@ class ChatboxPage extends StatefulWidget {
   State<ChatboxPage> createState() => _ChatboxPageState();
 }
 
-class _ChatboxPageState extends State<ChatboxPage> {
+class _ChatboxPageState extends State<ChatboxPage> with AutomaticKeepAliveClientMixin {
+  late final ChatboxBloc _chatboxBloc;
   final ScrollController _scrollController = ScrollController();
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    print('ChatboxPage initState with ID: ${widget.contactId}');
+    _initializeBloc();
+  }
+
+  void _initializeBloc() {
+    print('Initializing ChatboxBloc with ID: ${widget.contactId}');
+    _chatboxBloc = ChatboxBloc(
+      getMessages: GetIt.instance<GetMessages>(),
+      sendMessage: GetIt.instance<SendMessage>(),
+      sendFile: GetIt.instance<SendFile>(),
+      getContactInfo: GetIt.instance<GetContactInfo>(),
+    )..add(LoadContactInfo(widget.contactId))
+      ..add(LoadMessages(widget.contactId));
+  }
+
+  @override
+  void didUpdateWidget(ChatboxPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.contactId != widget.contactId) {
+      print('Contact ID changed from ${oldWidget.contactId} to ${widget.contactId}');
+      _chatboxBloc.close();
+      _initializeBloc();
+    }
+  }
+
+  @override
   void dispose() {
+    print('Disposing ChatboxPage');
+    _chatboxBloc.close();
     _scrollController.dispose();
     super.dispose();
   }
@@ -43,152 +77,115 @@ class _ChatboxPageState extends State<ChatboxPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final getIt = GetIt.instance;
-        return ChatboxBloc(
-          getMessages: getIt<GetMessages>(),
-          sendMessage: getIt<SendMessage>(),
-          sendFile: getIt<SendFile>(),
-          getContactInfo: getIt<GetContactInfo>(),
-        )
-          ..add(LoadMessages(widget.contactId))
-          ..add(LoadContactInfo(widget.contactId));
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: BlocBuilder<ChatboxBloc, ChatboxState>(
-            builder: (context, state) {
-              if (state is ContactInfoLoaded) {
-                return Text(state.contactInfo.name);
-              }
-              return const Text('Chat');
-            },
-          ),
-          actions: [
-            BlocBuilder<ChatboxBloc, ChatboxState>(
+    super.build(context);
+    print('Building ChatboxPage with contactId: ${widget.contactId}');
+    
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _chatboxBloc),
+      ],
+      child: BlocListener<ChatboxBloc, ChatboxState>(
+        listener: (context, state) {
+          print('ChatboxBloc state changed: $state');
+          if (state is ChatboxError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error: ${state.error}')),
+            );
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: BlocBuilder<ChatboxBloc, ChatboxState>(
               builder: (context, state) {
+                print('AppBar BlocBuilder state: $state');
                 if (state is ContactInfoLoaded) {
-                  return IconButton(
-                    icon: const Icon(Icons.info_outline),
-                    onPressed: () {
-                      _showContactInfo(context, state.contactInfo);
-                    },
-                  );
+                  return ContactInfoHeader(contactInfo: state.contactInfo);
                 }
-                return const SizedBox.shrink();
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
               },
             ),
-          ],
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: BlocConsumer<ChatboxBloc, ChatboxState>(
-                listener: (context, state) {
-                  if (state is MessageSent) {
-                    _scrollToBottom();
-                  }
-                },
-                builder: (context, state) {
-                  if (state is MessagesLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-
-                  if (state is MessagesLoaded) {
-                    if (state.messages.isEmpty) {
+            toolbarHeight: 120,
+            backgroundColor: Theme.of(context).cardColor,
+            elevation: 2,
+            automaticallyImplyLeading: true,
+          ),
+          body: Column(
+            children: [
+              Expanded(
+                child: BlocConsumer<ChatboxBloc, ChatboxState>(
+                  listener: (context, state) {
+                    if (state is MessageSent) {
+                      _scrollToBottom();
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is MessagesLoading) {
                       return const Center(
-                        child: Text('No messages yet'),
+                        child: CircularProgressIndicator(),
                       );
                     }
 
-                    return ListView.builder(
-                      controller: _scrollController,
-                      padding: const EdgeInsets.all(8.0),
-                      itemCount: state.messages.length,
-                      itemBuilder: (context, index) {
-                        final message = state.messages[index];
-                        return MessageBubble(
-                          message: message,
-                          key: ValueKey(message.id),
+                    if (state is MessagesLoaded) {
+                      if (state.messages.isEmpty) {
+                        return const Center(
+                          child: Text('No messages yet'),
                         );
-                      },
-                    );
-                  }
+                      }
 
-                  if (state is ChatboxError) {
-                    return Center(
-                      child: Text(
-                        'Error: ${state.error}',
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                    );
-                  }
+                      return ListView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.all(8.0),
+                        itemCount: state.messages.length,
+                        itemBuilder: (context, index) {
+                          final message = state.messages[index];
+                          return MessageBubble(
+                            message: message,
+                            key: ValueKey(message.id),
+                          );
+                        },
+                      );
+                    }
 
+                    if (state is ChatboxError) {
+                      return Center(
+                        child: Text(
+                          'Error: ${state.error}',
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      );
+                    }
+
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ),
+              BlocBuilder<ChatboxBloc, ChatboxState>(
+                builder: (context, state) {
+                  if (state is MessageSending) {
+                    return const LinearProgressIndicator();
+                  }
                   return const SizedBox.shrink();
                 },
               ),
-            ),
-            BlocBuilder<ChatboxBloc, ChatboxState>(
-              builder: (context, state) {
-                if (state is MessageSending) {
-                  return const LinearProgressIndicator();
-                }
-                return const SizedBox.shrink();
-              },
-            ),
-            MessageInputBar(
-              onSendMessage: (content, type) {
-                final message = Message(
-                  id: DateTime.now().toString(), // 临时ID，实际应由后端生成
-                  content: content,
-                  timestamp: DateTime.now(),
-                  isFromMe: true,
-                  type: type,
-                );
-                context.read<ChatboxBloc>().add(SendMessageEvent(message));
-              },
-              onSendFile: (path, type) {
-                context.read<ChatboxBloc>().add(SendFileEvent(path, type));
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showContactInfo(BuildContext context, contactInfo) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20),
-        ),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ContactInfoHeader(contactInfo: contactInfo),
-            const SizedBox(height: 16),
-            ListTile(
-              leading: const Icon(Icons.work),
-              title: Text('Position: ${contactInfo.position}'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.attach_money),
-              title: Text('Expected Salary: ${contactInfo.expectedSalary}'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.info),
-              title: Text('Status: ${contactInfo.status}'),
-            ),
-          ],
+              MessageInputBar(
+                onSendMessage: (content, type) {
+                  final message = Message(
+                    id: DateTime.now().toString(), // 临时ID，实际应由后端生成
+                    content: content,
+                    timestamp: DateTime.now(),
+                    isFromMe: true,
+                    type: type,
+                  );
+                  context.read<ChatboxBloc>().add(SendMessageEvent(message));
+                },
+                onSendFile: (path, type) {
+                  context.read<ChatboxBloc>().add(SendFileEvent(path, type));
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

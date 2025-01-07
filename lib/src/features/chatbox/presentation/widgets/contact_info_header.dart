@@ -1,18 +1,5 @@
 import 'package:flutter/material.dart';
-
-class ContactInfo {
-  final String name;
-  final String position;
-  final String expectedSalary;
-  final String avatarUrl;
-
-  ContactInfo({
-    required this.name,
-    required this.position,
-    required this.expectedSalary,
-    required this.avatarUrl,
-  });
-}
+import '../../domain/entities/contact_info_entity.dart';
 
 class ContactInfoHeader extends StatelessWidget {
   final ContactInfo contactInfo;
@@ -24,39 +11,53 @@ class ContactInfoHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundImage: contactInfo.avatarUrl.isNotEmpty
-                  ? NetworkImage(contactInfo.avatarUrl) as ImageProvider
-                  : const AssetImage('assets/default_avatar.png'),
+    print('Building ContactInfoHeader with: ${contactInfo.name}');
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 25,
+            backgroundImage: contactInfo.avatarUrl.isNotEmpty
+                ? NetworkImage(contactInfo.avatarUrl) as ImageProvider
+                : const AssetImage('assets/default_avatar.png'),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  contactInfo.name,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Position: ${contactInfo.position}',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey[700],
+                  ),
+                ),
+                Text(
+                  'Expected Salary: ${contactInfo.expectedSalary}',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey[700],
+                  ),
+                ),
+                Text(
+                  'Status: ${contactInfo.status}',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    contactInfo.name,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  Text(
-                    'Position: ${contactInfo.position}',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  Text(
-                    'Expected Salary: ${contactInfo.expectedSalary}',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
