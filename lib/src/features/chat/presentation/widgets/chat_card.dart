@@ -6,12 +6,14 @@ class ChatCard extends StatelessWidget {
   final Contact chat;
   final VoidCallback? onTap;
   final Function(Contact)? onArchive;
+  final bool isInArchivePage;
 
   const ChatCard({
     super.key,
     required this.chat,
     this.onTap,
     this.onArchive,
+    this.isInArchivePage = false,
   });
 
   @override
@@ -92,7 +94,7 @@ class ChatCard extends StatelessWidget {
       ),
       items: [
         PopupMenuItem(
-          child: const Text('Archive'),
+          child: Text(isInArchivePage ? 'Unarchive' : 'Archive'),
           onTap: () {
             if (onArchive != null) {
               onArchive!(chat);

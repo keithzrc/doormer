@@ -15,43 +15,55 @@ class ChatPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => serviceLocator<ChatBloc>()..add(chat_event.LoadChatsEvent()),
+      child: _ChatPageContent(),
+    );
+  }
+}
+
+class _ChatPageContent extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return BlocProvider(
-      create: (_) => serviceLocator<ChatBloc>()
-        ..add(chat_event.LoadChatsEvent()), // Provide the event to load chats
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Chat',
-            style: AppTextStyles.displayMedium, // Updated style
-          ),
-          leading: IconButton(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Chat', style: AppTextStyles.displayMedium),
+        leading: Builder(
+          builder: (context) => IconButton(
             icon: const Icon(Icons.archive),
             onPressed: () {
+              final bloc = BlocProvider.of<ChatBloc>(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ArchivePage()),
+                MaterialPageRoute(
+                  builder: (context) => BlocProvider.value(
+                    value: bloc,
+                    child: const ArchivePage(),
+                  ),
+                ),
               );
             },
           ),
         ),
-        body: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1600),
-          child: Row(
-            children: [
-              // Left-side chat list with a fixed minimum width of 250px
-              SizedBox(
-                width: screenWidth > 1000
-                    ? screenWidth * 0.25
-                    : 250, // Minimum 250px
-                child: BlocBuilder<ChatBloc, chat_state.ChatState>(
-                  builder: (context, state) {
-                    if (state is chat_state.ChatLoadingState) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
+      ),
+      body: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1600),
+        child: Row(
+          children: [
+            // Left-side chat list with a fixed minimum width of 250px
+            SizedBox(
+              width: screenWidth > 1000
+                  ? screenWidth * 0.25
+                  : 250, // Minimum 250px
+              child: BlocBuilder<ChatBloc, chat_state.ChatState>(
+                builder: (context, state) {
+                  if (state is chat_state.ChatLoadingState) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
 
                     if (state is chat_state.ChatErrorState) {
                       return Center(
@@ -85,6 +97,7 @@ class ChatPage extends StatelessWidget {
                             final chat = chats[index];
                             return ChatCard(
                               chat: chat,
+                              isInArchivePage: false,
                               onArchive: (contact) {
                                 context.read<ChatBloc>().add(
                                   chat_event.ToggleChatEvent(contact),
@@ -112,21 +125,20 @@ class ChatPage extends StatelessWidget {
                 ),
               ),
 
-              // Right-side user profile placeholder
-              Flexible(
-                flex: 1,
-                child: Container(
-                  color: Colors.white,
-                  child: const Center(
-                    child: Text(
-                      'User Profile Section',
-                      style: AppTextStyles.bodyLarge, // Updated style
-                    ),
+            // Right-side user profile placeholder
+            Flexible(
+              flex: 1,
+              child: Container(
+                color: Colors.white,
+                child: const Center(
+                  child: Text(
+                    'User Profile Section',
+                    style: AppTextStyles.bodyLarge, // Updated style
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

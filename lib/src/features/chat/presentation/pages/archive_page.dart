@@ -14,109 +14,102 @@ class ArchivePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider.value(
+      value: context.read<ChatBloc>(),
+      child: _ArchivePageContent(),
+    );
+  }
+}
+
+class _ArchivePageContent extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // 进入页面时加载数据
+    context.read<ChatBloc>().add(archive_event.LoadChatsEvent());
+
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return BlocProvider(
-      create: (_) => serviceLocator<ChatBloc>()
-        ..add(archive_event.LoadArchivedChatsEvent()), // Load archived chats
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Archive',
-            style: AppTextStyles.displayMedium,
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Archive',
+          style: AppTextStyles.displayMedium,
         ),
-        body: ConstrainedBox(
-          constraints:
-              const BoxConstraints(maxWidth: 1600), // Constrain maximum width
-          child: Row(
-            children: [
-              // Left-side chat list with a fixed minimum width of 250px
-              SizedBox(
-                width: screenWidth > 1000
-                    ? screenWidth * 0.25
-                    : 250, // Minimum 250px
-                child: BlocBuilder<ChatBloc, archive_state.ChatState>(
-                  builder: (context, state) {
-                    //TODO: switch()
-                    if (state is archive_state.ChatLoadingState ||
-                        state is archive_state.ArchivedChatLoadingState) {
+      ),
+      body: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1600),
+        child: Row(
+          children: [
+            SizedBox(
+              width: screenWidth > 1000 ? screenWidth * 0.25 : 250,
+              child: BlocBuilder<ChatBloc, archive_state.ChatState>(
+                builder: (context, state) {
+                  if (state is archive_state.ChatLoadingState) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (state is archive_state.ChatLoadedState) {
+                    final archivedChats = state.archivedChats;
+
+                    if (archivedChats.isEmpty) {
                       return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    if (state is archive_state.ChatErrorState) {
-                      return Center(
                         child: Text(
-                          'Error: ${state.error}',
-                          style: AppTextStyles.bodyLarge, // Updated style
+                          'No archived chats found.',
+                          style: AppTextStyles.bodyMedium,
                         ),
                       );
                     }
 
-                    if (state is archive_state.ArchivedChatLoadedState) {
-                      final archivedChats = state.archivedChats;
+                    return Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: ListView.builder(
+                        itemCount: archivedChats.length,
+                        itemBuilder: (context, index) {
+                          final chat = archivedChats[index];
+                          return ChatCard(
+                            chat: chat,
+                            isInArchivePage: true,
+                            onArchive: (contact) {
+                              context.read<ChatBloc>().add(
+                                    archive_event.ToggleChatEvent(contact),
+                                  );
+                            },
+                          );
+                        },
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
 
-                      if (archivedChats.isEmpty) {
-                        return const Center(
-                          child: Text(
-                            'No archived chats found.',
-                            style: AppTextStyles.bodyMedium, // Updated style
-                          ),
-                        );
-                      }
-
-                      return Padding(
-                        padding:
-                            const EdgeInsets.all(16.0), // Consistent padding
-                        child: ListView.builder(
-                          itemCount: archivedChats.length,
-                          itemBuilder: (context, index) {
-                            final chat = archivedChats[index];
-                            return ChatCard(
-                              chat: chat,
-                              onArchive: (contact) {
-                                context.read<ChatBloc>().add(
-                                  archive_event.ToggleChatEvent(contact),
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      );
-                    }
-
-                    return const SizedBox.shrink();
-                  },
+            // Center chat content placeholder (dynamically adjusts to remaining width)
+            const Flexible(
+              flex: 2,
+              child: Center(
+                child: Text(
+                  'Chat Content Goes Here',
+                  style: AppTextStyles.bodyLarge, // Updated style
                 ),
               ),
+            ),
 
-              // Center chat content placeholder (dynamically adjusts to remaining width)
-              const Flexible(
-                flex: 2,
-                child: Center(
+            // Right-side user profile placeholder
+            Flexible(
+              flex: 1,
+              child: Container(
+                color: Colors.white,
+                child: const Center(
                   child: Text(
-                    'Chat Content Goes Here',
+                    'User Profile Section',
                     style: AppTextStyles.bodyLarge, // Updated style
                   ),
                 ),
               ),
-
-              // Right-side user profile placeholder
-              Flexible(
-                flex: 1,
-                child: Container(
-                  color: Colors.white,
-                  child: const Center(
-                    child: Text(
-                      'User Profile Section',
-                      style: AppTextStyles.bodyLarge, // Updated style
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

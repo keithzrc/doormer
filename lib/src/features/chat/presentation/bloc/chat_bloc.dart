@@ -18,30 +18,36 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     required this.toggleChatUseCase,
     required this.deleteChatUseCase,
     List<Contact>? initialChats,
-  }) : super(initialChats != null //simple logic so kept here
-            ? ChatLoadedState(initialChats)
+  }) : super(initialChats != null
+            ? ChatLoadedState(chats: initialChats, archivedChats: [])
             : ChatLoadingState()) {
-    on<LoadChatsEvent>((_, emit) async {
+    on<LoadChatsEvent>((event, emit) async {
       emit(ChatLoadingState());
       try {
         final chats = await getChatListUseCase.call();
-        emit(ChatLoadedState(chats));
-        AppLogger.debug('Chat list loaded and sorted successfully');
-      } catch (e, stackTrace) {
+        final archivedChats = await getArchivedChatListUseCase.call();
+        AppLogger.debug('Loaded chats: ${chats.length}, archived: ${archivedChats.length}');
+        emit(ChatLoadedState(
+          chats: chats.where((chat) => !chat.isArchived).toList(),
+          archivedChats: archivedChats.where((chat) => chat.isArchived).toList(),
+        ));
+      } catch (e, stack) {
+        AppLogger.error('Error loading chats', e, stack);
         emit(ChatErrorState(e.toString()));
-        AppLogger.error('Chat list loaded with error', e, stackTrace);
       }
     });
 
     on<LoadArchivedChatsEvent>((event, emit) async {
-      emit(ArchivedChatLoadingState());
+      emit(ChatLoadingState());
       try {
+        final chats = await getChatListUseCase.call();
         final archivedChats = await getArchivedChatListUseCase.call();
-        emit(ArchivedChatLoadedState(archivedChats));
-        AppLogger.debug('Archived chat list loaded and sorted successfully');
-      } catch (e, stackTrace) {
+        emit(ChatLoadedState(
+          chats: chats,
+          archivedChats: archivedChats,
+        ));
+      } catch (e) {
         emit(ChatErrorState(e.toString()));
-        AppLogger.error('Archived chat list loaded with error', e, stackTrace);
       }
     });
 
@@ -49,14 +55,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<ToggleChatEvent>((event, emit) async {
       try {
         await toggleChatUseCase.call(event.contact);
-        if (state is ChatLoadedState) {
-          add(LoadChatsEvent());
-        } else if (state is ArchivedChatLoadedState) {
-          add(LoadArchivedChatsEvent());
-        }
-      } catch (e, stackTrace) {
+        add(LoadChatsEvent());
+      } catch (e) {
         emit(ChatErrorState(e.toString()));
-        AppLogger.error('Error toggling chat archive state', e, stackTrace);
       }
     });
 
