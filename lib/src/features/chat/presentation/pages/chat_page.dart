@@ -83,7 +83,14 @@ class ChatPage extends StatelessWidget {
                           itemCount: chats.length,
                           itemBuilder: (context, index) {
                             final chat = chats[index];
-                            return ChatCard(chat: chat);
+                            return ChatCard(
+                              chat: chat,
+                              onArchive: (contact) {
+                                context.read<ChatBloc>().add(
+                                  chat_event.ToggleChatEvent(contact),
+                                );
+                              },
+                            );
                           },
                         ),
                       );

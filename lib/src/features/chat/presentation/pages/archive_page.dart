@@ -73,7 +73,14 @@ class ArchivePage extends StatelessWidget {
                           itemCount: archivedChats.length,
                           itemBuilder: (context, index) {
                             final chat = archivedChats[index];
-                            return ChatCard(chat: chat);
+                            return ChatCard(
+                              chat: chat,
+                              onArchive: (contact) {
+                                context.read<ChatBloc>().add(
+                                  archive_event.ToggleChatEvent(contact),
+                                );
+                              },
+                            );
                           },
                         ),
                       );

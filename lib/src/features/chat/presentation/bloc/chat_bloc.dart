@@ -48,10 +48,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     // TODO: use routes
     on<ToggleChatEvent>((event, emit) async {
       try {
+        await toggleChatUseCase.call(event.contact);
         if (state is ChatLoadedState) {
-          add(LoadChatsEvent()); // Reload normal chat list
+          add(LoadChatsEvent());
         } else if (state is ArchivedChatLoadedState) {
-          add(LoadArchivedChatsEvent()); // Reload archived chat list
+          add(LoadArchivedChatsEvent());
         }
       } catch (e, stackTrace) {
         emit(ChatErrorState(e.toString()));
