@@ -699,7 +699,7 @@ packages:
     source: hosted
     version: "5.4.4"
   mocktail:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: mocktail
       sha256: "890df3f9688106f25755f26b1c60589a92b3ab91a22b8b224947ad041bf172d8"
@@ -999,6 +999,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
+  uuid_type:
+    dependency: "direct main"
+    description:
+      name: uuid_type
+      sha256: e734f4241494cc2e989932175dcbb8ef1e3ade9e84aa80ac6cfa51b34ae39b08
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   vector_math:
     dependency: transitive
     description:

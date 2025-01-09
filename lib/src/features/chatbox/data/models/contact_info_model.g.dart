@@ -8,7 +8,7 @@ part of 'contact_info_model.dart';
 
 ContactInfoModel _$ContactInfoModelFromJson(Map<String, dynamic> json) =>
     ContactInfoModel(
-      id: json['id'] as String,
+      id: const UuidValueConverter().fromJson(json['id'] as String),
       name: json['name'] as String,
       avatarUrl: json['avatarUrl'] as String,
       position: json['position'] as String,
@@ -18,7 +18,7 @@ ContactInfoModel _$ContactInfoModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$ContactInfoModelToJson(ContactInfoModel instance) =>
     <String, dynamic>{
-      'id': instance.id,
+      'id': const UuidValueConverter().toJson(instance.id),
       'name': instance.name,
       'avatarUrl': instance.avatarUrl,
       'position': instance.position,

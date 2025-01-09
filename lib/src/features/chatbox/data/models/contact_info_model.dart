@@ -1,40 +1,42 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:doormer/src/features/chatbox/domain/entities/contact_info_entity.dart';
-import 'package:json_annotation/json_annotation.dart';
-import 'package:logging/logging.dart';
+import 'package:doormer/src/core/utils/uuid_converter.dart';
+import 'package:uuid/uuid.dart';
 
 part 'contact_info_model.g.dart';
 
-final _log = Logger('ContactInfoModel');
-
-/// Data model representing contact information in the data layer.
-///
-/// This class is used for:
-/// - Converting JSON data to ContactInfo entity
-/// - Converting ContactInfo entity to JSON data
 @JsonSerializable()
-class ContactInfoModel extends ContactInfo {
-  /// Constructor for [ContactInfoModel].
+class ContactInfoModel {
+  @UuidValueConverter()
+  final UuidValue id;
+  final String name;
+  final String avatarUrl;
+  final String position;
+  final String expectedSalary;
+  final String status;
+
   ContactInfoModel({
-    required super.id,
-    required super.name,
-    required super.avatarUrl,
-    required super.position,
-    required super.expectedSalary,
-    required super.status,
+    required this.id,
+    required this.name,
+    required this.avatarUrl,
+    required this.position,
+    required this.expectedSalary,
+    required this.status,
   });
 
-  /// Creates a [ContactInfoModel] instance from JSON data.
-  factory ContactInfoModel.fromJson(Map<String, dynamic> json) {
-    _log.fine('Creating ContactInfoModel from JSON: $json');
-    return _$ContactInfoModelFromJson(json);
-  }
+  factory ContactInfoModel.fromJson(Map<String, dynamic> json) =>
+      _$ContactInfoModelFromJson(json);
 
-  /// Converts this model instance to JSON data.
-  Map<String, dynamic> toJson() {
-    final json = _$ContactInfoModelToJson(this);
-    _log.fine('Converting ContactInfoModel to JSON: $json');
-    return json;
-  }
+  Map<String, dynamic> toJson() => _$ContactInfoModelToJson(this);
+
+  ContactInfo toEntity() => ContactInfo(
+        id: id,
+        name: name,
+        avatarUrl: avatarUrl,
+        position: position,
+        expectedSalary: expectedSalary,
+        status: status,
+      );
 
   @override
   String toString() => 'ContactInfoModel('
@@ -44,4 +46,27 @@ class ContactInfoModel extends ContactInfo {
       'position: $position, '
       'expectedSalary: $expectedSalary, '
       'status: $status)';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ContactInfoModel &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          name == other.name &&
+          avatarUrl == other.avatarUrl &&
+          position == other.position &&
+          expectedSalary == other.expectedSalary &&
+          status == other.status;
+
+  @override
+  int get hashCode => Object.hash(
+        runtimeType,
+        id,
+        name,
+        avatarUrl,
+        position,
+        expectedSalary,
+        status,
+      );
 }

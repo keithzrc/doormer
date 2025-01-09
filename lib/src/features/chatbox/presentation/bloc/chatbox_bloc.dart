@@ -1,90 +1,111 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:doormer/src/core/utils/app_logger.dart';
 import '../../domain/usecase/chatbox_usecase.dart';
 import '../../domain/entities/message_entity.dart';
 import 'chatbox_state.dart';
 import 'chatbox_event.dart';
 
+/// Manages the chat box functionality and state.
+///
+/// This bloc handles message loading, sending messages, sending files,
+/// and loading contact information. It maintains the state of the chat box
+/// and processes various chat-related events.
 class ChatboxBloc extends Bloc<ChatboxEvent, ChatboxState> {
+  /// Use case for retrieving messages.
   final GetMessages getMessages;
+
+  /// Use case for sending messages.
   final SendMessage sendMessage;
+
+  /// Use case for sending files.
   final SendFile sendFile;
+
+  /// Use case for retrieving contact information.
   final GetContactInfo getContactInfo;
 
+  /// Creates a new instance of [ChatboxBloc].
+  ///
+  /// Requires all necessary use cases to be provided:
+  /// - [getMessages] for retrieving messages
+  /// - [sendMessage] for sending new messages
+  /// - [sendFile] for sending files
+  /// - [getContactInfo] for retrieving contact information
+  ///
+  /// Optionally accepts [initialMessages] to set the initial state.
   ChatboxBloc({
     required this.getMessages,
     required this.sendMessage,
     required this.sendFile,
     required this.getContactInfo,
-  }) : super(ChatboxInitial()) {
-    on<LoadMessages>(_onLoadMessages);
-    on<SendMessageEvent>(_onSendMessage);
-    on<SendFileEvent>(_onSendFile);
-    on<LoadContactInfo>((event, emit) async {
+    List<Message>? initialMessages,
+  }) : super(initialMessages != null 
+            ? MessagesLoaded(initialMessages)
+            : ChatboxInitial()) {
+            
+    /// Handles the loading of messages for a specific contact.
+    ///
+    /// Emits [MessagesLoading] while fetching messages and
+    /// [MessagesLoaded] when messages are successfully loaded.
+    on<LoadMessages>((event, emit) async {
+      emit(MessagesLoading());
       try {
-        print('Loading contact info for ID: ${event.contactId}');
-        final contactInfo = await getContactInfo(event.contactId);
-        print('Contact info loaded successfully: ${contactInfo.name}');
-        emit(ContactInfoLoaded(contactInfo));
-        print('Emitted ContactInfoLoaded state');
-      } catch (e) {
-        print('Error loading contact info: $e');
+        await emit.forEach(
+          getMessages(event.contactId),
+          onData: (List<Message> messages) {
+            AppLogger.debug('Messages loaded successfully');
+            return MessagesLoaded(messages);
+          },
+        );
+      } catch (e, stackTrace) {
         emit(ChatboxError(e.toString()));
+        AppLogger.error('Messages loaded with error', e, stackTrace);
       }
     });
-  }
 
-  void _onLoadMessages(LoadMessages event, Emitter<ChatboxState> emit) async {
-    emit(MessagesLoading());
-    try {
-      await emit.forEach(
-        getMessages(event.contactId),
-        onData: (List<Message> messages) => MessagesLoaded(messages),
-      );
-    } catch (e) {
-      emit(ChatboxError(e.toString()));
-    }
-  }
+    /// Handles sending a new message.
+    ///
+    /// Emits [MessageSending] while sending the message and
+    /// [MessageSent] when the message is successfully sent.
+    on<SendMessageEvent>((event, emit) async {
+      emit(MessageSending());
+      try {
+        await sendMessage(event.message);
+        emit(MessageSent());
+        AppLogger.debug('Message sent successfully');
+      } catch (e, stackTrace) {
+        emit(ChatboxError(e.toString()));
+        AppLogger.error('Message sent with error', e, stackTrace);
+      }
+    });
 
-  void _onSendMessage(
-      SendMessageEvent event, Emitter<ChatboxState> emit) async {
-    emit(MessageSending());
-    try {
-      await sendMessage(event.message);
-      emit(MessageSent());
-    } catch (e) {
-      emit(ChatboxError(e.toString()));
-    }
-  }
+    /// Handles sending a file.
+    ///
+    /// Emits [MessageSending] while sending the file and
+    /// [MessageSent] when the file is successfully sent.
+    on<SendFileEvent>((event, emit) async {
+      emit(MessageSending());
+      try {
+        await sendFile(event.path, event.type);
+        emit(MessageSent());
+        AppLogger.debug('File sent successfully');
+      } catch (e, stackTrace) {
+        emit(ChatboxError(e.toString()));
+        AppLogger.error('File sent with error', e, stackTrace);
+      }
+    });
 
-  void _onSendFile(SendFileEvent event, Emitter<ChatboxState> emit) async {
-    emit(MessageSending());
-    try {
-      await sendFile(event.path, event.type);
-      emit(MessageSent());
-    } catch (e) {
-      emit(ChatboxError(e.toString()));
-    }
-  }
-
-  void resetState() {
-    emit(ChatboxInitial());
-  }
-
-  @override
-  void onTransition(Transition<ChatboxEvent, ChatboxState> transition) {
-    super.onTransition(transition);
-    print('ChatboxBloc transition: $transition');
-  }
-
-  @override
-  void onChange(Change<ChatboxState> change) {
-    super.onChange(change);
-    print('ChatboxBloc state changed: ${change.currentState} -> ${change.nextState}');
-  }
-
-  @override
-  Future<void> close() async {
-    print('Closing ChatboxBloc');
-    await super.close();
+    /// Handles loading contact information.
+    ///
+    /// Emits [ContactInfoLoaded] when contact information is successfully loaded.
+    on<LoadContactInfo>((event, emit) async {
+      try {
+        final contactInfo = await getContactInfo(event.contactId);
+        emit(ContactInfoLoaded(contactInfo));
+        AppLogger.debug('Contact info loaded successfully');
+      } catch (e, stackTrace) {
+        emit(ChatboxError(e.toString()));
+        AppLogger.error('Contact info loaded with error', e, stackTrace);
+      }
+    });
   }
 }
