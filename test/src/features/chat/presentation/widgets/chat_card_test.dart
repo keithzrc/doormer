@@ -19,12 +19,12 @@ void main() {
     );
   });
 
-  Widget createWidgetUnderTest({Contact? contact, VoidCallback? onTap}) {
+  Widget createWidgetUnderTest({required Contact contact, VoidCallback? onTap}) {
     return MaterialApp(
       home: Material(
         child: Scaffold(
           body: ChatCard(
-            chat: contact ?? testContact,
+            chat: contact,
             onTap: onTap,
           ),
         ),
@@ -34,7 +34,7 @@ void main() {
 
   group('ChatCard', () {
     testWidgets('should display user information correctly', (tester) async {
-      await tester.pumpWidget(createWidgetUnderTest());
+      await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
       await tester.pump();
 
       expect(find.text('Test User'), findsOneWidget);
@@ -42,7 +42,7 @@ void main() {
     });
 
     testWidgets('should show first letter when no avatar URL', (tester) async {
-      await tester.pumpWidget(createWidgetUnderTest());
+      await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
       await tester.pump();
 
       expect(find.text('T'), findsOneWidget);
@@ -65,7 +65,8 @@ void main() {
       await tester.pump();
 
       final unreadIndicator = find.byWidgetPredicate(
-        (widget) => widget is Container && 
+        (widget) =>
+            widget is Container &&
             widget.decoration is BoxDecoration &&
             (widget.decoration as BoxDecoration).color == Colors.red &&
             (widget.decoration as BoxDecoration).shape == BoxShape.circle,
@@ -74,11 +75,12 @@ void main() {
     });
 
     testWidgets('should not show unread indicator when message is read', (tester) async {
-      await tester.pumpWidget(createWidgetUnderTest());
+      await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
       await tester.pump();
 
       final unreadIndicator = find.byWidgetPredicate(
-        (widget) => widget is Container && 
+        (widget) =>
+            widget is Container &&
             widget.decoration is BoxDecoration &&
             (widget.decoration as BoxDecoration).color == Colors.red,
       );
@@ -88,24 +90,25 @@ void main() {
     testWidgets('should handle tap callback', (tester) async {
       bool wasTapped = false;
       await tester.pumpWidget(createWidgetUnderTest(
+        contact: testContact,
         onTap: () => wasTapped = true,
       ));
       await tester.pump();
 
       await tester.tap(find.byType(ListTile));
       await tester.pump();
-      
+
       expect(wasTapped, isTrue);
     });
 
     testWidgets('should have correct card styling', (tester) async {
-      await tester.pumpWidget(createWidgetUnderTest());
+      await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
       await tester.pump();
 
       final card = tester.widget<Card>(find.byType(Card));
       expect(card.margin, equals(const EdgeInsets.symmetric(vertical: 8.0)));
       expect(card.elevation, equals(2));
-      
+
       final shape = card.shape as RoundedRectangleBorder;
       expect(shape.borderRadius, equals(BorderRadius.circular(15.0)));
     });
@@ -120,13 +123,13 @@ void main() {
 
       final titleFinder = find.text('A' * 100);
       final subtitleFinder = find.text('B' * 100);
-      
+
       expect(titleFinder, findsOneWidget);
       expect(subtitleFinder, findsOneWidget);
-      
+
       final title = tester.widget<Text>(titleFinder);
       final subtitle = tester.widget<Text>(subtitleFinder);
-      
+
       expect(title.overflow, equals(TextOverflow.ellipsis));
       expect(subtitle.overflow, equals(TextOverflow.ellipsis));
     });
