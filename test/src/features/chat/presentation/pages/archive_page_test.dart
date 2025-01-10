@@ -43,7 +43,6 @@ void main() {
     when(() => mockChatBloc.state).thenReturn(ArchivedChatLoadingState());
     
     await tester.pumpWidget(createWidgetUnderTest());
-    await tester.pump();
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
@@ -53,7 +52,6 @@ void main() {
     when(() => mockChatBloc.state).thenReturn(ChatErrorState(errorMessage));
 
     await tester.pumpWidget(createWidgetUnderTest());
-    await tester.pump();
 
     expect(find.text('Error: $errorMessage'), findsOneWidget);
   });
@@ -62,7 +60,6 @@ void main() {
     when(() => mockChatBloc.state).thenReturn(ArchivedChatLoadedState([]));
 
     await tester.pumpWidget(createWidgetUnderTest());
-    await tester.pump();
 
     expect(find.text('No archived chats found.'), findsOneWidget);
   });
