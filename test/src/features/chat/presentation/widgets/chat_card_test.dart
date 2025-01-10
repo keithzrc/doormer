@@ -35,7 +35,6 @@ void main() {
   group('ChatCard', () {
     testWidgets('should display user information correctly', (tester) async {
       await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
-      await tester.pump();
 
       expect(find.text('Test User'), findsOneWidget);
       expect(find.text('Hello World'), findsOneWidget);
@@ -43,7 +42,6 @@ void main() {
 
     testWidgets('should show first letter when no avatar URL', (tester) async {
       await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
-      await tester.pump();
 
       expect(find.text('T'), findsOneWidget);
     });
@@ -54,7 +52,6 @@ void main() {
         userName: '',
       );
       await tester.pumpWidget(createWidgetUnderTest(contact: emptyContact));
-      await tester.pump();
 
       expect(find.text('?'), findsOneWidget);
     });
@@ -62,7 +59,6 @@ void main() {
     testWidgets('should show unread indicator when message is unread', (tester) async {
       final unreadContact = testContact.copyWith(isRead: false);
       await tester.pumpWidget(createWidgetUnderTest(contact: unreadContact));
-      await tester.pump();
 
       final unreadIndicator = find.byWidgetPredicate(
         (widget) =>
@@ -76,7 +72,6 @@ void main() {
 
     testWidgets('should not show unread indicator when message is read', (tester) async {
       await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
-      await tester.pump();
 
       final unreadIndicator = find.byWidgetPredicate(
         (widget) =>
@@ -93,17 +88,14 @@ void main() {
         contact: testContact,
         onTap: () => wasTapped = true,
       ));
-      await tester.pump();
 
       await tester.tap(find.byType(ListTile));
-      await tester.pump();
 
       expect(wasTapped, isTrue);
     });
 
     testWidgets('should have correct card styling', (tester) async {
       await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
-      await tester.pump();
 
       final card = tester.widget<Card>(find.byType(Card));
       expect(card.margin, equals(const EdgeInsets.symmetric(vertical: 8.0)));
@@ -119,7 +111,6 @@ void main() {
         lastMessage: 'B' * 100,
       );
       await tester.pumpWidget(createWidgetUnderTest(contact: longTextContact));
-      await tester.pump();
 
       final titleFinder = find.text('A' * 100);
       final subtitleFinder = find.text('B' * 100);
