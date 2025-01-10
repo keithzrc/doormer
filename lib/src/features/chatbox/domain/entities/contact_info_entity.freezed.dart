@@ -27,10 +27,10 @@ mixin _$ContactInfo {
   String get avatarUrl => throw _privateConstructorUsedError;
 
   /// Professional position or role of the contact.
-  String get position => throw _privateConstructorUsedError;
+  String? get position => throw _privateConstructorUsedError;
 
   /// Expected salary range of the contact.
-  String get expectedSalary => throw _privateConstructorUsedError;
+  String? get expectedSalary => throw _privateConstructorUsedError;
 
   /// Current status of the contact (e.g., 'Active', 'Offline').
   String get status => throw _privateConstructorUsedError;
@@ -52,8 +52,8 @@ abstract class $ContactInfoCopyWith<$Res> {
       {@UuidValueConverter() UuidValue id,
       String name,
       String avatarUrl,
-      String position,
-      String expectedSalary,
+      String? position,
+      String? expectedSalary,
       String status});
 }
 
@@ -75,8 +75,8 @@ class _$ContactInfoCopyWithImpl<$Res, $Val extends ContactInfo>
     Object? id = null,
     Object? name = null,
     Object? avatarUrl = null,
-    Object? position = null,
-    Object? expectedSalary = null,
+    Object? position = freezed,
+    Object? expectedSalary = freezed,
     Object? status = null,
   }) {
     return _then(_value.copyWith(
@@ -92,14 +92,14 @@ class _$ContactInfoCopyWithImpl<$Res, $Val extends ContactInfo>
           ? _value.avatarUrl
           : avatarUrl // ignore: cast_nullable_to_non_nullable
               as String,
-      position: null == position
+      position: freezed == position
           ? _value.position
           : position // ignore: cast_nullable_to_non_nullable
-              as String,
-      expectedSalary: null == expectedSalary
+              as String?,
+      expectedSalary: freezed == expectedSalary
           ? _value.expectedSalary
           : expectedSalary // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -120,8 +120,8 @@ abstract class _$$ContactInfoImplCopyWith<$Res>
       {@UuidValueConverter() UuidValue id,
       String name,
       String avatarUrl,
-      String position,
-      String expectedSalary,
+      String? position,
+      String? expectedSalary,
       String status});
 }
 
@@ -141,8 +141,8 @@ class __$$ContactInfoImplCopyWithImpl<$Res>
     Object? id = null,
     Object? name = null,
     Object? avatarUrl = null,
-    Object? position = null,
-    Object? expectedSalary = null,
+    Object? position = freezed,
+    Object? expectedSalary = freezed,
     Object? status = null,
   }) {
     return _then(_$ContactInfoImpl(
@@ -158,14 +158,14 @@ class __$$ContactInfoImplCopyWithImpl<$Res>
           ? _value.avatarUrl
           : avatarUrl // ignore: cast_nullable_to_non_nullable
               as String,
-      position: null == position
+      position: freezed == position
           ? _value.position
           : position // ignore: cast_nullable_to_non_nullable
-              as String,
-      expectedSalary: null == expectedSalary
+              as String?,
+      expectedSalary: freezed == expectedSalary
           ? _value.expectedSalary
           : expectedSalary // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -181,8 +181,8 @@ class _$ContactInfoImpl implements _ContactInfo {
       {@UuidValueConverter() required this.id,
       required this.name,
       required this.avatarUrl,
-      required this.position,
-      required this.expectedSalary,
+      this.position,
+      this.expectedSalary,
       required this.status});
 
   /// Unique identifier for the contact.
@@ -200,11 +200,11 @@ class _$ContactInfoImpl implements _ContactInfo {
 
   /// Professional position or role of the contact.
   @override
-  final String position;
+  final String? position;
 
   /// Expected salary range of the contact.
   @override
-  final String expectedSalary;
+  final String? expectedSalary;
 
   /// Current status of the contact (e.g., 'Active', 'Offline').
   @override
@@ -249,8 +249,8 @@ abstract class _ContactInfo implements ContactInfo {
       {@UuidValueConverter() required final UuidValue id,
       required final String name,
       required final String avatarUrl,
-      required final String position,
-      required final String expectedSalary,
+      final String? position,
+      final String? expectedSalary,
       required final String status}) = _$ContactInfoImpl;
 
   /// Unique identifier for the contact.
@@ -268,11 +268,11 @@ abstract class _ContactInfo implements ContactInfo {
 
   /// Professional position or role of the contact.
   @override
-  String get position;
+  String? get position;
 
   /// Expected salary range of the contact.
   @override
-  String get expectedSalary;
+  String? get expectedSalary;
 
   /// Current status of the contact (e.g., 'Active', 'Offline').
   @override

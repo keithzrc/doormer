@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
+import 'package:doormer/src/features/chatbox/domain/entities/contact_info_entity.dart';
 
 class ContactInfoHeader extends StatelessWidget {
-  final Contact contact;
+  final ContactInfo contact;
   final VoidCallback? onTap;
 
   const ContactInfoHeader({
@@ -28,41 +28,48 @@ class ContactInfoHeader extends StatelessWidget {
         children: [
           // 头像
           CircleAvatar(
-            radius: 20,
-            backgroundColor: const Color.fromARGB(255, 152, 33, 243),
-            backgroundImage: contact.avatarUrl.isNotEmpty
-                ? NetworkImage(contact.avatarUrl)
-                : null,
+            radius: 24,
+            backgroundImage: NetworkImage(contact.avatarUrl),
             onBackgroundImageError: (exception, stackTrace) {
               AppLogger.error('Error loading avatar', exception, stackTrace);
             },
-            child: contact.avatarUrl.isEmpty
-                ? Text(
-                    contact.userName[0].toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                    ),
-                  )
-                : null,
+            child: Text(
+              contact.name[0].toUpperCase(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           // 联系人信息
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  contact.userName,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      contact.name,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      contact.position ?? 'Not Available',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Online',
+                  'Expected: ${contact.expectedSalary ?? 'Not Available'}',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -73,10 +80,10 @@ class ContactInfoHeader extends StatelessWidget {
           ),
           // 状态指示器
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: _getStatusColor().withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -89,12 +96,13 @@ class ContactInfoHeader extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: 6),
                 Text(
-                  contact.isRead ? 'Active' : 'Away',
+                  contact.status,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     color: _getStatusColor(),
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -106,6 +114,6 @@ class ContactInfoHeader extends StatelessWidget {
   }
 
   Color _getStatusColor() {
-    return contact.isRead ? Colors.green : Colors.orange;
+    return contact.status.toLowerCase() == 'active' ? Colors.green : Colors.orange;
   }
 }

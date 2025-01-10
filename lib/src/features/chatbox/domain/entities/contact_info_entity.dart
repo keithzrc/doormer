@@ -22,10 +22,10 @@ class ContactInfo with _$ContactInfo {
     required String avatarUrl,
 
     /// Professional position or role of the contact.
-    required String position,
+    String? position,
 
     /// Expected salary range of the contact.
-    required String expectedSalary,
+    String? expectedSalary,
 
     /// Current status of the contact (e.g., 'Active', 'Offline').
     required String status,

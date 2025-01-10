@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart';
 import '../../domain/entities/message_entity.dart';
+import '../../domain/entities/contact_info_entity.dart';
 import '../bloc/chatbox_bloc.dart';
 import '../bloc/chatbox_event.dart';
 import '../bloc/chatbox_state.dart';
@@ -59,12 +60,23 @@ class _ChatboxPageState extends State<ChatboxPage> {
                 AppLogger.debug('Building header with state: $state');
                 if (state is ChatLoadedState) {
                   try {
-                    final contact = state.chats.firstWhere(
+                    final chat = state.chats.firstWhere(
                       (chat) => chat.id.toString() == widget.contactId,
                     );
-                    AppLogger.debug('Found contact: ${contact.userName}');
+                    
+                    // 修改这里：正确创建 ContactInfo 对象
+                    final contactInfo = ContactInfo(
+                      id: chat.id,
+                      name: chat.userName,
+                      avatarUrl: chat.avatarUrl,
+                      position: null,
+                      expectedSalary: null,
+                      status: chat.isRead ? 'Active' : 'Away',
+                    );
+                    
+                    AppLogger.debug('Created ContactInfo: ${contactInfo.toString()}');
                     return ContactInfoHeader(
-                      contact: contact,
+                      contact: contactInfo,
                       onTap: () {},
                     );
                   } catch (e) {
