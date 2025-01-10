@@ -7,6 +7,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late LocalDataSource localDataSource;
 
+  const fileDBPath = 'lib/src/features/chat/data/repositories/file/dummydata.json';
+
   setUp(() {
     localDataSource = LocalDataSource();
   });
@@ -56,6 +58,36 @@ void main() {
         expect(result.length, 1);
         expect(result.first.userName, 'Test User');
         expect(result.first.lastMessage, 'Hello World');
+      });
+    });
+
+    test('should return empty list when file not found', () async {
+      await TestWidgetsFlutterBinding.instance.runAsync(() async {
+        final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+        messenger.setMockMessageHandler('flutter/assets', (ByteData? message) async {
+          return null; // Simulate file not found
+        });
+
+        final result = await localDataSource.loadDummyData();
+        expect(result, isEmpty);
+      });
+    });
+
+    test('should return empty list when JSON is invalid', () async {
+      await TestWidgetsFlutterBinding.instance.runAsync(() async {
+        final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+        const invalidJson = '{invalid json}';
+        
+        messenger.setMockMessageHandler('flutter/assets', (ByteData? message) async {
+          if (message != null &&
+              String.fromCharCodes(message.buffer.asUint8List()).contains(fileDBPath)) {
+            return ByteData.view(Uint8List.fromList(invalidJson.codeUnits).buffer);
+          }
+          return null;
+        });
+
+        final result = await localDataSource.loadDummyData();
+        expect(result, isEmpty);
       });
     });
   });

@@ -23,10 +23,11 @@ class ChatRepositoryImpl implements ContactRepository {
       final data = await localDataSource.loadDummyData();
       _chats.addAll(data);
       AppLogger.info('Data initialized in ChatRepositoryImpl');
-      _dataLoaded.complete();
     } catch (error) {
-      AppLogger.error('Data initialization failed in ChatRepositoryImpl', error);
+      AppLogger.error(
+          'Data initialization failed in ChatRepositoryImpl', error);
       _chats.clear();
+    } finally {
       _dataLoaded.complete();
     }
   }
