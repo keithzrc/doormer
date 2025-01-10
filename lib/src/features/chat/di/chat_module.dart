@@ -7,6 +7,7 @@ import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:doormer/src/features/chatbox/domain/repositories/chatbox_repository.dart';
 import 'package:doormer/src/features/chatbox/data/repositories/chatbox_repository_impl.dart';
 import 'package:doormer/src/features/chatbox/domain/usecase/chatbox_usecase.dart';
+import 'package:doormer/src/features/chatbox/presentation/bloc/chatbox_bloc.dart';
 
 
 void initChatModule() {
@@ -66,5 +67,13 @@ void initChatModule() {
         getArchivedChatListUseCase: serviceLocator<GetSortedArchivedChatList>(),
         toggleChatUseCase: serviceLocator<ToggleChatArchivedStatus>(),
         deleteChatUseCase: serviceLocator<DeleteChat>(),
+      ));
+
+  // Register ChatboxBloc
+  serviceLocator.registerFactory<ChatboxBloc>(() => ChatboxBloc(
+        getMessages: serviceLocator<GetMessages>(),
+        sendMessage: serviceLocator<SendMessage>(),
+        sendFile: serviceLocator<SendFile>(),
+        getContactInfo: serviceLocator<GetContactInfo>(),
       ));
 }

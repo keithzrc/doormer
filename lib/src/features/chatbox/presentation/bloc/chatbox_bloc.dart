@@ -98,13 +98,14 @@ class ChatboxBloc extends Bloc<ChatboxEvent, ChatboxState> {
     ///
     /// Emits [ContactInfoLoaded] when contact information is successfully loaded.
     on<LoadContactInfo>((event, emit) async {
+      AppLogger.info('Loading contact info for ID: ${event.contactId}');
       try {
         final contactInfo = await getContactInfo(event.contactId);
+        AppLogger.debug('Contact info loaded successfully: ${contactInfo.name}');
         emit(ContactInfoLoaded(contactInfo));
-        AppLogger.debug('Contact info loaded successfully');
       } catch (e, stackTrace) {
+        AppLogger.error('Error loading contact info', e, stackTrace);
         emit(ChatboxError(e.toString()));
-        AppLogger.error('Contact info loaded with error', e, stackTrace);
       }
     });
   }

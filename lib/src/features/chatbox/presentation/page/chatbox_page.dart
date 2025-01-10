@@ -1,8 +1,10 @@
+import 'package:doormer/src/core/di/service_locator.dart';
+import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart';
 import '../../domain/entities/message_entity.dart';
-import '../../domain/usecase/chatbox_usecase.dart';
 import '../bloc/chatbox_bloc.dart';
 import '../bloc/chatbox_event.dart';
 import '../bloc/chatbox_state.dart';
@@ -25,86 +27,80 @@ class ChatboxPage extends StatefulWidget {
   State<ChatboxPage> createState() => _ChatboxPageState();
 }
 
-class _ChatboxPageState extends State<ChatboxPage>
-    with AutomaticKeepAliveClientMixin {
+class _ChatboxPageState extends State<ChatboxPage> {
   final ScrollController _scrollController = ScrollController();
+  late final ChatboxBloc _chatboxBloc;
 
   @override
-  bool get wantKeepAlive => true;
+  void initState() {
+    super.initState();
+    _chatboxBloc = serviceLocator<ChatboxBloc>();
+    _chatboxBloc.add(LoadMessages(widget.contactId));
+  }
+
+  @override
+  void dispose() {
+    _chatboxBloc.close();
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-
-    return BlocProvider(
-      create: (context) => ChatboxBloc(
-        getMessages: GetIt.instance<GetMessages>(),
-        sendMessage: GetIt.instance<SendMessage>(),
-        sendFile: GetIt.instance<SendFile>(),
-        getContactInfo: GetIt.instance<GetContactInfo>(),
-      )..add(LoadContactInfo(widget.contactId))
-        ..add(LoadMessages(widget.contactId)),
-      child: BlocListener<ChatboxBloc, ChatboxState>(
-        listener: (context, state) {
-          if (state is ChatboxError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error: ${state.error}')),
-            );
-          }
-        },
-        child: Scaffold(
-          appBar: _buildAppBar(context),
-          body: _buildBody(context),
-        ),
-      ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      title: BlocBuilder<ChatboxBloc, ChatboxState>(
-        builder: (context, state) {
-          if (state is ContactInfoLoaded) {
-            return ContactInfoHeader(contactInfo: state.contactInfo);
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
-      toolbarHeight: 120,
-      backgroundColor: Theme.of(context).cardColor,
-      elevation: 2,
-      automaticallyImplyLeading: true,
-    );
-  }
-
-  Widget _buildBody(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: BlocBuilder<ChatboxBloc, ChatboxState>(
-            builder: (context, state) {
-              if (state is MessagesLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (state is MessagesLoaded) {
-                if (state.messages.isEmpty) {
-                  return const Center(child: Text('No messages yet'));
+    return BlocProvider.value(
+      value: _chatboxBloc,
+      child: Scaffold(
+        body: Column(
+          children: [
+            // ContactInfo header
+            BlocBuilder<ChatBloc, ChatState>(
+              bloc: BlocProvider.of<ChatBloc>(context, listen: false),
+              builder: (context, state) {
+                AppLogger.debug('Building header with state: $state');
+                if (state is ChatLoadedState) {
+                  try {
+                    final contact = state.chats.firstWhere(
+                      (chat) => chat.id.toString() == widget.contactId,
+                    );
+                    AppLogger.debug('Found contact: ${contact.userName}');
+                    return ContactInfoHeader(
+                      contact: contact,
+                      onTap: () {},
+                    );
+                  } catch (e) {
+                    AppLogger.error('Error finding contact', e);
+                    return _buildErrorHeader('Contact not found');
+                  }
                 }
-                return ListView.builder(
-                  controller: _scrollController,
-                  itemCount: state.messages.length,
-                  itemBuilder: (context, index) {
-                    return MessageBubble(message: state.messages[index]);
-                  },
-                );
-              }
-              return const SizedBox.shrink();
-            },
-          ),
-        ),
-        MessageInputBar(
-          onSendMessage: (content, type) {
-            context.read<ChatboxBloc>().add(
+                return _buildLoadingHeader();
+              },
+            ),
+            // 消息列表
+            Expanded(
+              child: BlocBuilder<ChatboxBloc, ChatboxState>(
+                builder: (context, state) {
+                  if (state is MessagesLoaded) {
+                    return ListView.builder(
+                      controller: _scrollController,
+                      itemCount: state.messages.length,
+                      itemBuilder: (context, index) {
+                        return MessageBubble(
+                          message: state.messages[index],
+                        );
+                      },
+                    );
+                  }
+                  if (state is ChatboxError) {
+                    return Center(child: Text('Error: ${state.error}'));
+                  }
+                  return const Center(child: CircularProgressIndicator());
+                },
+              ),
+            ),
+            // 输入栏
+            MessageInputBar(
+              onSendMessage: (content, type) {
+                _chatboxBloc.add(
                   SendMessageEvent(
                     Message(
                       id: DateTime.now().toString(),
@@ -115,18 +111,37 @@ class _ChatboxPageState extends State<ChatboxPage>
                     ),
                   ),
                 );
-          },
-          onSendFile: (path, type) {
-            context.read<ChatboxBloc>().add(SendFileEvent(path, type));
-          },
+              },
+              onSendFile: (path, type) {
+                _chatboxBloc.add(SendFileEvent(path, type));
+              },
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
+  Widget _buildErrorHeader(String message) {
+    return Container(
+      height: 60,
+      padding: const EdgeInsets.all(8),
+      child: Center(
+        child: Text(
+          'Error: $message',
+          style: const TextStyle(color: Colors.red),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingHeader() {
+    return Container(
+      height: 60,
+      padding: const EdgeInsets.all(8),
+      child: const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
   }
 }
