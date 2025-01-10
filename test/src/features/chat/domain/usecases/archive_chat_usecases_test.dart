@@ -40,8 +40,8 @@ void main() {
 
       final result = await useCase(testContact);
 
-      expect(result.isArchived, isTrue);
       verify(mockRepository.updateChat(result)).called(1);
+      expect(result.isArchived, isTrue);
     });
 
     test('should toggle chat archived status from true to false', () async {
@@ -50,8 +50,8 @@ void main() {
 
       final result = await useCase(archivedContact);
 
-      expect(result.isArchived, isFalse);
       verify(mockRepository.updateChat(result)).called(1);
+      expect(result.isArchived, isFalse);
     });
 
     test('should handle repository errors', () async {
@@ -115,10 +115,10 @@ void main() {
 
       final result = await useCase();
 
+      verify(mockRepository.getArchivedChatList()).called(1);
       expect(result.length, equals(2));
       expect(result.first, equals(newerContact));
       expect(result.last, equals(olderContact));
-      verify(mockRepository.getArchivedChatList()).called(1);
     });
 
     test('should handle empty list', () async {
@@ -127,8 +127,8 @@ void main() {
 
       final result = await useCase();
 
-      expect(result, isEmpty);
       verify(mockRepository.getArchivedChatList()).called(1);
+      expect(result, isEmpty);
     });
 
     test('should throw exception when repository fails', () {
@@ -162,10 +162,10 @@ void main() {
 
       final result = await useCase();
 
+      verify(mockRepository.getActiveChatList()).called(1);
       expect(result.length, equals(2));
       expect(result.first, equals(newerContact));
       expect(result.last, equals(olderContact));
-      verify(mockRepository.getActiveChatList()).called(1);
     });
 
     test('should handle empty list', () async {
