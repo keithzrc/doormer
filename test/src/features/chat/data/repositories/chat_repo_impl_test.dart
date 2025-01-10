@@ -120,5 +120,82 @@ void main() {
       final activeChats = await repo.getActiveChatList();
       expect(activeChats, isEmpty);
     });
+
+    test('updateChat should handle non-existent chat', () async {
+      final nonExistentContact = Contact(
+        id: UuidValue(const Uuid().v4()),
+        userName: 'Non-existent User',
+        avatarUrl: 'https://example.com/avatar.png',
+        lastMessage: 'Hello',
+        lastMessageCreatedTime: DateTime.now(),
+        isArchived: false,
+        isRead: true,
+      );
+
+      await repository.updateChat(nonExistentContact);
+      final allChats = await Future.wait([
+        repository.getActiveChatList(),
+        repository.getArchivedChatList(),
+      ]);
+      final flattenedChats = allChats.expand((x) => x).toList();
+      
+      expect(flattenedChats.any((chat) => chat.id == nonExistentContact.id), isFalse);
+    });
+
+    test('deleteChat should handle non-existent chat ID', () async {
+      final nonExistentId = const Uuid().v4();
+      final initialActiveChats = await repository.getActiveChatList();
+      final initialArchivedChats = await repository.getArchivedChatList();
+      
+      await repository.deleteChat(nonExistentId);
+      
+      final finalActiveChats = await repository.getActiveChatList();
+      final finalArchivedChats = await repository.getArchivedChatList();
+      
+      expect(finalActiveChats.length, equals(initialActiveChats.length));
+      expect(finalArchivedChats.length, equals(initialArchivedChats.length));
+    });
+
+    test('should maintain data consistency after multiple operations', () async {
+      final initialActiveChats = await repository.getActiveChatList();
+      
+      final chatToArchive = initialActiveChats.first;
+      final archivedChat = Contact(
+        id: chatToArchive.id,
+        userName: chatToArchive.userName,
+        avatarUrl: chatToArchive.avatarUrl,
+        lastMessage: chatToArchive.lastMessage,
+        lastMessageCreatedTime: chatToArchive.lastMessageCreatedTime,
+        isArchived: true,
+        isRead: chatToArchive.isRead,
+      );
+      
+      await repository.updateChat(archivedChat);
+      
+      final activeChatsAfterArchive = await repository.getActiveChatList();
+      final archivedChatsAfterArchive = await repository.getArchivedChatList();
+      
+      expect(activeChatsAfterArchive.length, equals(initialActiveChats.length - 1));
+      expect(archivedChatsAfterArchive.any((chat) => chat.id == chatToArchive.id), isTrue);
+      
+      await repository.deleteChat(chatToArchive.id.toString());
+      
+      final finalArchivedChats = await repository.getArchivedChatList();
+      expect(finalArchivedChats.any((chat) => chat.id == chatToArchive.id), isFalse);
+    });
+
+    test('should handle concurrent operations correctly', () async {
+      await Future.wait([
+        repository.getActiveChatList(),
+        repository.getArchivedChatList(),
+        repository.updateChat(mockContacts.first.toEntity()),
+        repository.deleteChat(mockContacts.last.id.toString()),
+      ]);
+
+      final activeChats = await repository.getActiveChatList();
+      final archivedChats = await repository.getArchivedChatList();
+      
+      expect(activeChats.length + archivedChats.length, equals(mockContacts.length - 1));
+    });
   });
 }

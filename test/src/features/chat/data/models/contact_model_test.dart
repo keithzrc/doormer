@@ -46,6 +46,21 @@ void main() {
         verifyContactModel(sut);
       });
 
+      test('should throw FormatException when UUID is invalid', () {
+        expect(
+          () => ContactModel(
+            id: UuidValue('invalid-uuid'),
+            userName: 'Test User',
+            avatarUrl: 'https://example.com/avatar.jpg',
+            lastMessage: 'Hello',
+            lastMessageCreatedTime: testDateTime,
+            isArchived: false,
+            isRead: true,
+          ),
+          throwsA(isA<FormatException>()),
+        );
+      });
+
       test('should throw ArgumentError when userName is empty', () {
         expect(
           () => ContactModel(
@@ -74,6 +89,19 @@ void main() {
           ),
           throwsA(isA<ArgumentError>()),
         );
+      });
+
+      test('should accept empty lastMessage', () {
+        final model = ContactModel(
+          id: validUuid,
+          userName: 'Test User',
+          avatarUrl: 'https://example.com/avatar.jpg',
+          lastMessage: '',
+          lastMessageCreatedTime: testDateTime,
+          isArchived: false,
+          isRead: true,
+        );
+        expect(model.lastMessage, isEmpty);
       });
     });
 
@@ -112,6 +140,29 @@ void main() {
         final json = sut.toJson();
         expect(json, equals(validJson));
       });
+
+      test('fromJson should handle boolean fields correctly', () {
+        final json = Map<String, dynamic>.from(validJson)
+          ..['isArchived'] = true
+          ..['isRead'] = false;
+        
+        final result = ContactModel.fromJson(json);
+        expect(result.isArchived, isTrue);
+        expect(result.isRead, isFalse);
+      });
+
+      test('toJson should maintain data integrity', () {
+        final model = ContactModel.fromJson(validJson);
+        final regeneratedModel = ContactModel.fromJson(model.toJson());
+        
+        expect(regeneratedModel.id.toString(), equals(model.id.toString()));
+        expect(regeneratedModel.userName, equals(model.userName));
+        expect(regeneratedModel.avatarUrl, equals(model.avatarUrl));
+        expect(regeneratedModel.lastMessage, equals(model.lastMessage));
+        expect(regeneratedModel.lastMessageCreatedTime, equals(model.lastMessageCreatedTime));
+        expect(regeneratedModel.isArchived, equals(model.isArchived));
+        expect(regeneratedModel.isRead, equals(model.isRead));
+      });
     });
 
     group('Entity conversion', () {
@@ -141,6 +192,32 @@ void main() {
 
         final result = ContactModel.fromEntity(entity);
         verifyContactModel(result);
+      });
+    });
+
+    group('equality', () {
+      test('models with same values should be structurally equal', () {
+        final model1 = ContactModel.fromJson(validJson);
+        final model2 = ContactModel.fromJson(validJson);
+        
+        expect(
+          model1.id.toString(), 
+          equals(model2.id.toString()),
+        );
+        expect(model1.userName, equals(model2.userName));
+        expect(model1.avatarUrl, equals(model2.avatarUrl));
+        expect(model1.lastMessage, equals(model2.lastMessage));
+        expect(model1.lastMessageCreatedTime, equals(model2.lastMessageCreatedTime));
+        expect(model1.isArchived, equals(model2.isArchived));
+        expect(model1.isRead, equals(model2.isRead));
+      });
+
+      test('models with different values should not be structurally equal', () {
+        final model1 = ContactModel.fromJson(validJson);
+        final model2 = ContactModel.fromJson(Map<String, dynamic>.from(validJson)
+          ..['userName'] = 'Different User');
+        
+        expect(model1.userName, isNot(equals(model2.userName)));
       });
     });
   });
