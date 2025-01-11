@@ -19,17 +19,15 @@ class ChatRepositoryImpl implements ContactRepository {
   /// Initializes data and completes the `_dataLoaded` completer when done.
   void _initializeData() async {
     AppLogger.info('Initializing data in ChatRepositoryImpl.');
-    try {
-      final data = await localDataSource.loadDummyData();
+    await localDataSource.loadDummyData().then((data) {
       _chats.addAll(data);
       AppLogger.info('Data initialized in ChatRepositoryImpl');
-    } catch (error) {
+      _dataLoaded.complete(); // Signal that data is ready
+    }).catchError((error) {
       AppLogger.error(
           'Data initialization failed in ChatRepositoryImpl', error);
-      _chats.clear();
-    } finally {
-      _dataLoaded.complete();
-    }
+      _dataLoaded.completeError(error); // Signal failure
+    });
   }
 
   /// Ensures data is loaded before initialization is completed.
