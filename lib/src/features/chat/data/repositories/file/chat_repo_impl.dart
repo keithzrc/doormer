@@ -18,6 +18,8 @@ class ChatRepositoryImpl implements ContactRepository {
 
   /// Initializes data and completes the `_dataLoaded` completer when done.
   void _initializeData() async {
+    //TODO this implementation should completeError when catches Error
+    //Revist this.
     AppLogger.info('Initializing data in ChatRepositoryImpl.');
     try {
       final data = await localDataSource.loadDummyData();
