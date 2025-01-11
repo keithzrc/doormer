@@ -1,3 +1,4 @@
+import 'package:doormer/src/features/chat/utils/time.dart';
 import 'package:flutter/material.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/core/theme/app_text_styles.dart';
@@ -67,6 +68,7 @@ class ChatCard extends StatelessWidget {
         trailing: SizedBox(
           width: 100,
           child: Text(
+            // TODO: format time to be more readable
             chat.lastMessageCreatedTime.toIso8601String(),
             style: AppTextStyles.bodySmall,
           ),

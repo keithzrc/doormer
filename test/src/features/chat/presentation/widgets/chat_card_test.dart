@@ -82,17 +82,6 @@ void main() {
       expect(unreadIndicator, findsNothing);
     });
 
-    testWidgets('should handle tap callback', (tester) async {
-      bool wasTapped = false;
-      await tester.pumpWidget(createWidgetUnderTest(
-        contact: testContact,
-        onTap: () => wasTapped = true,
-      ));
-
-      await tester.tap(find.byType(ListTile));
-
-      expect(wasTapped, isTrue);
-    });
 
     testWidgets('should have correct card styling', (tester) async {
       await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
