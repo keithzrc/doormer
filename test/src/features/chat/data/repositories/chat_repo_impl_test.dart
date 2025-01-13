@@ -1,94 +1,201 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart';
+import 'package:doormer/src/features/chat/data/models/contact_model.dart';
 import 'package:doormer/src/features/chat/data/repositories/file/chat_repo_impl.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
+import 'chat_repo_impl_test.mocks.dart';
 
+@GenerateMocks([LocalDataSource])
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
   late ChatRepositoryImpl repository;
+  late MockLocalDataSource mockLocalDataSource;
+  late List<ContactModel> mockContacts;
+  late UuidValue testId1;
+  late UuidValue testId2;
 
   setUp(() {
-    repository = ChatRepositoryImpl();
+    mockLocalDataSource = MockLocalDataSource();
+    testId1 = UuidValue(const Uuid().v4());
+    testId2 = UuidValue(const Uuid().v4());
+    
+    mockContacts = [
+      ContactModel(
+        id: testId1,
+        userName: 'Active User',
+        avatarUrl: 'https://example.com/avatar1.png',
+        lastMessage: 'Hello',
+        lastMessageCreatedTime: DateTime.now(),
+        isArchived: false,
+        isRead: true,
+      ),
+      ContactModel(
+        id: testId2,
+        userName: 'Archived User',
+        avatarUrl: 'https://example.com/avatar2.png',
+        lastMessage: 'Hi',
+        lastMessageCreatedTime: DateTime.now(),
+        isArchived: true,
+        isRead: false,
+      ),
+    ];
+
+    when(mockLocalDataSource.loadDummyData())
+        .thenAnswer((_) async => mockContacts);
+        
+    repository = ChatRepositoryImpl(localDataSource: mockLocalDataSource);
   });
 
   group('ChatRepositoryImpl', () {
-    // 1. 基本查询测试
-    group('Basic Query Tests', () {
-      test('getActiveChatList should return only unarchived chats', () async {
-        final chats = await repository.getActiveChatList();
-        for (var chat in chats) {
-          expect(chat.isArchived, false);
-        }
-      });
-
-      test('getArchivedChatList should return only archived chats', () async {
-        final archivedChats = await repository.getArchivedChatList();
-        for (var chat in archivedChats) {
-          expect(chat.isArchived, true);
-        }
-      });
+    test('should initialize data on construction', () {
+      verify(mockLocalDataSource.loadDummyData()).called(1);
     });
 
-    // 2. 归档操作测试
-    group('Archive Operations', () {
-      test('updateChat should be able to archive chat', () async {
-        final initialChats = await repository.getActiveChatList();
-        if (initialChats.isEmpty) return;
-
-        final chatToArchive = initialChats.first;
-        final updatedChat = chatToArchive.copyWith(isArchived: true);
-        await repository.updateChat(updatedChat);
-
-        final archivedChats = await repository.getArchivedChatList();
-        final archivedChat = archivedChats.firstWhere(
-          (chat) => chat.id == chatToArchive.id,
-          orElse: () => throw Exception('Archived chat not found'),
-        );
-
-        expect(archivedChat.isArchived, true);
-      });
-
-      test('updateChat should handle non-existent chat', () async {
-        final nonExistentChat = Contact(
-            id: 'non-existent-id',
-            userName: 'Test User',
-            avatarUrl: 'test.jpg',
-            lastMessage: 'Test message',
-            lastMessageCreatedTime: DateTime.now(),
-            isArchived: true,
-            isRead: true);
-        await repository.updateChat(nonExistentChat);
-        expect(true, true);
-      });
+    test('getActiveChatList should return only active chats', () async {
+      final result = await repository.getActiveChatList();
+      expect(result.length, 1);
+      expect(result.first.userName, 'Active User');
+      expect(result.first.isArchived, false);
     });
 
-    // 3. 删除操作测试
-    group('Delete Operations', () {
-      test('deleteChat should remove chat from list', () async {
-        final initialChats = await repository.getActiveChatList();
-        if (initialChats.isEmpty) return;
-
-        final chatToDelete = initialChats.first;
-        await repository.deleteChat(chatToDelete.id);
-
-        final updatedChats = await repository.getActiveChatList();
-        final deletedChat =
-            updatedChats.where((chat) => chat.id == chatToDelete.id);
-        expect(deletedChat.isEmpty, true);
-      });
-
-      test('deleteChat should handle non-existent chat ID', () async {
-        await repository.deleteChat('non-existent-id');
-        expect(true, true);
-      });
+    test('getArchivedChatList should return only archived chats', () async {
+      final result = await repository.getArchivedChatList();
+      expect(result.length, 1);
+      expect(result.first.userName, 'Archived User');
+      expect(result.first.isArchived, true);
     });
 
-    // 5. 数据加载测试
-    group('Data Loading Tests', () {
-      test('_ensureDataLoaded should attempt to load data if empty', () async {
-        repository = ChatRepositoryImpl();
-        await repository.getActiveChatList();
-        expect(true, true);
-      });
+    test('updateChat should update existing chat', () async {
+      final updatedContact = Contact(
+        id: testId1,
+        userName: 'Updated User',
+        avatarUrl: 'https://example.com/avatar1.png',
+        lastMessage: 'Hello',
+        lastMessageCreatedTime: DateTime.now(),
+        isArchived: true,
+        isRead: true,
+      );
+
+      await repository.updateChat(updatedContact);
+      final archivedChats = await repository.getArchivedChatList();
+      
+      expect(archivedChats.any((chat) => 
+        chat.id == testId1 && 
+        chat.userName == 'Updated User' &&
+        chat.isArchived
+      ), isTrue);
+    });
+
+    test('deleteChat should remove chat from list', () async {
+      await repository.deleteChat(testId1.toString());
+      final activeChats = await repository.getActiveChatList();
+      expect(activeChats.any((chat) => chat.id == testId1), isFalse);
+    });
+
+    test('should handle empty data', () async {
+      when(mockLocalDataSource.loadDummyData())
+          .thenAnswer((_) async => []);
+
+      final newRepository = ChatRepositoryImpl(
+        localDataSource: mockLocalDataSource,
+      );
+
+      final activeChats = await newRepository.getActiveChatList();
+      final archivedChats = await newRepository.getArchivedChatList();
+
+      expect(activeChats, isEmpty);
+      expect(archivedChats, isEmpty);
+    });
+
+    test('should handle initialization failure', () async {
+      reset(mockLocalDataSource);
+      when(mockLocalDataSource.loadDummyData())
+          .thenAnswer((_) => Future.error(Exception('Failed to load')));
+
+      final repo = ChatRepositoryImpl(localDataSource: mockLocalDataSource);
+      await Future.delayed(Duration.zero);
+
+      final activeChats = await repo.getActiveChatList();
+      expect(activeChats, isEmpty);
+    });
+
+    test('updateChat should handle non-existent chat', () async {
+      final nonExistentContact = Contact(
+        id: UuidValue(const Uuid().v4()),
+        userName: 'Non-existent User',
+        avatarUrl: 'https://example.com/avatar.png',
+        lastMessage: 'Hello',
+        lastMessageCreatedTime: DateTime.now(),
+        isArchived: false,
+        isRead: true,
+      );
+
+      await repository.updateChat(nonExistentContact);
+      final allChats = await Future.wait([
+        repository.getActiveChatList(),
+        repository.getArchivedChatList(),
+      ]);
+      final flattenedChats = allChats.expand((x) => x).toList();
+      
+      expect(flattenedChats.any((chat) => chat.id == nonExistentContact.id), isFalse);
+    });
+
+    test('deleteChat should handle non-existent chat ID', () async {
+      final nonExistentId = const Uuid().v4();
+      final initialActiveChats = await repository.getActiveChatList();
+      final initialArchivedChats = await repository.getArchivedChatList();
+      
+      await repository.deleteChat(nonExistentId);
+      
+      final finalActiveChats = await repository.getActiveChatList();
+      final finalArchivedChats = await repository.getArchivedChatList();
+      
+      expect(finalActiveChats.length, equals(initialActiveChats.length));
+      expect(finalArchivedChats.length, equals(initialArchivedChats.length));
+    });
+
+    test('should maintain data consistency after multiple operations', () async {
+      final initialActiveChats = await repository.getActiveChatList();
+      
+      final chatToArchive = initialActiveChats.first;
+      final archivedChat = Contact(
+        id: chatToArchive.id,
+        userName: chatToArchive.userName,
+        avatarUrl: chatToArchive.avatarUrl,
+        lastMessage: chatToArchive.lastMessage,
+        lastMessageCreatedTime: chatToArchive.lastMessageCreatedTime,
+        isArchived: true,
+        isRead: chatToArchive.isRead,
+      );
+      
+      await repository.updateChat(archivedChat);
+      
+      final activeChatsAfterArchive = await repository.getActiveChatList();
+      final archivedChatsAfterArchive = await repository.getArchivedChatList();
+      
+      expect(activeChatsAfterArchive.length, equals(initialActiveChats.length - 1));
+      expect(archivedChatsAfterArchive.any((chat) => chat.id == chatToArchive.id), isTrue);
+      
+      await repository.deleteChat(chatToArchive.id.toString());
+      
+      final finalArchivedChats = await repository.getArchivedChatList();
+      expect(finalArchivedChats.any((chat) => chat.id == chatToArchive.id), isFalse);
+    });
+
+    test('should handle concurrent operations correctly', () async {
+      await Future.wait([
+        repository.getActiveChatList(),
+        repository.getArchivedChatList(),
+        repository.updateChat(mockContacts.first.toEntity()),
+        repository.deleteChat(mockContacts.last.id.toString()),
+      ]);
+
+      final activeChats = await repository.getActiveChatList();
+      final archivedChats = await repository.getArchivedChatList();
+      
+      expect(activeChats.length + archivedChats.length, equals(mockContacts.length - 1));
     });
   });
 }

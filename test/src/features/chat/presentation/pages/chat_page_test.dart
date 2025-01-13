@@ -1,68 +1,34 @@
-import 'package:doormer/src/core/di/service_locator.dart';
+import 'package:uuid/uuid.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:doormer/src/features/chat/presentation/pages/chat_page.dart';
-import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart';
+import 'package:flutter/material.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bloc_test/bloc_test.dart';
-import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
-import 'package:doormer/src/features/chat/presentation/bloc/chat_event.dart';
+import 'package:doormer/src/features/chat/presentation/pages/chat_page.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart';
+import 'package:doormer/src/features/chat/presentation/widgets/chat_card.dart';
+import 'package:doormer/src/core/di/service_locator.dart';
 
-class MockGetActiveChatList extends Mock implements GetSortedActiveChatList {}
+class MockChatBloc extends Mock implements ChatBloc {
+  @override
+  Stream<ChatState> get stream => Stream.value(state);
 
-class MockGetArchivedChatList extends Mock
-    implements GetSortedArchivedChatList {}
-
-class MockToggleChatArchivedStatus extends Mock
-    implements ToggleChatArchivedStatus {}
-
-class MockDeleteChat extends Mock implements DeleteChat {}
-
-class MockChatBloc extends MockBloc<ChatEvent, ChatState> implements ChatBloc {}
+  @override
+  Future<void> close() async {
+    return;
+  }
+}
 
 void main() {
-  late MockGetActiveChatList mockGetActiveChatList;
-  late MockGetArchivedChatList mockGetArchivedChatList;
-  late MockToggleChatArchivedStatus mockToggleChatArchivedStatus;
-  late MockDeleteChat mockDeleteChat;
+  late MockChatBloc mockChatBloc;
+
+  setUpAll(() {
+    serviceLocator.reset();
+  });
 
   setUp(() {
-    serviceLocator.reset(); // Reset the service locator before each test
-
-    mockGetActiveChatList = MockGetActiveChatList();
-    mockGetArchivedChatList = MockGetArchivedChatList();
-    mockToggleChatArchivedStatus = MockToggleChatArchivedStatus();
-    mockDeleteChat = MockDeleteChat();
-
-    // Register mocks in the service locator
-    serviceLocator.registerLazySingleton<GetSortedActiveChatList>(
-        () => mockGetActiveChatList);
-    serviceLocator.registerLazySingleton<GetSortedArchivedChatList>(
-        () => mockGetArchivedChatList);
-    serviceLocator.registerLazySingleton<ToggleChatArchivedStatus>(
-        () => mockToggleChatArchivedStatus);
-    serviceLocator.registerLazySingleton<DeleteChat>(() => mockDeleteChat);
-
-    // Register ChatBloc with mocked use cases
-    serviceLocator.registerFactory<ChatBloc>(() => ChatBloc(
-          getChatListUseCase: serviceLocator<GetSortedActiveChatList>(),
-          getArchivedChatListUseCase:
-              serviceLocator<GetSortedArchivedChatList>(),
-          toggleChatUseCase: serviceLocator<ToggleChatArchivedStatus>(),
-          deleteChatUseCase: serviceLocator<DeleteChat>(),
-        ));
-
-    reset(mockGetActiveChatList);
-    reset(mockGetArchivedChatList);
-    reset(mockToggleChatArchivedStatus);
-    reset(mockDeleteChat);
-
-    // Mock behavior for the use cases => Returning a list of Contact
-    when(() => mockGetActiveChatList()).thenAnswer((_) async => <Contact>[]);
-    when(() => mockGetArchivedChatList()).thenAnswer((_) async => <Contact>[]);
+    mockChatBloc = MockChatBloc();
+    serviceLocator.registerFactory<ChatBloc>(() => mockChatBloc);
   });
 
   tearDown(() {
@@ -70,33 +36,97 @@ void main() {
   });
 
   Widget createWidgetUnderTest() {
-    return MaterialApp(
-      home: const ChatPage(),
-      routes: {
-        '/archive': (context) => const ArchivePage(),
-      },
+    return const MaterialApp(
+      home: ChatPage(),
     );
   }
 
-  group('ChatPage', () {
-    testWidgets('renders ChatPage correctly', (WidgetTester tester) async {
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pump();
+  testWidgets('displays loading indicator when in loading state', (tester) async {
+    when(() => mockChatBloc.state).thenReturn(ChatLoadingState());
 
-      expect(find.text('Chat'), findsOneWidget);
-      expect(find.byIcon(Icons.archive), findsOneWidget);
-    });
+    await tester.pumpWidget(createWidgetUnderTest());
 
-    testWidgets('navigates to ArchivePage when archive icon is tapped',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+  });
 
-      await tester.tap(find.byIcon(Icons.archive));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
+  testWidgets('displays error message when in error state', (tester) async {
+    const errorMessage = 'Network error';
+    when(() => mockChatBloc.state).thenReturn(ChatErrorState(errorMessage));
 
-      expect(find.byType(ArchivePage), findsOneWidget);
-    });
+    await tester.pumpWidget(createWidgetUnderTest());
+
+    expect(find.text('Error: $errorMessage'), findsOneWidget);
+  });
+
+  testWidgets('displays empty message when no chats available', (tester) async {
+    when(() => mockChatBloc.state).thenReturn(ChatLoadedState([]));
+
+    await tester.pumpWidget(createWidgetUnderTest());
+
+    expect(find.text('No chats found.'), findsOneWidget);
+  });
+
+  testWidgets('displays chat list when chats are available', (tester) async {
+    final testChats = [
+      Contact(
+        id: UuidValue(const Uuid().v4()),
+        userName: 'Chat 1',
+        lastMessage: 'Hello',
+        lastMessageCreatedTime: DateTime.now(),
+        avatarUrl: '',
+        isArchived: false,
+        isRead: true,
+      ),
+      Contact(
+        id: UuidValue(const Uuid().v4()),
+        userName: 'Chat 2',
+        lastMessage: 'Hi',
+        lastMessageCreatedTime: DateTime.now(),
+        avatarUrl: '',
+        isArchived: false,
+        isRead: true,
+      ),
+    ];
+
+    when(() => mockChatBloc.state).thenReturn(ChatLoadedState(testChats));
+
+    await tester.pumpWidget(createWidgetUnderTest());
+    await tester.pumpAndSettle(); // 确保所有动画和布局完成
+
+    expect(find.byType(ChatCard), findsNWidgets(2));
+    expect(find.text('Chat 1'), findsOneWidget);
+    expect(find.text('Chat 2'), findsOneWidget);
+  });
+
+  testWidgets('filters out archived chats', (tester) async {
+    final testChats = [
+      Contact(
+        id: UuidValue(const Uuid().v4()),
+        userName: 'Chat 1',
+        lastMessage: 'Hello',
+        lastMessageCreatedTime: DateTime.now(),
+        avatarUrl: '',
+        isArchived: false,
+        isRead: true,
+      ),
+      Contact(
+        id: UuidValue(const Uuid().v4()),
+        userName: 'Chat 2',
+        lastMessage: 'Hi',
+        lastMessageCreatedTime: DateTime.now(),
+        avatarUrl: '',
+        isArchived: true,
+        isRead: true,
+      ),
+    ];
+
+    when(() => mockChatBloc.state).thenReturn(ChatLoadedState(testChats));
+
+    await tester.pumpWidget(createWidgetUnderTest());
+    await tester.pumpAndSettle(); // 确保所有动画和布局完成
+
+    expect(find.byType(ChatCard), findsOneWidget);
+    expect(find.text('Chat 1'), findsOneWidget);
+    expect(find.text('Chat 2'), findsNothing);
   });
 }

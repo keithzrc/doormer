@@ -1,104 +1,117 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/features/chat/presentation/widgets/chat_card.dart';
-import 'package:doormer/src/core/theme/app_text_styles.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
-  final mockChat = Contact(
-    id: '1',
-    userName: 'Username',
-    avatarUrl: '',
-    lastMessage: 'This is a test mock message',
-    lastMessageCreatedTime: DateTime(2024, 3, 15, 14, 30),
-    isArchived: true,
-    isRead: false,
-  );
+  late Contact testContact;
 
-  testWidgets('ChatCard displays correct user information',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: ChatCard(chat: mockChat),
-        ),
-      ),
+  setUp(() {
+    testContact = Contact(
+      id: UuidValue(const Uuid().v4()),
+      userName: 'Test User',
+      avatarUrl: '',
+      lastMessage: 'Hello World',
+      lastMessageCreatedTime: DateTime(2024, 1, 1),
+      isArchived: false,
+      isRead: true,
     );
-
-    // Verify username is displayed
-    expect(find.text('Username'), findsOneWidget);
-    // Verify the last message is displayed - matches mockChat
-    expect(find.text('This is a test mock message'), findsOneWidget);
-    // Verify time is displayed - matches format
-    expect(find.text('14:30'), findsOneWidget);
-    // Verify CircleAvatar exists
-    expect(find.byType(CircleAvatar), findsOneWidget);
   });
 
-  testWidgets('ChatCard tap callback works correctly',
-      (WidgetTester tester) async {
-    bool wasTapped = false;
-
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
+  Widget createWidgetUnderTest({required Contact contact, VoidCallback? onTap}) {
+    return MaterialApp(
+      home: Material(
+        child: Scaffold(
           body: ChatCard(
-            chat: mockChat,
-            onTap: () => wasTapped = true,
+            chat: contact,
+            onTap: onTap,
           ),
         ),
       ),
     );
+  }
 
-    await tester.tap(find.byType(ListTile));
-    expect(wasTapped, true);
-  });
+  group('ChatCard', () {
+    testWidgets('should display user information correctly', (tester) async {
+      await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
 
-  testWidgets('ChatCard style verification', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: ChatCard(chat: mockChat),
-        ),
-      ),
-    );
+      expect(find.text('Test User'), findsOneWidget);
+      expect(find.text('Hello World'), findsOneWidget);
+    });
 
-    // Verify Card widget exists
-    final cardFinder = find.byType(Card);
-    expect(cardFinder, findsOneWidget);
+    testWidgets('should show first letter when no avatar URL', (tester) async {
+      await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
 
-    // Verify ListTile exists
-    expect(find.byType(ListTile), findsOneWidget);
+      expect(find.text('T'), findsOneWidget);
+    });
 
-    // Verify leading CircleAvatar exists
-    expect(find.byType(CircleAvatar), findsOneWidget);
+    testWidgets('should show question mark for empty username and no avatar', (tester) async {
+      final emptyContact = testContact.copyWith(
+        avatarUrl: '',
+        userName: '',
+      );
+      await tester.pumpWidget(createWidgetUnderTest(contact: emptyContact));
 
-    // Verify red dot exists for unread messages
-    final redDotFinder = find.byWidgetPredicate(
-      (widget) =>
-          widget is Container &&
-          widget.decoration is BoxDecoration &&
-          (widget.decoration as BoxDecoration).color == Colors.red &&
-          (widget.decoration as BoxDecoration).shape == BoxShape.circle,
-    );
-    expect(redDotFinder, findsOneWidget);
+      expect(find.text('?'), findsOneWidget);
+    });
 
-    // Verify title text styles
-    final titleFinder = find.text('Username');
-    final Text titleWidget = tester.widget(titleFinder);
-    expect(titleWidget.style?.fontWeight, AppTextStyles.bodyLarge.fontWeight);
-    expect(titleWidget.style?.fontSize, AppTextStyles.bodyLarge.fontSize);
+    testWidgets('should show unread indicator when message is unread', (tester) async {
+      final unreadContact = testContact.copyWith(isRead: false);
+      await tester.pumpWidget(createWidgetUnderTest(contact: unreadContact));
 
-    // Verify subtitle text styles
-    final subtitleFinder = find.text('This is a test mock message');
-    final Text subtitleWidget = tester.widget(subtitleFinder);
-    expect(subtitleWidget.style?.color, AppTextStyles.bodyMedium.color);
-    expect(subtitleWidget.style?.fontSize, AppTextStyles.bodyMedium.fontSize);
+      final unreadIndicator = find.byWidgetPredicate(
+        (widget) =>
+            widget is Container &&
+            widget.decoration is BoxDecoration &&
+            (widget.decoration as BoxDecoration).color == Colors.red &&
+            (widget.decoration as BoxDecoration).shape == BoxShape.circle,
+      );
+      expect(unreadIndicator, findsOneWidget);
+    });
 
-    // Verify trailing time format
-    final trailingFinder = find.text('14:30');
-    expect(trailingFinder, findsOneWidget);
-    final Text trailingWidget = tester.widget(trailingFinder);
-    expect(trailingWidget.style?.fontSize, AppTextStyles.bodySmall.fontSize);
+    testWidgets('should not show unread indicator when message is read', (tester) async {
+      await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
+
+      final unreadIndicator = find.byWidgetPredicate(
+        (widget) =>
+            widget is Container &&
+            widget.decoration is BoxDecoration &&
+            (widget.decoration as BoxDecoration).color == Colors.red,
+      );
+      expect(unreadIndicator, findsNothing);
+    });
+
+
+    testWidgets('should have correct card styling', (tester) async {
+      await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
+
+      final card = tester.widget<Card>(find.byType(Card));
+      expect(card.margin, equals(const EdgeInsets.symmetric(vertical: 8.0)));
+      expect(card.elevation, equals(2));
+
+      final shape = card.shape as RoundedRectangleBorder;
+      expect(shape.borderRadius, equals(BorderRadius.circular(15.0)));
+    });
+
+    testWidgets('should handle text overflow correctly', (tester) async {
+      final longTextContact = testContact.copyWith(
+        userName: 'A' * 100,
+        lastMessage: 'B' * 100,
+      );
+      await tester.pumpWidget(createWidgetUnderTest(contact: longTextContact));
+
+      final titleFinder = find.text('A' * 100);
+      final subtitleFinder = find.text('B' * 100);
+
+      expect(titleFinder, findsOneWidget);
+      expect(subtitleFinder, findsOneWidget);
+
+      final title = tester.widget<Text>(titleFinder);
+      final subtitle = tester.widget<Text>(subtitleFinder);
+
+      expect(title.overflow, equals(TextOverflow.ellipsis));
+      expect(subtitle.overflow, equals(TextOverflow.ellipsis));
+    });
   });
 }

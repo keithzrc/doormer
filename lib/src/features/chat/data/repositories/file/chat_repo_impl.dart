@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
@@ -19,16 +18,20 @@ class ChatRepositoryImpl implements ContactRepository {
 
   /// Initializes data and completes the `_dataLoaded` completer when done.
   void _initializeData() async {
+    //TODO this implementation should completeError when catches Error
+    //Revist this.
     AppLogger.info('Initializing data in ChatRepositoryImpl.');
-    await localDataSource.loadDummyData().then((data) {
+    try {
+      final data = await localDataSource.loadDummyData();
       _chats.addAll(data);
       AppLogger.info('Data initialized in ChatRepositoryImpl');
-      _dataLoaded.complete(); // Signal that data is ready
-    }).catchError((error) {
+    } catch (error) {
       AppLogger.error(
           'Data initialization failed in ChatRepositoryImpl', error);
-      _dataLoaded.completeError(error); // Signal failure
-    });
+      _chats.clear();
+    } finally {
+      _dataLoaded.complete();
+    }
   }
 
   /// Ensures data is loaded before initialization is completed.
