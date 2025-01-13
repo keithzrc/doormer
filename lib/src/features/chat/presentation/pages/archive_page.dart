@@ -49,6 +49,11 @@ class _ArchivePageContent extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     );
                   }
+                  if (state is archive_state.ChatErrorState) {
+                    return Center(
+                      child: Text(state.error),
+                    );
+                  }
                   if (state is archive_state.ChatLoadedState) {
                     final archivedChats = state.archivedChats;
 

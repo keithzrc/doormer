@@ -73,9 +73,12 @@ class ChatCard extends StatelessWidget {
             style: AppTextStyles.bodyMedium,
             overflow: TextOverflow.ellipsis,
           ),
-          trailing: Text(
-            chat.lastMessageCreatedTime.toIso8601String(),
-            style: AppTextStyles.bodySmall,
+          trailing: SizedBox(
+            width: 48,
+            child: Text(
+              chat.lastMessageCreatedTime.toIso8601String(),
+              style: AppTextStyles.bodySmall,
+            ),
           ),
           onTap: onTap,
         ),
