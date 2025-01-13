@@ -1,5 +1,4 @@
 import 'package:doormer/src/core/di/service_locator.dart';
-import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
@@ -13,12 +12,9 @@ import '../widgets/contact_info_header.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/message_input_bar.dart';
 
-/// A page that displays a chat conversation with a specific contact
 class ChatboxPage extends StatefulWidget {
-  /// The ID of the contact to chat with
   final String contactId;
 
-  /// Creates a new [ChatboxPage]
   const ChatboxPage({
     super.key,
     required this.contactId,
@@ -53,107 +49,88 @@ class _ChatboxPageState extends State<ChatboxPage> {
       child: Scaffold(
         body: Column(
           children: [
-            // ContactInfo header
-            BlocBuilder<ChatBloc, ChatState>(
-              bloc: BlocProvider.of<ChatBloc>(context, listen: false),
-              builder: (context, state) {
-                AppLogger.debug('Building header with state: $state');
-                if (state is ChatLoadedState) {
-                  try {
-                    final chat = state.chats.firstWhere(
-                      (chat) => chat.id.toString() == widget.contactId,
-                    );
-                    
-                    // 修改这里：正确创建 ContactInfo 对象
-                    final contactInfo = ContactInfo(
-                      id: chat.id,
-                      name: chat.userName,
-                      avatarUrl: chat.avatarUrl,
-                      position: null,
-                      expectedSalary: null,
-                      status: chat.isRead ? 'Active' : 'Away',
-                    );
-                    
-                    AppLogger.debug('Created ContactInfo: ${contactInfo.toString()}');
-                    return ContactInfoHeader(
-                      contact: contactInfo,
-                      onTap: () {},
-                    );
-                  } catch (e) {
-                    AppLogger.error('Error finding contact', e);
-                    return _buildErrorHeader('Contact not found');
-                  }
-                }
-                return _buildLoadingHeader();
-              },
-            ),
-            // 消息列表
-            Expanded(
-              child: BlocBuilder<ChatboxBloc, ChatboxState>(
-                builder: (context, state) {
-                  if (state is MessagesLoaded) {
-                    return ListView.builder(
-                      controller: _scrollController,
-                      itemCount: state.messages.length,
-                      itemBuilder: (context, index) {
-                        return MessageBubble(
-                          message: state.messages[index],
-                        );
-                      },
-                    );
-                  }
-                  if (state is ChatboxError) {
-                    return Center(child: Text('Error: ${state.error}'));
-                  }
-                  return const Center(child: CircularProgressIndicator());
-                },
-              ),
-            ),
-            // 输入栏
-            MessageInputBar(
-              onSendMessage: (content, type) {
-                _chatboxBloc.add(
-                  SendMessageEvent(
-                    Message(
-                      id: DateTime.now().toString(),
-                      content: content,
-                      timestamp: DateTime.now(),
-                      isFromMe: true,
-                      type: type,
-                    ),
-                  ),
-                );
-              },
-              onSendFile: (path, type) {
-                _chatboxBloc.add(SendFileEvent(path, type));
-              },
-            ),
+            _buildHeader(context),
+            _buildMessageList(),
+            _buildInputBar(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildErrorHeader(String message) {
-    return Container(
-      height: 60,
-      padding: const EdgeInsets.all(8),
-      child: Center(
-        child: Text(
-          'Error: $message',
-          style: const TextStyle(color: Colors.red),
-        ),
+  Widget _buildHeader(BuildContext context) {
+    return BlocBuilder<ChatBloc, ChatState>(
+      bloc: BlocProvider.of<ChatBloc>(context, listen: false),
+      builder: (context, state) {
+        if (state is ChatLoadedState) {
+          final contact = state.chats.firstWhere(
+            (chat) => chat.id.toString() == widget.contactId,
+            orElse: () => throw Exception('Contact not found'),
+          );
+          
+          return ContactInfoHeader(
+            contact: ContactInfo(
+              id: contact.id,
+              name: contact.userName,
+              avatarUrl: contact.avatarUrl,
+              status: contact.isRead ? 'Active' : 'Away',
+            ),
+          );
+        }
+        return const SizedBox(
+          height: 80,
+          child: Center(child: CircularProgressIndicator()),
+        );
+      },
+    );
+  }
+
+  Widget _buildMessageList() {
+    return Expanded(
+      child: BlocBuilder<ChatboxBloc, ChatboxState>(
+        builder: (context, state) {
+          if (state is MessagesLoaded) {
+            return ListView.builder(
+              controller: _scrollController,
+              itemCount: state.messages.length,
+              itemBuilder: (context, index) => MessageBubble(
+                message: state.messages[index],
+              ),
+            );
+          }
+          if (state is ChatboxError) {
+            return Center(
+              child: Text(
+                state.error,
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
       ),
     );
   }
 
-  Widget _buildLoadingHeader() {
-    return Container(
-      height: 60,
-      padding: const EdgeInsets.all(8),
-      child: const Center(
-        child: CircularProgressIndicator(),
-      ),
+  Widget _buildInputBar() {
+    return MessageInputBar(
+      onSendMessage: _handleSendMessage,
+      onSendFile: _handleSendFile,
     );
+  }
+
+  void _handleSendMessage(String content, MessageType type) {
+    final message = Message(
+      id: DateTime.now().toString(),
+      content: content,
+      timestamp: DateTime.now(),
+      isFromMe: true,
+      type: type,
+    );
+    _chatboxBloc.add(SendMessageEvent(message));
+  }
+
+  void _handleSendFile(String path, MessageType type) {
+    _chatboxBloc.add(SendFileEvent(path, type));
   }
 }

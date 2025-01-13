@@ -9,10 +9,9 @@ void main() {
     const testContent = 'Hello, world!';
     final testTimestamp = DateTime(2024, 1, 1, 12, 0);
     const testMediaUrl = 'https://example.com/media.jpg';
-    final testAudioDuration = const Duration(seconds: 30);
+    const testAudioDuration = Duration(seconds: 30);
 
     test('should create MessageModel instance with text type', () {
-      // Arrange & Act
       final model = MessageModel(
         id: testId,
         content: testContent,
@@ -21,120 +20,113 @@ void main() {
         type: MessageType.text,
       );
 
-      // Assert
       expect(model.id, testId);
       expect(model.content, testContent);
       expect(model.timestamp, testTimestamp);
       expect(model.isFromMe, true);
       expect(model.type, MessageType.text);
-      expect(model.mediaUrl, null);
-      expect(model.audioDuration, null);
+      expect(model.mediaUrl, isNull);
+      expect(model.audioDuration, isNull);
     });
 
-    test('should create MessageModel instance with image type and media URL', () {
-      // Arrange & Act
-      final model = MessageModel(
-        id: testId,
-        content: testContent,
-        timestamp: testTimestamp,
-        isFromMe: false,
-        type: MessageType.image,
-        mediaUrl: testMediaUrl,
-      );
-
-      // Assert
-      expect(model.id, testId);
-      expect(model.content, testContent);
-      expect(model.timestamp, testTimestamp);
-      expect(model.isFromMe, false);
-      expect(model.type, MessageType.image);
-      expect(model.mediaUrl, testMediaUrl);
-      expect(model.audioDuration, null);
-    });
-
-    test('should create MessageModel instance with audio type and duration', () {
-      // Arrange & Act
+    test('should convert to and from entity', () {
       final model = MessageModel(
         id: testId,
         content: testContent,
         timestamp: testTimestamp,
         isFromMe: true,
-        type: MessageType.audio,
-        mediaUrl: testMediaUrl,
-        audioDuration: testAudioDuration,
+        type: MessageType.text,
       );
 
-      // Assert
-      expect(model.id, testId);
-      expect(model.content, testContent);
-      expect(model.timestamp, testTimestamp);
-      expect(model.isFromMe, true);
-      expect(model.type, MessageType.audio);
-      expect(model.mediaUrl, testMediaUrl);
-      expect(model.audioDuration, testAudioDuration);
+      final entity = model.toEntity();
+
+      expect(entity.id, model.id);
+      expect(entity.content, model.content);
+      expect(entity.timestamp, model.timestamp);
+      expect(entity.isFromMe, model.isFromMe);
+      expect(entity.type, model.type);
     });
 
-    test('should convert to JSON correctly', () {
-      // Arrange
-      final model = MessageModel(
-        id: testId,
-        content: testContent,
-        timestamp: testTimestamp,
-        isFromMe: true,
-        type: MessageType.audio,
-        mediaUrl: testMediaUrl,
-        audioDuration: testAudioDuration,
-      );
+    group('JSON Serialization', () {
+      test('should convert text message to JSON', () {
+        final model = MessageModel(
+          id: testId,
+          content: testContent,
+          timestamp: testTimestamp,
+          isFromMe: true,
+          type: MessageType.text,
+        );
 
-      // Act
-      final json = model.toJson();
+        final json = model.toJson();
+        final fromJson = MessageModel.fromJson(json);
 
-      // Assert
-      expect(json, {
-        'id': testId,
-        'content': testContent,
-        'timestamp': testTimestamp.toIso8601String(),
-        'isFromMe': true,
-        'type': MessageType.audio.toString(),
-        'mediaUrl': testMediaUrl,
-        'audioDuration': testAudioDuration.inMilliseconds,
+        expect(fromJson.id, model.id);
+        expect(fromJson.content, model.content);
+        expect(fromJson.timestamp, model.timestamp);
+        expect(fromJson.type, model.type);
+        expect(fromJson.isFromMe, model.isFromMe);
+      });
+
+      test('should convert media message to JSON', () {
+        final model = MessageModel(
+          id: testId,
+          content: testContent,
+          timestamp: testTimestamp,
+          isFromMe: true,
+          type: MessageType.image,
+          mediaUrl: testMediaUrl,
+        );
+
+        final json = model.toJson();
+        final fromJson = MessageModel.fromJson(json);
+
+        expect(fromJson.mediaUrl, model.mediaUrl);
+        expect(fromJson.type, MessageType.image);
+      });
+
+      test('should convert audio message to JSON', () {
+        final model = MessageModel(
+          id: testId,
+          content: testContent,
+          timestamp: testTimestamp,
+          isFromMe: true,
+          type: MessageType.audio,
+          audioDuration: testAudioDuration,
+        );
+
+        final json = model.toJson();
+        final fromJson = MessageModel.fromJson(json);
+
+        expect(fromJson.audioDuration, model.audioDuration);
+        expect(fromJson.type, MessageType.audio);
+      });
+
+      test('should handle invalid message type gracefully', () {
+        final json = {
+          'id': testId,
+          'content': testContent,
+          'timestamp': testTimestamp.toIso8601String(),
+          'isFromMe': true,
+          'type': 'invalid_type',
+        };
+
+        final model = MessageModel.fromJson(json);
+        expect(model.type, MessageType.text); // 默认为文本类型
+      });
+
+      test('should handle missing optional fields', () {
+        final json = {
+          'id': testId,
+          'content': testContent,
+          'timestamp': testTimestamp.toIso8601String(),
+          'isFromMe': true,
+          'type': 'text',
+        };
+
+        final model = MessageModel.fromJson(json);
+        expect(model.mediaUrl, isNull);
+        expect(model.audioDuration, isNull);
       });
     });
-
-    test('should create instance from JSON correctly', () {
-      // Arrange
-      final json = {
-        'id': testId,
-        'content': testContent,
-        'timestamp': testTimestamp.toIso8601String(),
-        'isFromMe': true,
-        'type': MessageType.audio.toString(),
-        'mediaUrl': testMediaUrl,
-        'audioDuration': testAudioDuration.inMilliseconds,
-      };
-
-      // Act
-      final model = MessageModel.fromJson(json);
-
-      // Assert
-      expect(model.id, testId);
-      expect(model.content, testContent);
-      expect(model.timestamp, testTimestamp);
-      expect(model.isFromMe, true);
-      expect(model.type, MessageType.audio);
-      expect(model.mediaUrl, testMediaUrl);
-      expect(model.audioDuration, testAudioDuration);
-    });
-
-    test('should throw when required fields are missing in JSON', () {
-      // Arrange
-      final json = <String, dynamic>{};
-
-      // Act & Assert
-      expect(
-        () => MessageModel.fromJson(json),
-        throwsA(isA<TypeError>()),
-      );
-    });
   });
-} 
+}

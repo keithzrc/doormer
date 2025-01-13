@@ -9,10 +9,10 @@ class MessageInputBar extends StatefulWidget {
   final Function(String, MessageType) onSendFile;
 
   const MessageInputBar({
-    Key? key,
+    super.key,
     required this.onSendMessage,
     required this.onSendFile,
-  }) : super(key: key);
+  });
 
   @override
   State<MessageInputBar> createState() => _MessageInputBarState();
@@ -49,11 +49,14 @@ class _MessageInputBarState extends State<MessageInputBar> {
         allowMultiple: false,
       );
       
+      if (!mounted) return;
+      
       if (result != null && result.files.isNotEmpty) {
         final file = result.files.first;
-        widget.onSendFile(file.name!, MessageType.file);
+        widget.onSendFile(file.name, MessageType.file);
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error picking file: ${e.toString()}')),
       );
@@ -67,10 +70,13 @@ class _MessageInputBarState extends State<MessageInputBar> {
         source: ImageSource.gallery,
       );
       
+      if (!mounted) return;
+      
       if (image != null) {
         widget.onSendFile(image.name, MessageType.image);
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error picking image: ${e.toString()}')),
       );
@@ -100,7 +106,7 @@ class _MessageInputBarState extends State<MessageInputBar> {
               BoxShadow(
                 offset: const Offset(0, -2),
                 blurRadius: 4,
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withAlpha(26),
               ),
             ],
           ),
