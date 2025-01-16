@@ -29,6 +29,9 @@ class Message with _$Message {
 
     /// Duration for audio messages (if applicable).
     Duration? audioDuration,
+
+    /// The contact ID associated with the message.
+    required String contactId,
   }) = _Message;
 }
 

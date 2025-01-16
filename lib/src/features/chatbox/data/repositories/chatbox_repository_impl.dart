@@ -11,10 +11,10 @@ import 'package:uuid/uuid.dart';
 /// Implementation of the [ChatboxRepository] interface.
 class ChatboxRepositoryImpl implements ChatboxRepository {
   final LocalDataSource _localDataSource;
-  final _messageController = StreamController<List<Message>>.broadcast();
+  final _messageControllers = <String, StreamController<List<Message>>>{};
   final Completer<void> _dataLoaded = Completer<void>();
   List<ContactModel>? _contacts;
-  final List<Message> _currentMessages = [];
+  final _messagesByContact = <String, List<Message>>{};
 
   ChatboxRepositoryImpl({
     required LocalDataSource localDataSource,
@@ -103,21 +103,29 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
     }
   }
 
+  StreamController<List<Message>> _getControllerFor(String contactId) {
+    return _messageControllers.putIfAbsent(
+      contactId,
+      () => StreamController<List<Message>>.broadcast(),
+    );
+  }
+
   @override
   Stream<List<Message>> getMessages(String contactId) async* {
     await _ensureDataLoaded();
+    final controller = _getControllerFor(contactId);
     
     try {
       // 初始空消息列表
       final messages = <Message>[];
       yield messages;
       
-      // 订阅消息流
-      await for (final updates in _messageController.stream) {
+      // 订阅特定联系人的消息流
+      await for (final updates in controller.stream) {
         yield updates;
       }
     } catch (e) {
-      AppLogger.error('Error in getMessages stream', e);
+      AppLogger.error('Error in getMessages stream for contact: $contactId', e);
       yield [];
     }
   }
@@ -126,12 +134,21 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
   Future<void> sendMessage(Message message) async {
     await _ensureDataLoaded();
     
-    _currentMessages.add(message);
-    
     try {
-      _messageController.add(_currentMessages);
+      final contact = _findContactById(message.contactId);
+      if (contact == null) {
+        throw Exception('Contact not found');
+      }
+
+      final controller = _getControllerFor(message.contactId);
+      final currentMessages = _messagesByContact[message.contactId] ?? [];
       
-      AppLogger.info('Message sent successfully: ${message.id}');
+      // 添加新消息到特定联系人的消息列表
+      final updatedMessages = [...currentMessages, message];
+      _messagesByContact[message.contactId] = updatedMessages;
+      controller.add(updatedMessages);
+      
+      AppLogger.info('Message sent successfully to contact: ${message.contactId}');
     } catch (e) {
       AppLogger.error('Failed to send message', e);
       throw Exception('Failed to send message: ${e.toString()}');
@@ -144,6 +161,7 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
 
     final message = MessageModel(
       id: DateTime.now().toString(),
+      contactId: 'current_contact_id',
       content: path.split('/').last,
       timestamp: DateTime.now(),
       isFromMe: true,
@@ -171,7 +189,7 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
       final updatedMessages = messagesList
           .map((json) => MessageModel.fromJson(json).toEntity())
           .toList();
-      _messageController.add(updatedMessages);
+      _messageControllers[chat['id']]?.add(updatedMessages);
 
       AppLogger.info('Message deleted: $messageId');
     } else {
@@ -205,7 +223,7 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
         final updatedMessages = messagesList
             .map((json) => MessageModel.fromJson(json).toEntity())
             .toList();
-        _messageController.add(updatedMessages);
+        _messageControllers[chat['id']]?.add(updatedMessages);
         AppLogger.info('Message updated: ${message.id}');
       }
     } else {
@@ -236,7 +254,10 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
 
   /// Disposes of resources.
   void dispose() {
-    _messageController.close();
+    for (final controller in _messageControllers.values) {
+      controller.close();
+    }
+    _messageControllers.clear();
     AppLogger.info('ChatboxRepositoryImpl disposed');
   }
 }

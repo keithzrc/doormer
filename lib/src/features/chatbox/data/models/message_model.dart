@@ -6,6 +6,7 @@ part 'message_model.g.dart';
 @JsonSerializable()
 class MessageModel {
   final String id;
+  final String contactId;
   final String content;
   final DateTime timestamp;
   final bool isFromMe;
@@ -15,6 +16,7 @@ class MessageModel {
 
   MessageModel({
     required this.id,
+    required this.contactId,
     required this.content,
     required this.timestamp,
     required this.isFromMe,
@@ -30,6 +32,7 @@ class MessageModel {
 
   Message toEntity() => Message(
         id: id,
+        contactId: contactId,
         content: content,
         timestamp: timestamp,
         isFromMe: isFromMe,
@@ -42,6 +45,7 @@ class MessageModel {
 
   factory MessageModel.fromEntity(Message message) => MessageModel(
         id: message.id,
+        contactId: message.contactId,
         content: message.content,
         timestamp: message.timestamp,
         isFromMe: message.isFromMe,

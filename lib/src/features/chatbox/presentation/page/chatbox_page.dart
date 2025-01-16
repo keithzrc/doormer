@@ -122,12 +122,11 @@ class _ChatboxPageState extends State<ChatboxPage> {
   }
 
   void _handleSendMessage(String content, MessageType type) {
-    if (content.trim().isEmpty) {
-      return; // 基本验证：不允许发送空消息
-    }
+    if (content.trim().isEmpty) return;
 
     final message = Message(
-      id: _uuid.v4(), // 使用 UUID v4 生成唯一 ID
+      id: _uuid.v4(),
+      contactId: widget.contactId,
       content: content.trim(),
       timestamp: DateTime.now(),
       isFromMe: true,
@@ -137,11 +136,8 @@ class _ChatboxPageState extends State<ChatboxPage> {
     try {
       _chatboxBloc.add(SendMessageEvent(message));
     } catch (e) {
-      // 处理错误，可能显示 SnackBar 或其他错误提示
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to send message. Please try again.'),
-        ),
+        const SnackBar(content: Text('Failed to send message')),
       );
     }
   }

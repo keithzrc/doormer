@@ -8,6 +8,7 @@ part of 'message_model.dart';
 
 MessageModel _$MessageModelFromJson(Map<String, dynamic> json) => MessageModel(
       id: json['id'] as String,
+      contactId: json['contactId'] as String,
       content: json['content'] as String,
       timestamp: DateTime.parse(json['timestamp'] as String),
       isFromMe: json['isFromMe'] as bool,
@@ -19,6 +20,7 @@ MessageModel _$MessageModelFromJson(Map<String, dynamic> json) => MessageModel(
 Map<String, dynamic> _$MessageModelToJson(MessageModel instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'contactId': instance.contactId,
       'content': instance.content,
       'timestamp': instance.timestamp.toIso8601String(),
       'isFromMe': instance.isFromMe,

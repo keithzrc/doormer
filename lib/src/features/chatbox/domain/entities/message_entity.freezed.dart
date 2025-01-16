@@ -37,6 +37,9 @@ mixin _$Message {
   /// Duration for audio messages (if applicable).
   Duration? get audioDuration => throw _privateConstructorUsedError;
 
+  /// The contact ID associated with the message.
+  String get contactId => throw _privateConstructorUsedError;
+
   /// Create a copy of Message
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -55,7 +58,8 @@ abstract class $MessageCopyWith<$Res> {
       bool isFromMe,
       MessageType type,
       String? mediaUrl,
-      Duration? audioDuration});
+      Duration? audioDuration,
+      String contactId});
 }
 
 /// @nodoc
@@ -80,6 +84,7 @@ class _$MessageCopyWithImpl<$Res, $Val extends Message>
     Object? type = null,
     Object? mediaUrl = freezed,
     Object? audioDuration = freezed,
+    Object? contactId = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -110,6 +115,10 @@ class _$MessageCopyWithImpl<$Res, $Val extends Message>
           ? _value.audioDuration
           : audioDuration // ignore: cast_nullable_to_non_nullable
               as Duration?,
+      contactId: null == contactId
+          ? _value.contactId
+          : contactId // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -128,7 +137,8 @@ abstract class _$$MessageImplCopyWith<$Res> implements $MessageCopyWith<$Res> {
       bool isFromMe,
       MessageType type,
       String? mediaUrl,
-      Duration? audioDuration});
+      Duration? audioDuration,
+      String contactId});
 }
 
 /// @nodoc
@@ -151,6 +161,7 @@ class __$$MessageImplCopyWithImpl<$Res>
     Object? type = null,
     Object? mediaUrl = freezed,
     Object? audioDuration = freezed,
+    Object? contactId = null,
   }) {
     return _then(_$MessageImpl(
       id: null == id
@@ -181,6 +192,10 @@ class __$$MessageImplCopyWithImpl<$Res>
           ? _value.audioDuration
           : audioDuration // ignore: cast_nullable_to_non_nullable
               as Duration?,
+      contactId: null == contactId
+          ? _value.contactId
+          : contactId // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -195,7 +210,8 @@ class _$MessageImpl implements _Message {
       required this.isFromMe,
       required this.type,
       this.mediaUrl,
-      this.audioDuration});
+      this.audioDuration,
+      required this.contactId});
 
   /// Unique identifier for the message.
   @override
@@ -225,9 +241,13 @@ class _$MessageImpl implements _Message {
   @override
   final Duration? audioDuration;
 
+  /// The contact ID associated with the message.
+  @override
+  final String contactId;
+
   @override
   String toString() {
-    return 'Message(id: $id, content: $content, timestamp: $timestamp, isFromMe: $isFromMe, type: $type, mediaUrl: $mediaUrl, audioDuration: $audioDuration)';
+    return 'Message(id: $id, content: $content, timestamp: $timestamp, isFromMe: $isFromMe, type: $type, mediaUrl: $mediaUrl, audioDuration: $audioDuration, contactId: $contactId)';
   }
 
   @override
@@ -245,12 +265,14 @@ class _$MessageImpl implements _Message {
             (identical(other.mediaUrl, mediaUrl) ||
                 other.mediaUrl == mediaUrl) &&
             (identical(other.audioDuration, audioDuration) ||
-                other.audioDuration == audioDuration));
+                other.audioDuration == audioDuration) &&
+            (identical(other.contactId, contactId) ||
+                other.contactId == contactId));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, id, content, timestamp, isFromMe,
-      type, mediaUrl, audioDuration);
+      type, mediaUrl, audioDuration, contactId);
 
   /// Create a copy of Message
   /// with the given fields replaced by the non-null parameter values.
@@ -269,7 +291,8 @@ abstract class _Message implements Message {
       required final bool isFromMe,
       required final MessageType type,
       final String? mediaUrl,
-      final Duration? audioDuration}) = _$MessageImpl;
+      final Duration? audioDuration,
+      required final String contactId}) = _$MessageImpl;
 
   /// Unique identifier for the message.
   @override
@@ -298,6 +321,10 @@ abstract class _Message implements Message {
   /// Duration for audio messages (if applicable).
   @override
   Duration? get audioDuration;
+
+  /// The contact ID associated with the message.
+  @override
+  String get contactId;
 
   /// Create a copy of Message
   /// with the given fields replaced by the non-null parameter values.
