@@ -8,6 +8,7 @@ version: 1.0.0+1
 
 environment:
   sdk: ^3.5.3
+  flutter: ^3.27.2
 
 dependencies:
   flutter:
@@ -34,6 +35,8 @@ dependencies:
   file_picker: ^6.1.1
   image_picker: ^1.0.7
   uuid_type: ^2.1.0
+
+  logging: ^1.2.0
 
 dev_dependencies:
   flutter_test:

@@ -11,6 +11,7 @@ import '../bloc/chatbox_state.dart';
 import '../widgets/contact_info_header.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/message_input_bar.dart';
+import 'package:uuid/uuid.dart';
 
 class ChatboxPage extends StatefulWidget {
   final String contactId;
@@ -27,6 +28,7 @@ class ChatboxPage extends StatefulWidget {
 class _ChatboxPageState extends State<ChatboxPage> {
   final ScrollController _scrollController = ScrollController();
   late final ChatboxBloc _chatboxBloc;
+  final _uuid = const Uuid();
 
   @override
   void initState() {
@@ -120,17 +122,43 @@ class _ChatboxPageState extends State<ChatboxPage> {
   }
 
   void _handleSendMessage(String content, MessageType type) {
+    if (content.trim().isEmpty) {
+      return; // 基本验证：不允许发送空消息
+    }
+
     final message = Message(
-      id: DateTime.now().toString(),
-      content: content,
+      id: _uuid.v4(), // 使用 UUID v4 生成唯一 ID
+      content: content.trim(),
       timestamp: DateTime.now(),
       isFromMe: true,
       type: type,
     );
-    _chatboxBloc.add(SendMessageEvent(message));
+
+    try {
+      _chatboxBloc.add(SendMessageEvent(message));
+    } catch (e) {
+      // 处理错误，可能显示 SnackBar 或其他错误提示
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to send message. Please try again.'),
+        ),
+      );
+    }
   }
 
   void _handleSendFile(String path, MessageType type) {
-    _chatboxBloc.add(SendFileEvent(path, type));
+    if (path.trim().isEmpty) {
+      return; // 基本验证：不允许发送空路径
+    }
+
+    try {
+      _chatboxBloc.add(SendFileEvent(path.trim(), type));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to send file. Please try again.'),
+        ),
+      );
+    }
   }
 }

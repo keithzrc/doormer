@@ -1,5 +1,9 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:doormer/src/features/chatbox/domain/entities/message_entity.dart';
 
+part 'message_model.g.dart';
+
+@JsonSerializable()
 class MessageModel {
   final String id;
   final String content;
@@ -7,7 +11,7 @@ class MessageModel {
   final bool isFromMe;
   final MessageType type;
   final String? mediaUrl;
-  final Duration? audioDuration;
+  final int? audioDurationMs;
 
   MessageModel({
     required this.id,
@@ -16,8 +20,13 @@ class MessageModel {
     required this.isFromMe,
     required this.type,
     this.mediaUrl,
-    this.audioDuration,
+    this.audioDurationMs,
   });
+
+  factory MessageModel.fromJson(Map<String, dynamic> json) =>
+      _$MessageModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MessageModelToJson(this);
 
   Message toEntity() => Message(
         id: id,
@@ -26,35 +35,53 @@ class MessageModel {
         isFromMe: isFromMe,
         type: type,
         mediaUrl: mediaUrl,
-        audioDuration: audioDuration,
+        audioDuration: audioDurationMs != null 
+            ? Duration(milliseconds: audioDurationMs!) 
+            : null,
       );
 
-  factory MessageModel.fromJson(Map<String, dynamic> json) {
-    return MessageModel(
-      id: json['id'] as String,
-      content: json['content'] as String,
-      timestamp: DateTime.parse(json['timestamp'] as String),
-      isFromMe: json['isFromMe'] as bool,
-      type: MessageType.values.firstWhere(
-        (e) => e.name == (json['type'] as String).toLowerCase(),
-        orElse: () => MessageType.text,
-      ),
-      mediaUrl: json['mediaUrl'] as String?,
-      audioDuration: json['audioDuration'] != null
-          ? Duration(milliseconds: json['audioDuration'] as int)
-          : null,
-    );
-  }
+  factory MessageModel.fromEntity(Message message) => MessageModel(
+        id: message.id,
+        content: message.content,
+        timestamp: message.timestamp,
+        isFromMe: message.isFromMe,
+        type: message.type,
+        mediaUrl: message.mediaUrl,
+        audioDurationMs: message.audioDuration?.inMilliseconds,
+      );
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'content': content,
-      'timestamp': timestamp.toIso8601String(),
-      'isFromMe': isFromMe,
-      'type': type.name,
-      if (mediaUrl != null) 'mediaUrl': mediaUrl,
-      if (audioDuration != null) 'audioDuration': audioDuration!.inMilliseconds,
-    };
-  }
+  @override
+  String toString() => 'MessageModel('
+      'id: $id, '
+      'content: $content, '
+      'timestamp: $timestamp, '
+      'isFromMe: $isFromMe, '
+      'type: $type, '
+      'mediaUrl: $mediaUrl, '
+      'audioDurationMs: $audioDurationMs)';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MessageModel &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          content == other.content &&
+          timestamp == other.timestamp &&
+          isFromMe == other.isFromMe &&
+          type == other.type &&
+          mediaUrl == other.mediaUrl &&
+          audioDurationMs == other.audioDurationMs;
+
+  @override
+  int get hashCode => Object.hash(
+        runtimeType,
+        id,
+        content,
+        timestamp,
+        isFromMe,
+        type,
+        mediaUrl,
+        audioDurationMs,
+      );
 }

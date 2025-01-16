@@ -52,6 +52,17 @@ class WebRouter {
         path: '/main/inbox',
         builder: (context, state) => const ChatPage(),
       ),
+
+      GoRoute(
+        path: '/chat',
+        builder: (context, state) => const ChatPage(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            builder: (context, state) => const ChatPage(),
+          ),
+        ],
+      ),
     ],
     errorBuilder: (context, state) => const Scaffold(
       body: Center(child: Text('Page not found!')),

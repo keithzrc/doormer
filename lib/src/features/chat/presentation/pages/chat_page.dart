@@ -11,6 +11,9 @@ import 'package:doormer/src/features/chat/presentation/widgets/chat_card.dart';
 import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:doormer/src/features/chatbox/presentation/page/chatbox_page.dart';
+import 'package:logging/logging.dart';
+
+final _logger = Logger('ChatPage');
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
@@ -21,13 +24,12 @@ class ChatPage extends StatelessWidget {
     final String? selectedChatId =
         GoRouterState.of(context).pathParameters['id'];
 
-    print(
-        'Current route parameters: ${GoRouterState.of(context).pathParameters}');
-    print('Selected chat ID: $selectedChatId');
+    _logger.info('Current route parameters: ${GoRouterState.of(context).pathParameters}');
+    _logger.info('Selected chat ID: $selectedChatId');
 
     return BlocProvider(
       create: (_) {
-        print('Creating ChatBloc...');
+        _logger.info('Creating ChatBloc...');
         return serviceLocator<ChatBloc>()..add(chat_event.LoadChatsEvent());
       },
       child: Scaffold(
@@ -77,8 +79,7 @@ class ChatPage extends StatelessWidget {
                           .where((chat) => !chat.isArchived)
                           .toList();
 
-                      print(
-                          'Available chat IDs: ${chats.map((c) => c.id).join(', ')}');
+                      _logger.info('Available chat IDs: ${chats.map((c) => c.id).join(', ')}');
 
                       if (chats.isEmpty) {
                         return const Center(
@@ -97,7 +98,7 @@ class ChatPage extends StatelessWidget {
                             final chat = chats[index];
                             return InkWell(
                               onTap: () {
-                                print('Navigating to chat: ${chat.id}');
+                                _logger.info('Navigating to chat: ${chat.id}');
                                 context.pushReplacement('/chat/${chat.id}');
                               },
                               child: ChatCard(chat: chat),
@@ -118,8 +119,7 @@ class ChatPage extends StatelessWidget {
                 child: selectedChatId != null
                     ? Builder(
                         builder: (context) {
-                          print(
-                              'Creating ChatboxPage with ID: $selectedChatId');
+                          _logger.info('Creating ChatboxPage with ID: $selectedChatId');
                           return ChatboxPage(contactId: selectedChatId);
                         },
                       )

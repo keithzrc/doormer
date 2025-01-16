@@ -6,6 +6,7 @@ import 'package:doormer/src/features/chatbox/domain/entities/message_entity.dart
 import 'package:doormer/src/features/chatbox/domain/entities/contact_info_entity.dart';
 import 'package:doormer/src/features/chatbox/domain/repositories/chatbox_repository.dart';
 import '../models/message_model.dart';
+import 'package:uuid/uuid.dart';
 
 /// Implementation of the [ChatboxRepository] interface.
 class ChatboxRepositoryImpl implements ChatboxRepository {
@@ -53,18 +54,29 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
       return null;
     }
 
-    AppLogger.debug('Available contacts: ${_contacts!.map((c) => '${c.id}: ${c.userName}').join(', ')}');
-    
+    // 验证 contactId 是否为有效的 UUID
     try {
-      final contact = _contacts!.firstWhere(
-        (contact) => contact.id.toString() == contactId,
-      );
-      AppLogger.debug('Found contact: ${contact.userName} with ID: ${contact.id}');
-      return contact;
+      final uuid = UuidValue(contactId);
+      AppLogger.debug('Valid UUID format: ${uuid.toString()}');
     } catch (e) {
-      AppLogger.error('Contact not found for ID: $contactId, Error: $e');
+      AppLogger.error('Invalid UUID format for contactId: $contactId');
       return null;
     }
+
+    AppLogger.debug('Available contacts: ${_contacts!.map((c) => '${c.id}: ${c.userName}').join(', ')}');
+    
+    // 使用 where + firstOrNull 替代 firstWhere 来避免异常
+    final contact = _contacts!
+        .where((contact) => contact.id.toString() == contactId)
+        .firstOrNull;
+
+    if (contact != null) {
+      AppLogger.debug('Found contact: ${contact.userName} with ID: ${contact.id}');
+    } else {
+      AppLogger.error('No contact found for ID: $contactId');
+    }
+
+    return contact;
   }
 
   @override
@@ -80,16 +92,9 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
         throw Exception('Contact not found');
       }
 
-      final contactInfo = ContactInfo(
-        id: contact.id,
-        name: contact.userName,
-        avatarUrl: contact.avatarUrl,
-        position: 'Software Engineer',
-        expectedSalary: '¥15k-20k',
-        status: contact.isRead ? 'Active' : 'Away'
-      );
+      final contactInfo = contact.toContactInfo();
       
-      AppLogger.info('Successfully created ContactInfo for: ${contactInfo.name} with avatar: ${contactInfo.avatarUrl}');
+      AppLogger.info('Successfully created ContactInfo for: ${contactInfo.name}');
       return contactInfo;
     } catch (e) {
       AppLogger.error('Error in getContactInfo', e);
@@ -128,17 +133,9 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
     final chat = _findChatById(message.id);
     if (chat != null) {
       final messagesList = chat['messages'] as List;
-      final newMessage = {
-        'id': message.id,
-        'content': message.content,
-        'timestamp': message.timestamp.toIso8601String(),
-        'isFromMe': message.isFromMe,
-        'type': message.type.toString().split('.').last,
-        if (message.mediaUrl != null) 'mediaUrl': message.mediaUrl,
-        if (message.audioDuration != null)
-          'audioDuration': message.audioDuration!.inMilliseconds,
-      };
-
+      
+      // 使用新的 MessageModel 创建消息
+      final newMessage = MessageModel.fromEntity(message).toJson();
       messagesList.add(newMessage);
 
       final updatedMessages = messagesList
@@ -158,7 +155,12 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
       timestamp: DateTime.now(),
       isFromMe: true,
       type: type,
-      mediaUrl: 'https://example.com/files/${path.split('/').last}',
+      mediaUrl: type != MessageType.text && type != MessageType.emoji 
+          ? 'https://example.com/files/${path.split('/').last}'
+          : null,
+      audioDurationMs: type == MessageType.audio || type == MessageType.voice 
+          ? const Duration(seconds: 30).inMilliseconds
+          : null,
     ).toEntity();
 
     await sendMessage(message);
