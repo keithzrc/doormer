@@ -14,6 +14,7 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
   final _messageController = StreamController<List<Message>>.broadcast();
   final Completer<void> _dataLoaded = Completer<void>();
   List<ContactModel>? _contacts;
+  final List<Message> _currentMessages = [];
 
   ChatboxRepositoryImpl({
     required LocalDataSource localDataSource,
@@ -105,22 +106,18 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
   @override
   Stream<List<Message>> getMessages(String contactId) async* {
     await _ensureDataLoaded();
-    final chat = _findChatById(contactId);
-
-    if (chat != null) {
-      final messages = <Message>[
-        MessageModel(
-          id: DateTime.now().toString(),
-          content: chat['lastMessage'] as String,
-          timestamp: DateTime.parse(chat['createdTime'] as String),
-          isFromMe: false,
-          type: MessageType.text,
-        ).toEntity(),
-      ];
-
+    
+    try {
+      // 初始空消息列表
+      final messages = <Message>[];
       yield messages;
-      _messageController.add(messages);
-    } else {
+      
+      // 订阅消息流
+      await for (final updates in _messageController.stream) {
+        yield updates;
+      }
+    } catch (e) {
+      AppLogger.error('Error in getMessages stream', e);
       yield [];
     }
   }
@@ -128,20 +125,16 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
   @override
   Future<void> sendMessage(Message message) async {
     await _ensureDataLoaded();
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    final chat = _findChatById(message.id);
-    if (chat != null) {
-      final messagesList = chat['messages'] as List;
+    
+    _currentMessages.add(message);
+    
+    try {
+      _messageController.add(_currentMessages);
       
-      // 使用新的 MessageModel 创建消息
-      final newMessage = MessageModel.fromEntity(message).toJson();
-      messagesList.add(newMessage);
-
-      final updatedMessages = messagesList
-          .map((json) => MessageModel.fromJson(json).toEntity())
-          .toList();
-      _messageController.add(updatedMessages);
+      AppLogger.info('Message sent successfully: ${message.id}');
+    } catch (e) {
+      AppLogger.error('Failed to send message', e);
+      throw Exception('Failed to send message: ${e.toString()}');
     }
   }
 
