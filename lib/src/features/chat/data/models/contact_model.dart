@@ -62,8 +62,25 @@ class ContactModel {
   }
 
   /// Creates a `ContactModel` instance from JSON.
-  factory ContactModel.fromJson(Map<String, dynamic> json) =>
-      _$ContactModelFromJson(json);
+  factory ContactModel.fromJson(Map<String, dynamic> json) {
+    try {
+      print('Parsing contact JSON: $json');
+      return ContactModel(
+        id: UuidValue(json['id'].toString()),
+        userName: json['userName'] as String? ?? 'Unknown User',
+        avatarUrl: json['avatarUrl'] as String? ?? '',
+        lastMessage: json['lastMessage'] as String? ?? '',
+        lastMessageCreatedTime: json['lastMessageCreatedTime'] != null
+            ? DateTime.parse(json['lastMessageCreatedTime'].toString())
+            : DateTime.now(),
+        isArchived: json['isArchived'] as bool? ?? false,
+        isRead: json['isRead'] as bool? ?? true,
+      );
+    } catch (e) {
+      print('Error parsing contact JSON: $e');
+      rethrow;
+    }
+  }
 
   /// Converts a `ContactModel` instance to JSON.
   Map<String, dynamic> toJson() => _$ContactModelToJson(this);

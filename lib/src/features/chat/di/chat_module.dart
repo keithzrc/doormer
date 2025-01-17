@@ -1,24 +1,37 @@
 import 'package:doormer/src/core/di/service_locator.dart';
-import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart';
-import 'package:doormer/src/features/chat/data/repositories/file/chat_repo_impl.dart';
+import 'package:doormer/src/features/chat/data/datasources/remote_data_source.dart';
+import 'package:doormer/src/features/chat/data/repositories/api/chat_repo_impl.dart';
 import 'package:doormer/src/features/chat/domain/repositories/contact_repository.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:http/http.dart' as http;
+import 'package:doormer/src/core/config/app_config.dart';
 
 void initChatModule() {
-  // Register LocalDataSource
-  serviceLocator.registerSingleton<LocalDataSource>(LocalDataSource());
+  // API Client
+  serviceLocator.registerLazySingleton<http.Client>(
+    () => http.Client(),
+  );
 
-  // Register ChatRepository
-  serviceLocator.registerSingleton<ContactRepository>(
-    ChatRepositoryImpl(
-      localDataSource: serviceLocator<LocalDataSource>(),
+  // Data Sources
+  serviceLocator.registerLazySingleton<RemoteDataSource>(
+    () => RemoteDataSourceImpl(
+      client: serviceLocator<http.Client>(),
+      baseUrl: AppConfig.apiBaseUrl,
     ),
   );
 
-  // Register use cases
-  serviceLocator.registerSingleton<GetSortedActiveChatList>(
-    GetSortedActiveChatList(serviceLocator<ContactRepository>()),
+  // Repositories
+  serviceLocator.registerLazySingleton<ContactRepository>(
+    () => ChatRepositoryImpl(
+      remoteDataSource: serviceLocator<RemoteDataSource>(),
+      currentUserId: 'test-user-id', // TODO: 从认证服务获取
+    ),
+  );
+
+  // Use Cases
+  serviceLocator.registerLazySingleton<GetSortedActiveChatList>(
+    () => GetSortedActiveChatList(serviceLocator<ContactRepository>()),
   );
 
   serviceLocator.registerLazySingleton<GetSortedArchivedChatList>(
@@ -33,7 +46,7 @@ void initChatModule() {
     () => DeleteChat(serviceLocator<ContactRepository>()),
   );
 
-  // Register ChatBloc
+  // BLoC
   serviceLocator.registerFactory<ChatBloc>(() => ChatBloc(
         getChatListUseCase: serviceLocator<GetSortedActiveChatList>(),
         getArchivedChatListUseCase: serviceLocator<GetSortedArchivedChatList>(),
