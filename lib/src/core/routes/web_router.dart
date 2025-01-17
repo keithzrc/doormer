@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 import 'package:doormer/src/core/di/service_locator.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
+=======
+import 'package:doormer/src/features/auth/presentation/pages/web/auth_page_web.dart';
+>>>>>>> ade1269 (router update)
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -19,12 +23,12 @@ WebRouter defines the routing structure and logic specifically for the web platf
 class WebRouter {
   // TODO: Change to th according web UI
   static final GoRouter router = GoRouter(
-    initialLocation: '/main/inbox',
+    initialLocation: '/auth',
     routes: [
       // Auth Routes
       GoRoute(
         path: '/auth',
-        builder: (context, state) => const AuthPage(),
+        builder: (context, state) => const AuthPageWeb(),
         routes: [
           GoRoute(
             path: 'login',
