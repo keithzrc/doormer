@@ -1,6 +1,5 @@
 class AppConfig {
-  static const String apiBaseUrl =
-      'https://728186ec-63ae-44b3-be57-bfa793127d5f.mock.pstmn.io';
+  static const String apiBaseUrl = 'http://localhost:5598';
   static const int connectTimeout = 15000; // in milliseconds
   static const int receiveTimeout = 15000;
 
