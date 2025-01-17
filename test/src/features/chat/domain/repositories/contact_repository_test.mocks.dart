@@ -51,10 +51,11 @@ class MockContactRepository extends _i1.Mock implements _i2.ContactRepository {
       ) as _i3.Future<List<_i4.Contact>>);
 
   @override
-  _i3.Future<void> updateChat(_i4.Contact? contact) => (super.noSuchMethod(
+  _i3.Future<void> updateChat(_i4.Contact? updatedContact) =>
+      (super.noSuchMethod(
         Invocation.method(
           #updateChat,
-          [contact],
+          [updatedContact],
         ),
         returnValue: _i3.Future<void>.value(),
         returnValueForMissingStub: _i3.Future<void>.value(),
