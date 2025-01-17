@@ -1,7 +1,7 @@
 // lib/src/features/auth/di/auth_module.dart
 
 import 'package:doormer/src/core/services/sessions/session_service.dart';
-import 'package:doormer/src/core/utils/token_storage.dart';
+import 'package:doormer/src/core/utils/token_storage/token_storage.dart';
 import 'package:doormer/src/features/auth/domain/repository/auth_repository.dart';
 import 'package:doormer/src/features/auth/domain/usecases/auth_usecase.dart';
 import 'package:get_it/get_it.dart';
