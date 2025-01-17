@@ -1,9 +1,9 @@
 // lib/features/auth/data/repositories/auth_repository_impl.dart
 
 import 'package:doormer/src/core/services/sessions/session_service.dart';
-import 'package:doormer/src/core/utils/token_storage.dart';
+import 'package:doormer/src/core/utils/token_storage/token_storage.dart';
 import 'package:doormer/src/features/auth/data/datasources/auth_remote_datasource.dart';
-import 'package:doormer/src/shared/domain/entities/user.dart';
+import 'package:doormer/src/shared/user/domain/entities/user.dart';
 import 'package:doormer/src/features/auth/domain/repository/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {

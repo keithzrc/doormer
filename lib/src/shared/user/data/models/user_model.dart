@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:doormer/src/shared/domain/entities/user.dart';
+import 'package:doormer/src/shared/user/domain/entities/user.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
 
 class UserModel {
@@ -47,7 +47,6 @@ class UserModel {
 }
 
 class UserInfo extends User {
-
   UserInfo({
     required super.id,
     required super.email,
