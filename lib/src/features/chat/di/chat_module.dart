@@ -4,15 +4,23 @@ import 'package:doormer/src/features/chat/data/repositories/file/chat_repo_impl.
 import 'package:doormer/src/features/chat/domain/repositories/contact_repository.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:dio/dio.dart';
+import 'package:doormer/src/features/chat/data/datasources/remote_data_source.dart';
 
 void initChatModule() {
   // Register LocalDataSource
   serviceLocator.registerSingleton<LocalDataSource>(LocalDataSource());
 
+  // Register RemoteDataSource
+  serviceLocator.registerSingleton<ChatRemoteDataSource>(
+    ChatRemoteDataSource(dio: serviceLocator<Dio>()),
+  );
+
   // Register ChatRepository
   serviceLocator.registerSingleton<ContactRepository>(
     ChatRepositoryImpl(
       localDataSource: serviceLocator<LocalDataSource>(),
+      remoteDataSource: serviceLocator<ChatRemoteDataSource>(),
     ),
   );
 

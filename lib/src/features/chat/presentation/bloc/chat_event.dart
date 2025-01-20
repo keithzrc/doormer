@@ -6,12 +6,9 @@ class LoadChatsEvent extends ChatEvent {}
 
 class LoadArchivedChatsEvent extends ChatEvent {}
 
-class ToggleChatEvent extends ChatEvent {
+class ToggleArchiveStatusEvent extends ChatEvent {
   final Contact contact;
-  ToggleChatEvent(this.contact);
+  ToggleArchiveStatusEvent(this.contact);
 }
 
-class DeleteChatEvent extends ChatEvent {
-  final String chatId;
-  DeleteChatEvent(this.chatId);
-}
+

@@ -60,7 +60,7 @@ void main() {
 
   testWidgets('displays empty message when no chats available', (tester) async {
     when(() => mockChatBloc.state).thenReturn(ChatLoadedState(
-      chats: [],
+      unarchivedChats: [],
       archivedChats: [],
     ));
 
@@ -92,7 +92,7 @@ void main() {
     ];
 
     when(() => mockChatBloc.state).thenReturn(ChatLoadedState(
-      chats: testChats,
+      unarchivedChats: testChats,
       archivedChats: [],
     ));
 
@@ -126,7 +126,7 @@ void main() {
     ];
 
     when(() => mockChatBloc.state).thenReturn(ChatLoadedState(
-      chats: testChats,
+      unarchivedChats: testChats,
       archivedChats: [],
     ));
 

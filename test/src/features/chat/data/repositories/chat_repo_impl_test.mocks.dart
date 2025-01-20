@@ -3,13 +3,17 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
+import 'dart:async' as _i4;
 
+import 'package:dio/dio.dart' as _i2;
 import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart'
-    as _i2;
+    as _i3;
+import 'package:doormer/src/features/chat/data/datasources/remote_data_source.dart'
+    as _i6;
 import 'package:doormer/src/features/chat/data/models/contact_model.dart'
-    as _i4;
+    as _i5;
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:uuid/uuid.dart' as _i7;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -25,21 +29,110 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
+class _FakeDio_0 extends _i1.SmartFake implements _i2.Dio {
+  _FakeDio_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [LocalDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockLocalDataSource extends _i1.Mock implements _i2.LocalDataSource {
+class MockLocalDataSource extends _i1.Mock implements _i3.LocalDataSource {
   MockLocalDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<List<_i4.ContactModel>> loadDummyData() => (super.noSuchMethod(
+  _i4.Future<List<_i5.ContactModel>> loadDummyData() => (super.noSuchMethod(
         Invocation.method(
           #loadDummyData,
           [],
         ),
         returnValue:
-            _i3.Future<List<_i4.ContactModel>>.value(<_i4.ContactModel>[]),
-      ) as _i3.Future<List<_i4.ContactModel>>);
+            _i4.Future<List<_i5.ContactModel>>.value(<_i5.ContactModel>[]),
+      ) as _i4.Future<List<_i5.ContactModel>>);
+}
+
+/// A class which mocks [ChatRemoteDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockChatRemoteDataSource extends _i1.Mock
+    implements _i6.ChatRemoteDataSource {
+  MockChatRemoteDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.Dio get dio => (super.noSuchMethod(
+        Invocation.getter(#dio),
+        returnValue: _FakeDio_0(
+          this,
+          Invocation.getter(#dio),
+        ),
+      ) as _i2.Dio);
+
+  @override
+  _i4.Future<List<_i5.ContactModel>> getActiveChatList() => (super.noSuchMethod(
+        Invocation.method(
+          #getActiveChatList,
+          [],
+        ),
+        returnValue:
+            _i4.Future<List<_i5.ContactModel>>.value(<_i5.ContactModel>[]),
+      ) as _i4.Future<List<_i5.ContactModel>>);
+
+  @override
+  _i4.Future<List<_i5.ContactModel>> getArchivedChatList() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getArchivedChatList,
+          [],
+        ),
+        returnValue:
+            _i4.Future<List<_i5.ContactModel>>.value(<_i5.ContactModel>[]),
+      ) as _i4.Future<List<_i5.ContactModel>>);
+
+  @override
+  _i4.Future<void> archiveChat(
+    _i7.UuidValue? id,
+    _i7.UuidValue? contactId,
+    bool? isArchived,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #archiveChat,
+          [
+            id,
+            contactId,
+            isArchived,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> deleteChat(String? chatId) => (super.noSuchMethod(
+        Invocation.method(
+          #deleteChat,
+          [chatId],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> updateChat(_i5.ContactModel? chat) => (super.noSuchMethod(
+        Invocation.method(
+          #updateChat,
+          [chat],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }

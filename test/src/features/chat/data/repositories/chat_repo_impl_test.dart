@@ -1,4 +1,5 @@
 import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart';
+import 'package:doormer/src/features/chat/data/datasources/remote_data_source.dart';
 import 'package:doormer/src/features/chat/data/models/contact_model.dart';
 import 'package:doormer/src/features/chat/data/repositories/file/chat_repo_impl.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
@@ -8,16 +9,18 @@ import 'package:mockito/mockito.dart';
 import 'package:uuid/uuid.dart';
 import 'chat_repo_impl_test.mocks.dart';
 
-@GenerateMocks([LocalDataSource])
+@GenerateMocks([LocalDataSource, ChatRemoteDataSource])
 void main() {
   late ChatRepositoryImpl repository;
   late MockLocalDataSource mockLocalDataSource;
+  late MockChatRemoteDataSource mockRemoteDataSource;
   late List<ContactModel> mockContacts;
   late UuidValue testId1;
   late UuidValue testId2;
 
   setUp(() {
     mockLocalDataSource = MockLocalDataSource();
+    mockRemoteDataSource = MockChatRemoteDataSource();
     testId1 = UuidValue(const Uuid().v4());
     testId2 = UuidValue(const Uuid().v4());
     
@@ -44,8 +47,19 @@ void main() {
 
     when(mockLocalDataSource.loadDummyData())
         .thenAnswer((_) async => mockContacts);
+    
+    // 添加 remoteDataSource 的基本 mock
+    when(mockRemoteDataSource.archiveChat(any, any, any))
+        .thenAnswer((_) async => {});
+    when(mockRemoteDataSource.deleteChat(any))
+        .thenAnswer((_) async => {});
+    when(mockRemoteDataSource.updateChat(any))
+        .thenAnswer((_) async => {});
         
-    repository = ChatRepositoryImpl(localDataSource: mockLocalDataSource);
+    repository = ChatRepositoryImpl(
+      localDataSource: mockLocalDataSource,
+      remoteDataSource: mockRemoteDataSource,
+    );
   });
 
   group('ChatRepositoryImpl', () {
@@ -100,6 +114,7 @@ void main() {
 
       final newRepository = ChatRepositoryImpl(
         localDataSource: mockLocalDataSource,
+        remoteDataSource: mockRemoteDataSource,
       );
 
       final activeChats = await newRepository.getActiveChatList();
@@ -114,7 +129,10 @@ void main() {
       when(mockLocalDataSource.loadDummyData())
           .thenAnswer((_) => Future.error(Exception('Failed to load')));
 
-      final repo = ChatRepositoryImpl(localDataSource: mockLocalDataSource);
+      final repo = ChatRepositoryImpl(
+        localDataSource: mockLocalDataSource,
+        remoteDataSource: mockRemoteDataSource,
+      );
       await Future.delayed(Duration.zero);
 
       final activeChats = await repo.getActiveChatList();
@@ -196,6 +214,29 @@ void main() {
       final archivedChats = await repository.getArchivedChatList();
       
       expect(activeChats.length + archivedChats.length, equals(mockContacts.length - 1));
+    });
+
+    test('archiveChat should update local and remote data', () async {
+      await repository.archiveChat(testId1, testId1, true);
+      
+      // 验证本地数据更新
+      final archivedChats = await repository.getArchivedChatList();
+      expect(archivedChats.any((chat) => chat.id == testId1), isTrue);
+      
+      // 验证远程调用
+      verify(mockRemoteDataSource.archiveChat(testId1, testId1, true)).called(1);
+    });
+
+    test('archiveChat should handle remote errors gracefully', () async {
+      when(mockRemoteDataSource.archiveChat(any, any, any))
+          .thenThrow(Exception('Network error'));
+
+      try {
+        await repository.archiveChat(testId1, testId1, true);
+        fail('Should throw an exception');
+      } catch (e) {
+        expect(e, isInstanceOf<Exception>());
+      }
     });
   });
 }

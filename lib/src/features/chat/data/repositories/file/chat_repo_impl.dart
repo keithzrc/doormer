@@ -4,14 +4,20 @@ import 'package:doormer/src/features/chat/data/datasources/local_data_source.dar
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/features/chat/domain/repositories/contact_repository.dart';
 import 'package:doormer/src/features/chat/data/models/contact_model.dart';
+import 'package:uuid/uuid.dart';
+import 'package:doormer/src/features/chat/data/datasources/remote_data_source.dart';
 
 /// Implementation of the [ContactRepository] interface.
 class ChatRepositoryImpl implements ContactRepository {
   final LocalDataSource localDataSource;
+  final ChatRemoteDataSource remoteDataSource;
   final List<ContactModel> _chats = [];
   final Completer<void> _dataLoaded = Completer<void>();
 
-  ChatRepositoryImpl({required this.localDataSource}) {
+  ChatRepositoryImpl({
+    required this.localDataSource,
+    required this.remoteDataSource,
+  }) {
     // Constructor cannot await, not a problem when using API
     _initializeData();
   }
@@ -85,4 +91,22 @@ class ChatRepositoryImpl implements ContactRepository {
       AppLogger.info('Chat with ID $chatId successfully removed.');
     }
   }
+
+  Future<void> archiveChat(
+      UuidValue id, UuidValue contactId, bool isArchived) async {
+    await _ensureDataLoaded();
+    
+    final index = _chats.indexWhere((chat) => chat.id == id);
+    if (index != indexNotFound) {
+      // 更新本地数据
+      _chats[index] = _chats[index].copyWith(isArchived: isArchived);
+      AppLogger.info('Chat with ID ${id.toString()} archived status updated to: $isArchived');
+      
+      // 调用远程数据源
+      await remoteDataSource.archiveChat(id, contactId, isArchived);
+    } else {
+      AppLogger.warn('Chat with ID ${id.toString()} not found for archiving.');
+    }
+  }
 }
+

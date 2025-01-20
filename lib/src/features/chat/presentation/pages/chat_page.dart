@@ -75,9 +75,7 @@ class _ChatPageContent extends StatelessWidget {
                     }
 
                     if (state is chat_state.ChatLoadedState) {
-                      final chats = state.chats
-                          .where((chat) => !chat.isArchived)
-                          .toList();
+                      final chats = state.unarchivedChats;
 
                       if (chats.isEmpty) {
                         return const Center(
@@ -100,7 +98,7 @@ class _ChatPageContent extends StatelessWidget {
                               isInArchivePage: false,
                               onArchive: (contact) {
                                 context.read<ChatBloc>().add(
-                                  chat_event.ToggleChatEvent(contact),
+                                  chat_event.ToggleArchiveStatusEvent(contact),
                                 );
                               },
                             );

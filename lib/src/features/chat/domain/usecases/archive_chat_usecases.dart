@@ -11,8 +11,11 @@ class ToggleChatArchivedStatus {
   Future<Contact> call(Contact contact) async {
     final updatedContact = contact.copyWith(isArchived: !contact.isArchived);
 
-    // TODO: maybe just create a updateArchiveStatus(), where it Updates the `isArchived` status of a chat by its ID.
-    await repository.updateChat(updatedContact);
+    await repository.archiveChat(
+      contact.id,
+      contact.id,
+      !contact.isArchived
+    );
 
     return updatedContact;
   }

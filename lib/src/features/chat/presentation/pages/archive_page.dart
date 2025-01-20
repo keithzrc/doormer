@@ -77,7 +77,7 @@ class _ArchivePageContent extends StatelessWidget {
                             isInArchivePage: true,
                             onArchive: (contact) {
                               context.read<ChatBloc>().add(
-                                    archive_event.ToggleChatEvent(contact),
+                                    archive_event.ToggleArchiveStatusEvent(contact),
                                   );
                             },
                           );

@@ -10,6 +10,7 @@ import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart'
 import 'package:doormer/src/features/chat/domain/repositories/contact_repository.dart'
     as _i2;
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:uuid/uuid.dart' as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -67,6 +68,25 @@ class MockContactRepository extends _i1.Mock implements _i2.ContactRepository {
         Invocation.method(
           #deleteChat,
           [chatId],
+        ),
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
+
+  @override
+  _i3.Future<void> archiveChat(
+    _i5.UuidValue? id,
+    _i5.UuidValue? contactId,
+    bool? isArchived,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #archiveChat,
+          [
+            id,
+            contactId,
+            isArchived,
+          ],
         ),
         returnValue: _i3.Future<void>.value(),
         returnValueForMissingStub: _i3.Future<void>.value(),

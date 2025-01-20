@@ -61,7 +61,7 @@ void main() {
   });
 
   testWidgets('ArchivePage shows empty message when no archived chats', (tester) async {
-    when(() => mockChatBloc.state).thenReturn(ChatLoadedState(chats: [], archivedChats: []));
+    when(() => mockChatBloc.state).thenReturn(ChatLoadedState(unarchivedChats: [], archivedChats: []));
 
     await tester.pumpWidget(createWidgetUnderTest());
 

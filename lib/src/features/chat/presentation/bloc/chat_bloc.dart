@@ -19,17 +19,20 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     required this.deleteChatUseCase,
     List<Contact>? initialChats,
   }) : super(initialChats != null
-            ? ChatLoadedState(chats: initialChats, archivedChats: [])
+            ? ChatLoadedState(
+                unarchivedChats: initialChats.where((chat) => !chat.isArchived).toList(),
+                archivedChats: initialChats.where((chat) => chat.isArchived).toList(),
+              )
             : ChatLoadingState()) {
-    on<LoadChatsEvent>((event, emit) async {
+    on<LoadChatsEvent>((_, emit) async {
       emit(ChatLoadingState());
       try {
         final chats = await getChatListUseCase.call();
         final archivedChats = await getArchivedChatListUseCase.call();
         AppLogger.debug('Loaded chats: ${chats.length}, archived: ${archivedChats.length}');
         emit(ChatLoadedState(
-          chats: chats.where((chat) => !chat.isArchived).toList(),
-          archivedChats: archivedChats.where((chat) => chat.isArchived).toList(),
+          unarchivedChats: chats,
+          archivedChats: archivedChats,
         ));
       } catch (e, stack) {
         AppLogger.error('Error loading chats', e, stack);
@@ -43,7 +46,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         final chats = await getChatListUseCase.call();
         final archivedChats = await getArchivedChatListUseCase.call();
         emit(ChatLoadedState(
-          chats: chats,
+          unarchivedChats: chats,
           archivedChats: archivedChats,
         ));
       } catch (e) {
@@ -52,7 +55,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     });
 
     // TODO: use routes
-    on<ToggleChatEvent>((event, emit) async {
+    on<ToggleArchiveStatusEvent>((event, emit) async {
       try {
         await toggleChatUseCase.call(event.contact);
         add(LoadChatsEvent());
@@ -61,14 +64,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       }
     });
 
-    on<DeleteChatEvent>((event, emit) async {
-      try {
-        await deleteChatUseCase.call(event.chatId);
-        add(LoadArchivedChatsEvent());
-      } catch (e, stackTrace) {
-        emit(ChatErrorState(e.toString()));
-        AppLogger.error('Deleted chat with error', e, stackTrace);
-      }
-    });
+    
   }
 }
