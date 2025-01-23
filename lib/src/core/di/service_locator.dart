@@ -29,11 +29,11 @@ Future<void> initDependencies() async {
     );
   }
 
-  // Register SessionService
-  serviceLocator.registerSingleton<SessionService>(
-    SessionServiceImpl(
+  // Register Session Service (with token and dio)
+  serviceLocator.registerLazySingleton<SessionService>(
+    () => SessionServiceImpl(
       tokenStorage: serviceLocator<TokenStorage>(),
-      dio: serviceLocator<Dio>(),
+      dio: Dio(), // Temporary basic Dio instance
     ),
   );
 
@@ -44,9 +44,9 @@ Future<void> initDependencies() async {
     ),
   );
 
-  // Register Dio Client with interceptors
-  serviceLocator.registerSingleton<Dio>(
-    DioClient.createDio(
+  // Register Dio
+  serviceLocator.registerLazySingleton<Dio>(
+    () => DioClient.createDio(
       sessionService: serviceLocator<SessionService>(),
       sessionBloc: serviceLocator<GlobalSessionBloc>(),
     ),
@@ -60,6 +60,10 @@ Future<void> initDependencies() async {
       sessionBloc: serviceLocator<GlobalSessionBloc>(),
     ),
   );
+
+  // Inject the fully configured Dio into SessionService
+  final sessionService = serviceLocator<SessionService>() as SessionServiceImpl;
+  sessionService.setDio(serviceLocator<Dio>());
 
   // Initialize feature-specific modules
   initAuthModule(); // Initializes dependencies for the auth feature
