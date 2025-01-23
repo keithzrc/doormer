@@ -15,11 +15,11 @@ final serviceLocator = GetIt.instance;
 Future<void> initDependencies() async {
   // Register Dio Client with base URL and interceptors
   serviceLocator.registerLazySingleton<Dio>(() => DioClient.createDio());
-    serviceLocator.registerLazySingletonAsync<HubConnection>((s) =>   await s.initSignalR();
-);
+  serviceLocator.registerLazySingletonAsync<HubConnection>(
+      () async => await SignalRService.initSignalR());
 
-  final SignalRService signalRService = serviceLocator<SignalRService>();
-  await signalRService.initSignalR();
+  // final SignalRService signalRService = serviceLocator<SignalRService>();
+  // await signalRService.initSignalR();
 
   // Register FlutterSecureStorage
   serviceLocator.registerLazySingleton<FlutterSecureStorage>(

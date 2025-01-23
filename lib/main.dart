@@ -10,18 +10,15 @@ void main() async {
   // 初始化依赖
   await initDependencies();
 
-  // 初始化 SignalR 服务
-  final SignalRService signalRService = serviceLocator<SignalRService>();
-  await signalRService.initSignalR();
-
+  // // 初始化 SignalR 服务
+  // final SignalRService signalRService = serviceLocator<SignalRService>();
+  // await signalRService.initSignalR();
   // 启动应用
-  runApp(MyApp(signalRService: signalRService));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final SignalRService signalRService;
-
-  const MyApp({super.key, required this.signalRService});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,7 @@
 import 'package:signalr_netcore/signalr_client.dart';
 
 class SignalRService {
+  static HubConnection? hubConnection;
   // 初始化 SignalR 连接
   static Future<HubConnection> initSignalR() async {
     var hubConnection = HubConnectionBuilder()

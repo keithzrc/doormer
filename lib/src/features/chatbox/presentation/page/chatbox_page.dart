@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart';
+import 'package:signalr_netcore/hub_connection.dart';
 import '../../domain/entities/message_entity.dart';
 import '../../domain/entities/contact_info_entity.dart';
 import '../bloc/chatbox_bloc.dart';
@@ -12,7 +13,6 @@ import '../widgets/contact_info_header.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/message_input_bar.dart';
 import 'package:uuid/uuid.dart';
-import 'package:doormer/src/core/signalr_service.dart'; // 引入 SignalR 服务
 
 class ChatboxPage extends StatefulWidget {
   final String contactId;
@@ -29,8 +29,7 @@ class ChatboxPage extends StatefulWidget {
 class _ChatboxPageState extends State<ChatboxPage> {
   final ScrollController _scrollController = ScrollController();
   late final ChatboxBloc _chatboxBloc;
-  final SignalRService _signalRService =
-      serviceLocator<SignalRService>(); // 初始化 SignalR
+  final HubConnection _hubConnection = serviceLocator<HubConnection>();
   final _uuid = const Uuid();
 
   @override
@@ -41,9 +40,7 @@ class _ChatboxPageState extends State<ChatboxPage> {
     _chatboxBloc = serviceLocator<ChatboxBloc>();
     _chatboxBloc.add(LoadMessages(widget.contactId));
 
-    // 初始化 SignalR 服务并监听消息
-    _signalRService.initSignalR();
-    _signalRService.hubConnection.on("ReceiveMessage", (args) {
+    _hubConnection.on("ReceiveMessage", (args) {
       if (args!.isNotEmpty) {
         final message = Message(
           id: _uuid.v4(),
@@ -153,10 +150,11 @@ class _ChatboxPageState extends State<ChatboxPage> {
       isFromMe: true,
       type: type,
     );
-
+    final HubConnection _hubConnection = serviceLocator<HubConnection>();
     try {
       _chatboxBloc.add(SendMessageEvent(message));
-      _signalRService.sendMessage(widget.contactId, content); // 同步发送到 SignalR
+      _hubConnection.invoke("SendMessage",
+          args: [widget.contactId, content]); // 同步发送到 SignalR
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to send message')),
