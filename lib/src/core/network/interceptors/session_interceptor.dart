@@ -72,7 +72,7 @@ class SessionInterceptor extends Interceptor {
         // Handle token refresh errors
         if (e.response?.statusCode == 401) {
           // Both the access token and refresh token have expired; log out
-          _globalSessionBloc.add(SessionExpired());
+          _globalSessionBloc.add(ExpireSession());
           await _sessionService.logout();
         } else {
           AppLogger.error("Refresh token failed with error: ${e.message}");

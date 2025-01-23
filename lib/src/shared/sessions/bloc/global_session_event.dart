@@ -7,10 +7,10 @@ abstract class GlobalSessionEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class SessionExpiredState extends GlobalSessionState {}
-
 class CheckSession extends GlobalSessionEvent {}
 
 class ExpireSession extends GlobalSessionEvent {}
 
 class RefreshSession extends GlobalSessionEvent {}
+
+class SessionStarted extends GlobalSessionEvent {}
