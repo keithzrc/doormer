@@ -1,9 +1,18 @@
 import 'package:signalr_netcore/signalr_client.dart';
 
 class SignalRService {
-  static HubConnection? hubConnection;
+  late final HubConnection hubConnection;
+
+  SignalRService._();
+
+  static Future<SignalRService> create() async {
+    final instance = SignalRService._();
+    instance.hubConnection = await instance._initSignalR();
+    return instance;
+  }
+
   // 初始化 SignalR 连接
-  static Future<HubConnection> initSignalR() async {
+  Future<HubConnection> _initSignalR() async {
     var hubConnection = HubConnectionBuilder()
         .withUrl("http://localhost:5597/chatHub") // 替换为后端的 URL
         .build();
@@ -25,10 +34,10 @@ class SignalRService {
 
   // 发送消息
   Future<void> sendMessage(String userId, String message) async {
-    //try {
-    //await hubConnection.invoke("SendMessage", args: [userId, message]);
-    // } catch (e) {
-    //  print("Error sending message: $e");
-    // }
+    try {
+      await hubConnection.invoke("SendMessage", args: [userId, message]);
+    } catch (e) {
+      print("Error sending message: $e");
+    }
   }
 }

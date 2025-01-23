@@ -15,8 +15,9 @@ final serviceLocator = GetIt.instance;
 Future<void> initDependencies() async {
   // Register Dio Client with base URL and interceptors
   serviceLocator.registerLazySingleton<Dio>(() => DioClient.createDio());
-  serviceLocator.registerLazySingletonAsync<HubConnection>(
-      () async => await SignalRService.initSignalR());
+
+  serviceLocator.registerSingletonAsync<SignalRService>(
+      () async => await SignalRService.create());
 
   // final SignalRService signalRService = serviceLocator<SignalRService>();
   // await signalRService.initSignalR();

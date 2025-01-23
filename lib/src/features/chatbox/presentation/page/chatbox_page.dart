@@ -1,4 +1,5 @@
 import 'package:doormer/src/core/di/service_locator.dart';
+import 'package:doormer/src/core/signalr_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
@@ -29,7 +30,7 @@ class ChatboxPage extends StatefulWidget {
 class _ChatboxPageState extends State<ChatboxPage> {
   final ScrollController _scrollController = ScrollController();
   late final ChatboxBloc _chatboxBloc;
-  final HubConnection _hubConnection = serviceLocator<HubConnection>();
+  final SignalRService _signalRService = serviceLocator<SignalRService>();
   final _uuid = const Uuid();
 
   @override
@@ -40,12 +41,12 @@ class _ChatboxPageState extends State<ChatboxPage> {
     _chatboxBloc = serviceLocator<ChatboxBloc>();
     _chatboxBloc.add(LoadMessages(widget.contactId));
 
-    _hubConnection.on("ReceiveMessage", (args) {
+    _signalRService.hubConnection.on("ReceiveMessage", (args) {
       if (args!.isNotEmpty) {
         final message = Message(
           id: _uuid.v4(),
           contactId: widget.contactId,
-          content: args[1],
+          content: args[1] as String,
           timestamp: DateTime.now(),
           isFromMe: false, // SignalR 收到的消息通常来自对方
           type: MessageType.text, // 假设收到的消息为文本类型
@@ -150,11 +151,11 @@ class _ChatboxPageState extends State<ChatboxPage> {
       isFromMe: true,
       type: type,
     );
-    final HubConnection _hubConnection = serviceLocator<HubConnection>();
+    final SignalRService _signalRService = serviceLocator<SignalRService>();
     try {
       _chatboxBloc.add(SendMessageEvent(message));
-      _hubConnection.invoke("SendMessage",
-          args: [widget.contactId, content]); // 同步发送到 SignalR
+      _signalRService.sendMessage(widget.contactId, content);
+      // 同步发送到 SignalR
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to send message')),

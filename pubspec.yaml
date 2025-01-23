@@ -15,7 +15,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  uuid: ^3.0.7
+  uuid: ^4.3.3
   
 
   flutter_bloc:
@@ -37,7 +37,7 @@ dependencies:
   uuid_type: ^2.1.0
 
   logging: ^1.2.0
-  signalr_netcore: ^0.1.7+2-nullsafety.3
+  signalr_netcore: ^1.4.0
 
 dev_dependencies:
   flutter_test:
