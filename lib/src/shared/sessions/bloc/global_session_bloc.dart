@@ -10,7 +10,7 @@ class GlobalSessionBloc extends Bloc<GlobalSessionEvent, GlobalSessionState> {
 
   GlobalSessionBloc({required SessionService sessionService})
       : _sessionService = sessionService,
-        super(SessionInitial()) {
+        super(SessionInitialState()) {
     on<CheckSession>(_onCheckSession);
     on<ExpireSession>(_onExpireSession);
     on<RefreshSession>(_onRefreshSession);
@@ -35,9 +35,9 @@ class GlobalSessionBloc extends Bloc<GlobalSessionEvent, GlobalSessionState> {
     Emitter<GlobalSessionState> emit,
   ) async {
     try {
-      emit(SessionLoading());
+      emit(SessionLoadingState());
       await _sessionService.refreshToken();
-      emit(SessionActive());
+      emit(SessionActiveState());
     } catch (e) {
       emit(SessionExpiredState());
     }

@@ -6,12 +6,12 @@ import 'package:doormer/src/core/services/sessions/session_service_impl.dart';
 import 'package:doormer/src/core/utils/token_storage/token_storage.dart';
 import 'package:doormer/src/core/utils/token_storage/token_storage_mobile.dart';
 import 'package:doormer/src/core/utils/token_storage/token_storage_web.dart';
+import 'package:doormer/src/features/auth/candidate/di/auth_module.dart';
 import 'package:doormer/src/features/chat/di/chat_module.dart';
 import 'package:doormer/src/shared/sessions/bloc/global_session_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
-import 'package:doormer/src/features/auth/di/auth_module.dart';
 
 final serviceLocator = GetIt.instance;
 

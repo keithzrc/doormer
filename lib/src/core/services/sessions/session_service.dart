@@ -7,4 +7,8 @@ abstract class SessionService {
 
   /// Refreshes token
   Future<String?> refreshToken();
+
+  /// Save access and refresh token
+  Future<void> saveTokens(
+      {required String accessToken, required String refreshToken});
 }

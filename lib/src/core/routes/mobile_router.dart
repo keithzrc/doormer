@@ -1,10 +1,10 @@
+import 'package:doormer/src/features/auth/candidate/presentation/pages/auth_page.dart';
+import 'package:doormer/src/features/auth/candidate/presentation/pages/confirm_email_page.dart';
+import 'package:doormer/src/features/auth/candidate/presentation/pages/login_page.dart';
+import 'package:doormer/src/features/auth/candidate/presentation/pages/signup_page.dart';
+import 'package:doormer/src/shared/dashboard/presentation/pages/dashboard_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../features/auth/presentation/pages/auth_page.dart';
-import '../../features/auth/presentation/pages/login_page.dart';
-import '../../features/auth/presentation/pages/signup_page.dart';
-import '../../features/auth/presentation/pages/confirm_email_page.dart';
-import '../../shared/presentation/pages/dashboard_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/list/presentation/pages/list_page.dart';
 import '../../features/chat/presentation/pages/chat_page.dart';

@@ -75,4 +75,11 @@ class SessionServiceImpl implements SessionService {
       throw Exception('An unexpected error occurred');
     }
   }
+
+  @override
+  Future<void> saveTokens(
+      {required String accessToken, required String refreshToken}) async {
+    _tokenStorage.saveAccessToken(accessToken);
+    _tokenStorage.saveRefreshToken(refreshToken);
+  }
 }

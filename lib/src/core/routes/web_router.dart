@@ -1,16 +1,12 @@
-<<<<<<< HEAD
 import 'package:doormer/src/core/di/service_locator.dart';
+import 'package:doormer/src/features/auth/candidate/presentation/pages/confirm_email_page.dart';
+import 'package:doormer/src/features/auth/candidate/presentation/pages/login_page.dart';
+import 'package:doormer/src/features/auth/candidate/presentation/pages/signup_page.dart';
+import 'package:doormer/src/features/auth/candidate/presentation/pages/web/auth_page_web.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
-=======
-import 'package:doormer/src/features/auth/presentation/pages/web/auth_page_web.dart';
->>>>>>> ade1269 (router update)
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../features/auth/presentation/pages/auth_page.dart';
-import '../../features/auth/presentation/pages/login_page.dart';
-import '../../features/auth/presentation/pages/signup_page.dart';
-import '../../features/auth/presentation/pages/confirm_email_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/chat/presentation/pages/chat_page.dart';
 
