@@ -38,6 +38,7 @@ class SendMessageEvent extends ChatboxEvent {
 class SendFileEvent extends ChatboxEvent {
   /// The path to the file to be sent
   final String path;
+
   /// The type of message this file represents
   final MessageType type;
 
@@ -79,6 +80,18 @@ class UpdateMessageEvent extends ChatboxEvent {
 
   /// Creates a new [UpdateMessageEvent] event
   const UpdateMessageEvent(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+/// **[新增]** Event to receive a new message from SignalR
+class ReceiveMessageEvent extends ChatboxEvent {
+  /// The message received from SignalR
+  final Message message;
+
+  /// Creates a new [ReceiveMessageEvent] event
+  const ReceiveMessageEvent(this.message);
 
   @override
   List<Object?> get props => [message];

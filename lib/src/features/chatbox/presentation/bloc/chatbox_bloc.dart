@@ -38,10 +38,9 @@ class ChatboxBloc extends Bloc<ChatboxEvent, ChatboxState> {
     required this.sendFile,
     required this.getContactInfo,
     List<Message>? initialMessages,
-  }) : super(initialMessages != null 
+  }) : super(initialMessages != null
             ? MessagesLoaded(initialMessages)
             : ChatboxInitial()) {
-            
     /// Handles the loading of messages for a specific contact.
     ///
     /// Emits [MessagesLoading] while fetching messages and
@@ -101,11 +100,24 @@ class ChatboxBloc extends Bloc<ChatboxEvent, ChatboxState> {
       AppLogger.info('Loading contact info for ID: ${event.contactId}');
       try {
         final contactInfo = await getContactInfo(event.contactId);
-        AppLogger.debug('Contact info loaded successfully: ${contactInfo.name}');
+        AppLogger.debug(
+            'Contact info loaded successfully: ${contactInfo.name}');
         emit(ContactInfoLoaded(contactInfo));
       } catch (e, stackTrace) {
         AppLogger.error('Error loading contact info', e, stackTrace);
         emit(ChatboxError(e.toString()));
+      }
+    });
+
+    /// **[新增]** Handles receiving a new message from SignalR.
+    ///
+    /// Adds the new message to the existing messages list and updates the state.
+    on<ReceiveMessageEvent>((event, emit) {
+      if (state is MessagesLoaded) {
+        final messages = List<Message>.from((state as MessagesLoaded).messages);
+        messages.add(event.message); // 添加新消息
+        emit(MessagesLoaded(messages)); // 更新状态
+        AppLogger.info('New message received: ${event.message.content}');
       }
     });
   }

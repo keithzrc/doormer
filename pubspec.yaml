@@ -37,6 +37,7 @@ dependencies:
   uuid_type: ^2.1.0
 
   logging: ^1.2.0
+  signalr_netcore: ^0.1.7+2-nullsafety.3
 
 dev_dependencies:
   flutter_test:

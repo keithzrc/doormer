@@ -12,6 +12,7 @@ import '../widgets/contact_info_header.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/message_input_bar.dart';
 import 'package:uuid/uuid.dart';
+import 'package:doormer/src/core/signalr_service.dart'; // 引入 SignalR 服务
 
 class ChatboxPage extends StatefulWidget {
   final String contactId;
@@ -28,13 +29,33 @@ class ChatboxPage extends StatefulWidget {
 class _ChatboxPageState extends State<ChatboxPage> {
   final ScrollController _scrollController = ScrollController();
   late final ChatboxBloc _chatboxBloc;
+  final SignalRService _signalRService =
+      serviceLocator<SignalRService>(); // 初始化 SignalR
   final _uuid = const Uuid();
 
   @override
   void initState() {
     super.initState();
+
+    // 初始化 ChatboxBloc
     _chatboxBloc = serviceLocator<ChatboxBloc>();
     _chatboxBloc.add(LoadMessages(widget.contactId));
+
+    // 初始化 SignalR 服务并监听消息
+    _signalRService.initSignalR();
+    _signalRService.hubConnection.on("ReceiveMessage", (args) {
+      if (args!.isNotEmpty) {
+        final message = Message(
+          id: _uuid.v4(),
+          contactId: widget.contactId,
+          content: args[1],
+          timestamp: DateTime.now(),
+          isFromMe: false, // SignalR 收到的消息通常来自对方
+          type: MessageType.text, // 假设收到的消息为文本类型
+        );
+        _chatboxBloc.add(ReceiveMessageEvent(message)); // 将消息交给 Bloc
+      }
+    });
   }
 
   @override
@@ -69,7 +90,7 @@ class _ChatboxPageState extends State<ChatboxPage> {
             (chat) => chat.id.toString() == widget.contactId,
             orElse: () => throw Exception('Contact not found'),
           );
-          
+
           return ContactInfoHeader(
             contact: ContactInfo(
               id: contact.id,
@@ -135,6 +156,7 @@ class _ChatboxPageState extends State<ChatboxPage> {
 
     try {
       _chatboxBloc.add(SendMessageEvent(message));
+      _signalRService.sendMessage(widget.contactId, content); // 同步发送到 SignalR
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to send message')),

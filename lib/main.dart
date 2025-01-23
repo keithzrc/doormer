@@ -2,24 +2,31 @@ import 'package:doormer/src/core/di/service_locator.dart';
 import 'package:doormer/src/core/routes/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:doormer/src/core/signalr_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize all dependencies
+  // 初始化依赖
   await initDependencies();
 
-  // Run the app
-  runApp(const MyApp());
+  // 初始化 SignalR 服务
+  final SignalRService signalRService = serviceLocator<SignalRService>();
+  await signalRService.initSignalR();
+
+  // 启动应用
+  runApp(MyApp(signalRService: signalRService));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final SignalRService signalRService;
+
+  const MyApp({super.key, required this.signalRService});
 
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(360, 690), // Set base design size
+      designSize: const Size(360, 690), // 设置设计尺寸
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (_, child) {
@@ -29,7 +36,7 @@ class MyApp extends StatelessWidget {
             fontFamily: 'Helvetica',
             useMaterial3: true,
           ),
-          routerConfig: AppRouter.router, // Use GoRouter for navigation
+          routerConfig: AppRouter.router, // 使用 GoRouter 进行导航
         );
       },
     );
