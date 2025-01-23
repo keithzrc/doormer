@@ -5,13 +5,17 @@ import 'package:doormer/src/core/utils/app_logger.dart';
 
 class SessionServiceImpl implements SessionService {
   final TokenStorage _tokenStorage;
-  final Dio _dio;
+  late Dio _dio;
 
   SessionServiceImpl({
     required TokenStorage tokenStorage,
     required Dio dio,
   })  : _tokenStorage = tokenStorage,
         _dio = dio;
+
+  void setDio(Dio newDio) {
+    _dio = newDio;
+  }
 
   @override
   Future<String?> getAccessToken() async {
