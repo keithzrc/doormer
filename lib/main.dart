@@ -3,6 +3,7 @@ import 'package:doormer/src/core/routes/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:doormer/src/core/signalr_service.dart';
+import 'package:logging/logging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,8 +12,6 @@ void main() async {
   await initDependencies();
 
   // // 初始化 SignalR 服务
-  // final SignalRService signalRService = serviceLocator<SignalRService>();
-  // await signalRService.initSignalR();
   // 启动应用
   runApp(MyApp());
 }

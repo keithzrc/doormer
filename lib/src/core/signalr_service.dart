@@ -1,3 +1,4 @@
+import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 
 class SignalRService {
@@ -27,7 +28,7 @@ class SignalRService {
       print("SignalR connected!");
       return hubConnection;
     } catch (e) {
-      print("Error connecting to SignalR: $e");
+      AppLogger.error("Error connecting to SignalR:", e);
       throw e;
     }
   }
