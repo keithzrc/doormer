@@ -1,0 +1,86 @@
+// lib/features/auth/data/repositories/auth_repository_impl.dart
+
+import 'package:doormer/src/core/services/sessions/session_service.dart';
+import 'package:doormer/src/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:doormer/src/shared/user/Entity/user_entity.dart';
+import 'package:doormer/src/features/auth/domain/repository/auth_repository.dart';
+import 'package:doormer/src/shared/user/Models/user_model_factory.dart';
+import 'package:doormer/src/shared/user/user_type.dart';
+import 'package:uuid/uuid.dart';
+
+class AuthRepositoryImpl implements AuthRepository {
+  final AuthRemoteDataSource remoteDataSource;
+  final SessionService sessionService;
+
+  AuthRepositoryImpl({
+    required this.remoteDataSource,
+    required this.sessionService,
+  });
+
+  @override
+  Future<User> signup({required String email, required String password}) async {
+    // Call remote data source to get LoginResponseModel
+    final loginResponse = await remoteDataSource.signup(email, password);
+
+    // Save tokens using SessionService
+    await sessionService.saveTokens(
+      accessToken: loginResponse.accessToken,
+      refreshToken: loginResponse.refreshToken,
+    );
+    // Return User entity
+    final userEntity = loginResponse.user.toEntity();
+    return userEntity;
+  }
+
+  @override
+  Future<User> login({required String email, required String password}) async {
+    // Call remote data source to get LoginResponseModel
+    final loginResponse = await remoteDataSource.login(email, password);
+
+    // Save tokens using SessionService
+    await sessionService.saveTokens(
+      accessToken: loginResponse.accessToken,
+      refreshToken: loginResponse.refreshToken,
+    );
+
+    // Return User entity
+    final user = loginResponse.user.toEntity();
+    return user;
+  }
+
+  @override
+  Future<void> verifyEmail(
+      {required String email, required String code}) async {
+    await remoteDataSource.verifyEmail(email, code);
+  }
+
+  @override
+  Future<void> logout() async {
+    await sessionService.logout(); // Clear tokens and reset session
+  }
+
+  @override
+  Future<User> signInWithApple() {
+    // TODO: implement signInWithApple
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<User> signInWithGoogle() async {
+    // Step 1: Get Google ID token
+    final googleIdToken = await remoteDataSource.getGoogleIdToken();
+
+    // Step 2: Exchange Google ID token for backend tokens
+    // final tokens =
+    //     await remoteDataSource.exchangeGoogleIdTokenForTokens(googleIdToken);
+
+    // // Step 3: Save tokens securely
+    // await sessionService.saveTokens(tokens);
+
+    // Step 4: Return user info
+    //return tokens.user; // Assuming `tokens` contains user info.
+
+    return User(
+        id: UuidValue('uuid'), email: '123', userType: UserType.employer);
+  }
+}
