@@ -129,10 +129,7 @@ void main() {
       when(mockLocalDataSource.loadDummyData())
           .thenAnswer((_) => Future.error(Exception('Failed to load')));
 
-      final repo = ChatRepositoryImpl(
-        localDataSource: mockLocalDataSource,
-        remoteDataSource: mockRemoteDataSource,
-      );
+      final repo = ChatRepositoryImpl(localDataSource: mockLocalDataSource);
       await Future.delayed(Duration.zero);
 
       final activeChats = await repo.getActiveChatList();

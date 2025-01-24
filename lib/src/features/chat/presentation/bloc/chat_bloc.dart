@@ -10,13 +10,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetSortedActiveChatList getChatListUseCase;
   final GetSortedArchivedChatList getArchivedChatListUseCase;
   final ToggleChatArchivedStatus toggleChatUseCase;
-  final DeleteChat deleteChatUseCase;
+  //final DeleteChat deleteChatUseCase;
 
   ChatBloc({
     required this.getChatListUseCase,
     required this.getArchivedChatListUseCase,
     required this.toggleChatUseCase,
-    required this.deleteChatUseCase,
+    //required this.deleteChatUseCase,
     List<Contact>? initialChats,
   }) : super(initialChats != null
             ? ChatLoadedState(

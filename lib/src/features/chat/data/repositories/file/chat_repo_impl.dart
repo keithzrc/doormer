@@ -1,111 +1,87 @@
 import 'dart:async';
 import 'package:doormer/src/core/utils/app_logger.dart';
-import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/features/chat/domain/repositories/contact_repository.dart';
 import 'package:doormer/src/features/chat/data/models/contact_model.dart';
 import 'package:uuid/uuid.dart';
 import 'package:doormer/src/features/chat/data/datasources/remote_data_source.dart';
+import 'package:doormer/src/core/utils/token_storage.dart';
 
 /// Implementation of the [ContactRepository] interface.
 class ChatRepositoryImpl implements ContactRepository {
-  final LocalDataSource localDataSource;
   final ChatRemoteDataSource remoteDataSource;
-  final List<ContactModel> _chats = [];
-  final Completer<void> _dataLoaded = Completer<void>();
+  final TokenStorage tokenStorage;
 
   ChatRepositoryImpl({
-    required this.localDataSource,
     required this.remoteDataSource,
-  }) {
-    // Constructor cannot await, not a problem when using API
-    _initializeData();
-  }
+    required this.tokenStorage,
+  });
 
-  /// Initializes data and completes the `_dataLoaded` completer when done.
-  void _initializeData() async {
-    //TODO this implementation should completeError when catches Error
-    //Revist this.
-    AppLogger.info('Initializing data in ChatRepositoryImpl.');
-    try {
-      final data = await localDataSource.loadDummyData();
-      _chats.addAll(data);
-      AppLogger.info('Data initialized in ChatRepositoryImpl');
-    } catch (error) {
-      AppLogger.error(
-          'Data initialization failed in ChatRepositoryImpl', error);
-      _chats.clear();
-    } finally {
-      _dataLoaded.complete();
-    }
-  }
 
-  /// Ensures data is loaded before initialization is completed.
-  Future<void> _ensureDataLoaded() => _dataLoaded.future;
 
   @override
   Future<List<Contact>> getActiveChatList() async {
-    await _ensureDataLoaded();
-    final activeChats = _chats
-        .where((chat) => !chat.isArchived)
-        .map((chat) => chat.toEntity())
-        .toList();
-    AppLogger.info('Active chat list: $activeChats');
-    return activeChats;
+    try {
+      
+      final remoteContacts = await remoteDataSource.getActiveChatList('3fa85f64-5717-4562-b3fc-2c963f66afa6');
+      AppLogger.info('Active contacts fetched successfully: ${remoteContacts.length}');
+      return remoteContacts.map((model) => model.toEntity()).toList();
+    } catch (e, stackTrace) {
+      AppLogger.error('Failed to fetch active chats from remote', e);
+      AppLogger.error('Stack trace: $stackTrace');
+      rethrow;
+    }
   }
 
   @override
   Future<List<Contact>> getArchivedChatList() async {
-    await _ensureDataLoaded();
-    final archivedChats = _chats
-        .where((chat) => chat.isArchived)
-        .map((chat) => chat.toEntity())
-        .toList();
-    AppLogger.info('Archived chat list: $archivedChats');
-    return archivedChats;
+    try {
+      
+      final remoteContacts = await remoteDataSource.getArchivedChatList('3fa85f64-5717-4562-b3fc-2c963f66afa6');
+      AppLogger.info('Archived contacts fetched successfully: ${remoteContacts.length}');
+      return remoteContacts.map((model) => model.toEntity()).toList();
+    } catch (e, stackTrace) {
+      AppLogger.error('Failed to fetch archived chats from remote', e);
+      AppLogger.error('Stack trace: $stackTrace');
+      rethrow;
+    }
   }
-
-  final int indexNotFound = -1;
 
   @override
   Future<void> updateChat(Contact updatedContact) async {
-    final updatedContactModel = ContactModel.fromEntity(updatedContact);
-    final index =
-        _chats.indexWhere((chat) => chat.id == updatedContactModel.id);
-    if (index != indexNotFound) {
-      _chats[index] = updatedContactModel;
-      AppLogger.info('Chat with ID ${updatedContact.id} updated successfully.');
-    } else {
-      AppLogger.warn('Chat with ID ${updatedContact.id} not found.');
+    try {
+      final model = ContactModel.fromEntity(updatedContact);
+      await remoteDataSource.updateChat(model);
+      AppLogger.info('Chat updated successfully: ${updatedContact.id}');
+    } catch (e) {
+      AppLogger.error('Failed to update chat', e);
+      rethrow;
     }
   }
+
+  // @override
+  // Future<void> deleteChat(String chatId) async {
+  //   try {
+  //     final token = await tokenStorage.getAccessToken();
+  //     if (token == null) {
+  //       throw Exception('No access token found');
+  //     }
+  //     await remoteDataSource.deleteChat(chatId);
+  //     AppLogger.info('Chat deleted successfully: $chatId');
+  //   } catch (e) {
+  //     AppLogger.error('Failed to delete chat', e);
+  //     rethrow;
+  //   }
+  // }
 
   @override
-  Future<void> deleteChat(String chatId) async {
-    final initialLength = _chats.length;
-    _chats.removeWhere((chat) => chat.id.toString() == chatId);
-
-    if (_chats.length == initialLength) {
-      AppLogger.warn('Chat with ID $chatId not found.');
-    } else {
-      AppLogger.info('Chat with ID $chatId successfully removed.');
-    }
-  }
-
-  Future<void> archiveChat(
-      UuidValue id, UuidValue contactId, bool isArchived) async {
-    await _ensureDataLoaded();
-    
-    final index = _chats.indexWhere((chat) => chat.id == id);
-    if (index != indexNotFound) {
-      // 更新本地数据
-      _chats[index] = _chats[index].copyWith(isArchived: isArchived);
-      AppLogger.info('Chat with ID ${id.toString()} archived status updated to: $isArchived');
-      
-      // 调用远程数据源
+  Future<void> archiveChat(UuidValue id, UuidValue contactId, bool isArchived) async {
+    try {
       await remoteDataSource.archiveChat(id, contactId, isArchived);
-    } else {
-      AppLogger.warn('Chat with ID ${id.toString()} not found for archiving.');
+      AppLogger.info('Chat archive status updated successfully: ${id.toString()}');
+    } catch (e) {
+      AppLogger.error('Failed to update chat archive status', e);
+      rethrow;
     }
   }
 }

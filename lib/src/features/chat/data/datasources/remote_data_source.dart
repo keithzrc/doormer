@@ -8,68 +8,88 @@ class ChatRemoteDataSource {
 
   ChatRemoteDataSource({required this.dio});
 
-  Future<List<ContactModel>> getActiveChatList() async {
+  Future<List<ContactModel>> getActiveChatList(String userId) async {
+
     try {
-      final response = await dio.post('/api/chat/get-active-contacts');
-
-      final List<dynamic> data = response.data as List<dynamic>;
-      return data.map((json) => ContactModel.fromJson(json)).toList();
-    } catch (e, stackTrace) {
-      AppLogger.error('Error fetching active chats', e, stackTrace);
-      throw Exception('Failed to fetch active chats');
-    }
-  }
-
-  Future<List<ContactModel>> getArchivedChatList() async {
-    try {
-      final response = await dio.post('/api/chat/get-archived-contact');
-
-      final List<dynamic> data = response.data as List<dynamic>;
-      return data.map((json) => ContactModel.fromJson(json)).toList();
-    } catch (e, stackTrace) {
-      AppLogger.error('Error fetching archived chats', e, stackTrace);
-      throw Exception('Failed to fetch archived chats');
-    }
-  }
-
-  Future<void> archiveChat(UuidValue id, UuidValue contactUserId, bool isArchived) async {
-    try {
-      AppLogger.info('Attempting to ${isArchived ? 'archive' : 'unarchive'} chat. UserId: $id, ContactUserId: $contactUserId');
-      
       final response = await dio.post(
-        isArchived ? '/api/chat/archive-contact' : '/api/chat/unarchive-contact',
-        data: {
-          'userId': id.toString(),
-          'contactUserId': contactUserId.toString(),
+        '/api/chat/get-active-contacts',
+        queryParameters: {
+          'userId': '3fa85f64-5717-4562-b3fc-2c963f66afa6',
         },
       );
       
-      AppLogger.info('Successfully ${isArchived ? 'archived' : 'unarchived'} chat $id. Response: ${response.statusCode}');
+      AppLogger.info('Active contacts response: ${response.data}');
+      return (response.data as List)
+          .map((json) => ContactModel.fromJson(json))
+          .toList();
     } on DioException catch (e) {
-      final errorMessage = e.response?.data['title'] ?? e.response?.data['message'] ?? 
-          'Failed to ${isArchived ? 'archive' : 'unarchive'} chat';
-      AppLogger.error(
-        'Failed to ${isArchived ? 'archive' : 'unarchive'} chat: Status: ${e.response?.statusCode}, Message: $errorMessage',
-        e,
-        null
+      AppLogger.error('Error in getActiveChatList API call: $e');
+      throw Exception(e.response?.data['message'] ?? 'Failed to fetch active chats');
+    }
+  }
+
+  Future<List<ContactModel>> getArchivedChatList(String userId) async {
+
+    try {
+      final response = await dio.post(
+        '/api/chat/get-archived-contact',
+        queryParameters: {
+          'userId': '3fa85f64-5717-4562-b3fc-2c963f66afa7',
+        },
       );
-      throw Exception(errorMessage);
+      AppLogger.info('Archived contacts response: ${response.data}');
+      return (response.data as List)
+          .map((json) => ContactModel.fromJson(json))
+          .toList();
+
+    } on DioException catch (e) {
+      AppLogger.error('Error in getArchivedChatList API call: $e');
+      throw Exception(e.response?.data['message'] ?? 'Failed to fetch archived chats');
+    }
+  }
+
+  Future<void> archiveChat(UuidValue id, UuidValue contactId, bool isArchived) async {
+    try {
+      await dio.post(
+        isArchived ? '/api/chat/archive-contact' : '/api/chat/unarchive-contact',
+        data: {
+          'userId': id.toString(),
+          'contactUserId': contactId.toString(),
+          'isArchived': isArchived
+        },
+      );
+    } on DioException catch (e) {
+      AppLogger.error('Error in archiveChat API call: $e');
+      throw Exception(e.response?.data['message'] ?? 
+        'Failed to ${isArchived ? 'archive' : 'unarchive'} chat');
     }
   }
 
   Future<void> createContact(UuidValue userId, UuidValue contactUserId) async {
     try {
       await dio.post(
-        '/api/chat/create-contact',
+        '/create-contact',
         data: {
           'userId': userId.toString(),
           'contactUserId': contactUserId.toString(),
         },
       );
-      AppLogger.info('Successfully created contact between $userId and $contactUserId');
     } on DioException catch (e) {
-      AppLogger.error('Failed to create contact', e);
+      AppLogger.error('Error in createContact API call: $e');
       throw Exception(e.response?.data['message'] ?? 'Failed to create contact');
+    }
+  }
+
+  Future<void> updateChat(ContactModel contact) async {
+    try {
+      await archiveChat(
+        contact.id,
+        contact.id,
+        contact.isArchived,
+      );
+    } on DioException catch (e) {
+      AppLogger.error('Error in updateChat API call: $e');
+      throw Exception(e.response?.data['message'] ?? 'Failed to update chat');
     }
   }
 }

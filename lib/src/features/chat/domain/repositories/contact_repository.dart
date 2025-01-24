@@ -34,7 +34,7 @@ abstract class ContactRepository {
   ///
   /// Parameters:
   /// - [chatId]: The unique identifier of the chat to delete.
-  Future<void> deleteChat(String chatId);
+  // Future<void> deleteChat(String chatId);
 
   Future<void> archiveChat(UuidValue id, UuidValue contactId, bool isArchived);
 }
