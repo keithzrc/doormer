@@ -1,7 +1,8 @@
-import 'package:doormer/src/features/auth/candidate/presentation/pages/confirm_email_page.dart';
-import 'package:doormer/src/features/auth/candidate/presentation/pages/login_page.dart';
-import 'package:doormer/src/features/auth/candidate/presentation/pages/signup_page.dart';
-import 'package:doormer/src/features/auth/candidate/presentation/pages/web/auth_page_web.dart';
+import 'package:doormer/src/features/auth/presentation/pages/confirm_email_page.dart';
+import 'package:doormer/src/features/auth/presentation/pages/login_page.dart';
+import 'package:doormer/src/features/auth/presentation/pages/signup_page.dart';
+import 'package:doormer/src/features/auth/presentation/pages/web/auth_page_web.dart';
+import 'package:doormer/src/features/auth/presentation/pages/web/company_info_web.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/home/presentation/pages/home_page.dart';
@@ -37,6 +38,10 @@ class WebRouter {
               final email = state.uri.queryParameters['email'] ?? '';
               return ConfirmEmailPage(email: email);
             },
+          ),
+          GoRoute(
+            path: 'companyInfo',
+            builder: (context, state) => const CompanyInfoPage(),
           ),
         ],
       ),
