@@ -31,10 +31,11 @@ import 'package:uuid/uuid.dart' as _i5;
 /// See the documentation for Mockito's code generation for more information.
 class MockContactRepository extends _i1.Mock implements _i2.ContactRepository {
   @override
-  _i3.Future<List<_i4.Contact>> getActiveChatList() => (super.noSuchMethod(
+  _i3.Future<List<_i4.Contact>> getActiveChatList(_i5.UuidValue? userId) =>
+      (super.noSuchMethod(
         Invocation.method(
           #getActiveChatList,
-          [],
+          [userId],
         ),
         returnValue: _i3.Future<List<_i4.Contact>>.value(<_i4.Contact>[]),
         returnValueForMissingStub:
@@ -42,10 +43,11 @@ class MockContactRepository extends _i1.Mock implements _i2.ContactRepository {
       ) as _i3.Future<List<_i4.Contact>>);
 
   @override
-  _i3.Future<List<_i4.Contact>> getArchivedChatList() => (super.noSuchMethod(
+  _i3.Future<List<_i4.Contact>> getArchivedChatList(_i5.UuidValue? userId) =>
+      (super.noSuchMethod(
         Invocation.method(
           #getArchivedChatList,
-          [],
+          [userId],
         ),
         returnValue: _i3.Future<List<_i4.Contact>>.value(<_i4.Contact>[]),
         returnValueForMissingStub:
@@ -58,16 +60,6 @@ class MockContactRepository extends _i1.Mock implements _i2.ContactRepository {
         Invocation.method(
           #updateChat,
           [updatedContact],
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
-
-  @override
-  _i3.Future<void> deleteChat(String? chatId) => (super.noSuchMethod(
-        Invocation.method(
-          #deleteChat,
-          [chatId],
         ),
         returnValue: _i3.Future<void>.value(),
         returnValueForMissingStub: _i3.Future<void>.value(),

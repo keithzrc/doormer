@@ -77,21 +77,23 @@ class MockChatRemoteDataSource extends _i1.Mock
       ) as _i2.Dio);
 
   @override
-  _i4.Future<List<_i5.ContactModel>> getActiveChatList() => (super.noSuchMethod(
+  _i4.Future<List<_i5.ContactModel>> getActiveChatList(_i7.UuidValue? userId) =>
+      (super.noSuchMethod(
         Invocation.method(
           #getActiveChatList,
-          [],
+          [userId],
         ),
         returnValue:
             _i4.Future<List<_i5.ContactModel>>.value(<_i5.ContactModel>[]),
       ) as _i4.Future<List<_i5.ContactModel>>);
 
   @override
-  _i4.Future<List<_i5.ContactModel>> getArchivedChatList() =>
+  _i4.Future<List<_i5.ContactModel>> getArchivedChatList(
+          _i7.UuidValue? userId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getArchivedChatList,
-          [],
+          [userId],
         ),
         returnValue:
             _i4.Future<List<_i5.ContactModel>>.value(<_i5.ContactModel>[]),
@@ -117,20 +119,27 @@ class MockChatRemoteDataSource extends _i1.Mock
       ) as _i4.Future<void>);
 
   @override
-  _i4.Future<void> deleteChat(String? chatId) => (super.noSuchMethod(
+  _i4.Future<void> createContact(
+    _i7.UuidValue? userId,
+    _i7.UuidValue? contactUserId,
+  ) =>
+      (super.noSuchMethod(
         Invocation.method(
-          #deleteChat,
-          [chatId],
+          #createContact,
+          [
+            userId,
+            contactUserId,
+          ],
         ),
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
 
   @override
-  _i4.Future<void> updateChat(_i5.ContactModel? chat) => (super.noSuchMethod(
+  _i4.Future<void> updateChat(_i5.ContactModel? contact) => (super.noSuchMethod(
         Invocation.method(
           #updateChat,
-          [chat],
+          [contact],
         ),
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),

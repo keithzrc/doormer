@@ -1,3 +1,5 @@
+import 'package:uuid/uuid.dart';
+
 import '../repositories/contact_repository.dart';
 import '../entities/contact_entity.dart';
 
@@ -8,11 +10,11 @@ class ToggleChatArchivedStatus {
 
   ToggleChatArchivedStatus(this.repository);
 
-  Future<Contact> call(Contact contact) async {
+  Future<Contact> call(UuidValue userId, Contact contact) async {
     final updatedContact = contact.copyWith(isArchived: !contact.isArchived);
 
     await repository.archiveChat(
-      contact.id,
+      userId,
       contact.id,
       !contact.isArchived
     );
@@ -42,8 +44,8 @@ class GetSortedArchivedChatList {
 
   GetSortedArchivedChatList(this.repository);
 
-  Future<List<Contact>> call() async {
-    final chats = await repository.getArchivedChatList();
+  Future<List<Contact>> call(UuidValue userId) async {
+    final chats = await repository.getArchivedChatList(userId);
     chats.sort(
         (a, b) => b.lastMessageCreatedTime.compareTo(a.lastMessageCreatedTime));
     return chats;
@@ -59,8 +61,8 @@ class GetSortedActiveChatList {
 
   GetSortedActiveChatList(this.repository);
 
-  Future<List<Contact>> call() async {
-    final chats = await repository.getActiveChatList();
+  Future<List<Contact>> call(UuidValue userId) async {
+    final chats = await repository.getActiveChatList(userId);
     chats.sort(
         (a, b) => b.lastMessageCreatedTime.compareTo(a.lastMessageCreatedTime));
     return chats;

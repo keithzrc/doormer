@@ -20,12 +20,12 @@ class ChatRepositoryImpl implements ContactRepository {
 
 
   @override
-  Future<List<Contact>> getActiveChatList() async {
+  Future<List<Contact>> getActiveChatList(UuidValue userId) async {
     try {
       
-      final remoteContacts = await remoteDataSource.getActiveChatList('3fa85f64-5717-4562-b3fc-2c963f66afa6');
+      final remoteContacts = await remoteDataSource.getActiveChatList(userId);
       AppLogger.info('Active contacts fetched successfully: ${remoteContacts.length}');
-      return remoteContacts.map((model) => model.toEntity()).toList();
+      return remoteContacts.map((model) => model.toEntity(userId)).toList();
     } catch (e, stackTrace) {
       AppLogger.error('Failed to fetch active chats from remote', e);
       AppLogger.error('Stack trace: $stackTrace');
@@ -34,12 +34,12 @@ class ChatRepositoryImpl implements ContactRepository {
   }
 
   @override
-  Future<List<Contact>> getArchivedChatList() async {
+  Future<List<Contact>> getArchivedChatList(UuidValue userId) async {
     try {
-      
-      final remoteContacts = await remoteDataSource.getArchivedChatList('3fa85f64-5717-4562-b3fc-2c963f66afa6');
+            
+      final remoteContacts = await remoteDataSource.getArchivedChatList(userId);
       AppLogger.info('Archived contacts fetched successfully: ${remoteContacts.length}');
-      return remoteContacts.map((model) => model.toEntity()).toList();
+      return remoteContacts.map((model) => model.toEntity(userId)).toList();
     } catch (e, stackTrace) {
       AppLogger.error('Failed to fetch archived chats from remote', e);
       AppLogger.error('Stack trace: $stackTrace');

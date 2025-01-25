@@ -11,7 +11,7 @@ abstract class ContactRepository {
   ///
   /// Returns:
   /// - A `Future` that resolves to a list of unarchived `Contact` entities.
-  Future<List<Contact>> getActiveChatList();
+  Future<List<Contact>> getActiveChatList(UuidValue userId);
 
   /// Retrieves a list of archived chats as domain entities (`Contact`).
   ///
@@ -19,7 +19,7 @@ abstract class ContactRepository {
   ///
   /// Returns:
   /// - A `Future` that resolves to a list of archived `Contact` entities.
-  Future<List<Contact>> getArchivedChatList();
+  Future<List<Contact>> getArchivedChatList(UuidValue userId);
 
   /// Updates an existing chat with the data from the provided `Contact` entity.
   ///

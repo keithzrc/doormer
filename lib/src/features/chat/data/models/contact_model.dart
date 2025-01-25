@@ -69,7 +69,7 @@ class ContactModel {
   Map<String, dynamic> toJson() => _$ContactModelToJson(this);
 
   /// Converts this model to a domain entity [Contact].
-  Contact toEntity() {
+  Contact toEntity(UuidValue userId) {
     return Contact(
       id: id,
       userName: userName,

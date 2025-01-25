@@ -8,13 +8,13 @@ class ChatRemoteDataSource {
 
   ChatRemoteDataSource({required this.dio});
 
-  Future<List<ContactModel>> getActiveChatList(String userId) async {
+  Future<List<ContactModel>> getActiveChatList(UuidValue userId) async {
 
     try {
       final response = await dio.post(
         '/api/chat/get-active-contacts',
         queryParameters: {
-          'userId': '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+          'userId': userId.toString(),
         },
       );
       
@@ -28,13 +28,13 @@ class ChatRemoteDataSource {
     }
   }
 
-  Future<List<ContactModel>> getArchivedChatList(String userId) async {
+  Future<List<ContactModel>> getArchivedChatList(UuidValue userId) async {
 
     try {
       final response = await dio.post(
         '/api/chat/get-archived-contact',
         queryParameters: {
-          'userId': '3fa85f64-5717-4562-b3fc-2c963f66afa7',
+          'userId': userId.toString(),
         },
       );
       AppLogger.info('Archived contacts response: ${response.data}');
