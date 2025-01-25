@@ -63,17 +63,50 @@ class AuthRemoteDataSource {
   }
 
   Future<String> getGoogleIdToken() async {
-    final account = await googleSignIn.signIn();
-    if (account == null) {
-      throw Exception('User canceled Google Sign-In.');
-    }
+    try {
+      // Sign out to reset the GoogleSignIn state
+      await googleSignIn.signOut();
 
-    final authentication = await account.authentication;
+      final account = await googleSignIn.signIn();
+      if (account == null) {
+        throw Exception('User canceled Google Sign-In.');
+      }
 
-    if (authentication.idToken == null) {
-      throw Exception('Failed to retrieve Google ID token.');
+      final authentication = await account.authentication;
+
+      if (authentication.accessToken == null) {
+        throw Exception('Failed to retrieve Google ID token.');
+      }
+
+      AppLogger.info(authentication.accessToken.toString());
+      return authentication.accessToken!;
+    } catch (e) {
+      AppLogger.error(e.toString());
+      rethrow;
     }
-    AppLogger.info(authentication.idToken.toString());
-    return authentication.idToken!;
+  }
+
+  // Exchange Google ID token for backend tokens
+  Future<LoginResponseModel> exchangeGoogleIdTokenForTokens(
+      String googleIdToken) async {
+    try {
+      final response = await requestManager.post(
+        '/auth/google-sign-in', // Your backend endpoint
+        data: {
+          'idToken': googleIdToken,
+        },
+        requiresAuth: false,
+      );
+
+      if (response.statusCode == 200) {
+        return LoginResponseModel.fromJson(response.data);
+      } else {
+        throw Exception(
+            'Failed to exchange Google ID token for backend tokens');
+      }
+    } catch (e) {
+      throw Exception(
+          'Error while exchanging Google ID token: ${e.toString()}');
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:doormer/src/shared/user/user_type.dart';
+import 'package:doormer/src/shared/user/Models/account_status.dart'; // Import AccountStatus
 import 'package:uuid/uuid.dart';
 
 class UserModel {
@@ -13,11 +14,13 @@ class UserModel {
   final String? companySize; // Nullable for candidates
   final String? industry; // Nullable for candidates
   final String? oriented; // Nullable for candidates
+  final AccountStatus accountStatus; // Added accountStatus
 
   UserModel({
     required this.id,
     required this.email,
     required this.userType,
+    required this.accountStatus, // Required field
     this.firstName,
     this.lastName,
     this.companyName,
@@ -31,9 +34,11 @@ class UserModel {
   // Factory method to create UserModel from JSON
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'],
+      id: UuidValue(json['id']),
       email: json['email'],
-      userType: UserTypeExtension.fromApiString(json[['userType']]),
+      userType: UserTypeExtension.fromApiString(json['userType']),
+      accountStatus: AccountStatusExtension.fromApiString(
+          json['accountStatus']), // Map accountStatus
       firstName: json['firstName'],
       lastName: json['lastName'],
       companyName: json['companyName'],
@@ -48,9 +53,10 @@ class UserModel {
   // Convert to JSON (optional, for requests)
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'id': id.toString(), // Convert UuidValue to string
       'email': email,
       'userType': userType.toApiString(),
+      'accountStatus': accountStatus.toApiString(), // Convert to API string
       'firstName': firstName,
       'lastName': lastName,
       'companyName': companyName,
