@@ -16,6 +16,8 @@ class ContactModel {
   @UuidValueConverter()
   final UuidValue id;
 
+  final int contactId;
+
   /// Name of the user associated with the contact.
   final String userName;
 
@@ -36,6 +38,7 @@ class ContactModel {
 
   /// Constructor for [ContactModel].
   ContactModel({
+    required this.contactId,
     required this.id,
     required this.userName,
     required this.avatarUrl,
@@ -71,6 +74,7 @@ class ContactModel {
   /// Converts this model to a domain entity [Contact].
   Contact toEntity() {
     return Contact(
+      contactId: contactId,
       id: id,
       userName: userName,
       avatarUrl: avatarUrl,
@@ -84,6 +88,7 @@ class ContactModel {
   /// Constructs a `ContactModel` from a domain entity [Contact].
   static ContactModel fromEntity(Contact contact) {
     return ContactModel(
+      contactId: contact.contactId,
       id: contact.id,
       userName: contact.userName,
       avatarUrl: contact.avatarUrl,

@@ -1,9 +1,13 @@
 import 'package:doormer/src/features/chat/utils/time.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/core/theme/app_text_styles.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_event.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart';
 
-class ChatCard extends StatelessWidget {
+class ChatCard extends StatefulWidget {
   final Contact chat;
   final VoidCallback? onTap;
 
@@ -12,6 +16,22 @@ class ChatCard extends StatelessWidget {
     required this.chat,
     this.onTap,
   });
+
+  @override
+  State<ChatCard> createState() => _ChatCardState();
+}
+
+class _ChatCardState extends State<ChatCard> {
+  @override
+  void initState() {
+    super.initState();
+    if (!widget.chat.isRead) {
+      context.read<ChatBloc>().add(
+            //TODO use var instead of dummy number
+            LoadUnreadMessageCountEvent(1),
+          );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,42 +46,63 @@ class ChatCard extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 30,
-              backgroundImage: chat.avatarUrl.isNotEmpty
-                  ? NetworkImage(chat.avatarUrl)
+              backgroundImage: widget.chat.avatarUrl.isNotEmpty
+                  ? NetworkImage(widget.chat.avatarUrl)
                   : null,
-              child: chat.avatarUrl.isEmpty
+              child: widget.chat.avatarUrl.isEmpty
                   ? Text(
-                      chat.userName.isNotEmpty
-                          ? chat.userName[0].toUpperCase()
+                      widget.chat.userName.isNotEmpty
+                          ? widget.chat.userName[0].toUpperCase()
                           : '?',
                       style: AppTextStyles.titleLarge,
                     )
                   : null,
             ),
-            // Add red dot to users with unread messages
-            // TODO: take it out, reusable
-            if (chat.isRead == false)
-              Positioned(
-                right: 0,
-                top: 0,
-                child: Container(
-                  width: 12,
-                  height: 12,
-                  decoration: const BoxDecoration(
-                    color: Colors.red, //TODO: AppColors
-                    shape: BoxShape.circle,
-                  ),
-                ),
+            if (!widget.chat.isRead)
+              BlocBuilder<ChatBloc, ChatState>(
+                buildWhen: (previous, current) =>
+                    current is UnreadMessageCountLoadedState ||
+                    current is UnreadMessageCountLoadingState,
+                builder: (context, state) {
+                  if (state is UnreadMessageCountLoadedState) {
+                    return Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        constraints: const BoxConstraints(
+                          minWidth: 20,
+                          minHeight: 20,
+                        ),
+                        decoration: const BoxDecoration(
+                          color: Colors.red, //TODO: AppColors
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            state.count.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
           ],
         ),
         title: Text(
-          chat.userName,
+          widget.chat.userName,
           style: AppTextStyles.bodyLarge,
           overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
-          chat.lastMessage,
+          widget.chat.lastMessage,
           style: AppTextStyles.bodyMedium,
           overflow: TextOverflow.ellipsis,
         ),
@@ -69,11 +110,11 @@ class ChatCard extends StatelessWidget {
           width: 100,
           child: Text(
             // TODO: format time to be more readable
-            chat.lastMessageCreatedTime.toIso8601String(),
+            widget.chat.lastMessageCreatedTime.toIso8601String(),
             style: AppTextStyles.bodySmall,
           ),
         ),
-        onTap: onTap,
+        onTap: widget.onTap,
       ),
     );
   }

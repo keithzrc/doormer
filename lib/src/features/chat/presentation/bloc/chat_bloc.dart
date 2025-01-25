@@ -11,12 +11,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetSortedArchivedChatList getArchivedChatListUseCase;
   final ToggleChatArchivedStatus toggleChatUseCase;
   final DeleteChat deleteChatUseCase;
+  final GetUnreadMessageCount getUnreadMessageCountUseCase;
 
   ChatBloc({
     required this.getChatListUseCase,
     required this.getArchivedChatListUseCase,
     required this.toggleChatUseCase,
     required this.deleteChatUseCase,
+    required this.getUnreadMessageCountUseCase,
     List<Contact>? initialChats,
   }) : super(initialChats != null //simple logic so kept here
             ? ChatLoadedState(initialChats)
@@ -26,7 +28,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       try {
         final chats = await getChatListUseCase.call();
         emit(ChatLoadedState(chats));
-        AppLogger.debug('Chat list loaded and sorted successfully');
+        AppLogger.info('Chat list loaded and sorted successfully');
       } catch (e, stackTrace) {
         emit(ChatErrorState(e.toString()));
         AppLogger.error('Chat list loaded with error', e, stackTrace);
@@ -38,7 +40,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       try {
         final archivedChats = await getArchivedChatListUseCase.call();
         emit(ArchivedChatLoadedState(archivedChats));
-        AppLogger.debug('Archived chat list loaded and sorted successfully');
+        AppLogger.info('Archived chat list loaded and sorted successfully');
       } catch (e, stackTrace) {
         emit(ChatErrorState(e.toString()));
         AppLogger.error('Archived chat list loaded with error', e, stackTrace);
@@ -66,6 +68,18 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       } catch (e, stackTrace) {
         emit(ChatErrorState(e.toString()));
         AppLogger.error('Deleted chat with error', e, stackTrace);
+      }
+    });
+
+    on<LoadUnreadMessageCountEvent>((event, emit) async {
+      emit(UnreadMessageCountLoadingState());
+      try {
+        final count = await getUnreadMessageCountUseCase.call(event.contactId);
+        emit(UnreadMessageCountLoadedState(count));
+        AppLogger.info('Unread message count loaded successfully');
+      } catch (e, stackTrace) {
+        emit(ChatErrorState(e.toString()));
+        AppLogger.error('Failed to load unread message count', e, stackTrace);
       }
     });
   }
