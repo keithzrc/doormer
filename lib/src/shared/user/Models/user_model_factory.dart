@@ -14,6 +14,7 @@ extension UserModelToEntity on UserModel {
         id: id,
         email: email,
         userType: userType,
+        accountStatus: accountStatus,
         firstName: firstName!,
         lastName: lastName!,
       );
@@ -30,6 +31,7 @@ extension UserModelToEntity on UserModel {
         id: id,
         email: email,
         userType: userType,
+        accountStatus: accountStatus,
         companyName: companyName!,
         nzbn: nzbn!,
         companyType: companyType!,

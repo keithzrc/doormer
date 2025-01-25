@@ -5,8 +5,6 @@ import 'package:doormer/src/features/auth/data/datasources/auth_remote_datasourc
 import 'package:doormer/src/shared/user/Entity/user_entity.dart';
 import 'package:doormer/src/features/auth/domain/repository/auth_repository.dart';
 import 'package:doormer/src/shared/user/Models/user_model_factory.dart';
-import 'package:doormer/src/shared/user/user_type.dart';
-import 'package:uuid/uuid.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -70,17 +68,22 @@ class AuthRepositoryImpl implements AuthRepository {
     // Step 1: Get Google ID token
     final googleIdToken = await remoteDataSource.getGoogleIdToken();
 
-    // Step 2: Exchange Google ID token for backend tokens
-    // final tokens =
-    //     await remoteDataSource.exchangeGoogleIdTokenForTokens(googleIdToken);
+    final user = await exchangeGoogleIdTokenForTokens(googleIdToken);
 
-    // // Step 3: Save tokens securely
-    // await sessionService.saveTokens(tokens);
+    return user;
+  }
 
-    // Step 4: Return user info
-    //return tokens.user; // Assuming `tokens` contains user info.
+  Future<User> exchangeGoogleIdTokenForTokens(String googleIdToken) async {
+    final loginResponse =
+        await remoteDataSource.exchangeGoogleIdTokenForTokens(googleIdToken);
 
-    return User(
-        id: UuidValue('uuid'), email: '123', userType: UserType.employer);
+    // Save tokens using SessionService
+    await sessionService.saveTokens(
+      accessToken: loginResponse.accessToken,
+      refreshToken: loginResponse.refreshToken,
+    );
+    // Return User entity
+    final user = loginResponse.user.toEntity();
+    return user;
   }
 }

@@ -1,4 +1,5 @@
 import 'package:doormer/src/shared/user/Entity/user_entity.dart';
+import 'package:doormer/src/shared/user/Models/account_status.dart';
 import 'package:doormer/src/shared/user/user_type.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,17 +12,12 @@ class Candidate extends User {
     required UuidValue id,
     required String email,
     required UserType userType,
+    required AccountStatus accountStatus,
     required this.firstName,
     required this.lastName,
-  }) : super(id: id, email: email, userType: userType);
-
-  factory Candidate.fromJson(Map<String, dynamic> json) {
-    return Candidate(
-      id: json['id'],
-      email: json['email'],
-      userType: UserTypeExtension.fromApiString(json['userType']),
-      firstName: json['firstName'],
-      lastName: json['lastName'],
-    );
-  }
+  }) : super(
+            id: id,
+            email: email,
+            userType: userType,
+            accountStatus: accountStatus);
 }
