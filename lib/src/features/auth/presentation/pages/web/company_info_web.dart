@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 class CompanyInfoPage extends StatelessWidget {
-  const CompanyInfoPage({Key? key}) : super(key: key);
+  const CompanyInfoPage({super.key});
 
   @override
   Widget build(BuildContext context) {
