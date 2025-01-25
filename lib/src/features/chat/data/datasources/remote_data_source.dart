@@ -13,7 +13,7 @@ class ChatRemoteDataSource {
     try {
       final response = await _dio.post(
         '/api/chat/get-unread-message-count',
-        queryParameters: {'contactId': contactId},
+        data: {'ContactId': contactId},
       );
       return response.data['count'] as int;
     } catch (e, stackTrace) {
