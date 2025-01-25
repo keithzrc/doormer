@@ -41,4 +41,12 @@ class SignalRService {
       print("Error sending message: $e");
     }
   }
+
+  Future<void> login(String userId) async {
+    try {
+      await hubConnection.invoke("Login", args: [userId]);
+    } catch (e) {
+      AppLogger.error("Error to login: $e");
+    }
+  }
 }

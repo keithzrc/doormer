@@ -47,6 +47,12 @@ class MessageSent extends ChatboxState {
   const MessageSent();
 }
 
+/// State when a message has been sent successfully
+class MessageReceived extends ChatboxState {
+  /// Creates a new instance of [MessageReceive]
+  const MessageReceived();
+}
+
 /// State when contact information has been loaded successfully
 class ContactInfoLoaded extends ChatboxState {
   /// The loaded contact information

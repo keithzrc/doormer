@@ -2,8 +2,6 @@ import 'package:doormer/src/core/di/service_locator.dart';
 import 'package:doormer/src/core/routes/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:doormer/src/core/signalr_service.dart';
-import 'package:logging/logging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

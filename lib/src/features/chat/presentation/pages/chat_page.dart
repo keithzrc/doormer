@@ -1,22 +1,27 @@
 import 'package:doormer/src/core/di/service_locator.dart';
+import 'package:doormer/src/core/signalr_service.dart';
+import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/core/theme/app_text_styles.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_event.dart'
-    as chat_event; // Prefix for events
+    as chat_event;
 import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart'
-    as chat_state; // Prefix for states
+    as chat_state;
 import 'package:doormer/src/features/chat/presentation/widgets/chat_card.dart';
-import 'package:doormer/src/features/chat/presentation/pages/archive_page.dart';
-import 'package:go_router/go_router.dart';
 import 'package:doormer/src/features/chatbox/presentation/page/chatbox_page.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
+import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart';
+import 'package:doormer/src/features/chat/data/models/contact_model.dart';
 
 final _logger = Logger('ChatPage');
 
 class ChatPage extends StatelessWidget {
-  const ChatPage({super.key});
+  final String userId;
+
+  const ChatPage({super.key, required this.userId, String? selectedChatId});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +29,8 @@ class ChatPage extends StatelessWidget {
     final String? selectedChatId =
         GoRouterState.of(context).pathParameters['id'];
 
-    _logger.info('Current route parameters: ${GoRouterState.of(context).pathParameters}');
+    _logger.info(
+        'Current route parameters: ${GoRouterState.of(context).pathParameters}');
     _logger.info('Selected chat ID: $selectedChatId');
 
     return BlocProvider(
@@ -34,9 +40,9 @@ class ChatPage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'Chat',
-            style: AppTextStyles.displayMedium, // Updated style
+          title: Text(
+            'Chat as $userId',
+            style: AppTextStyles.displayMedium,
           ),
           leading: IconButton(
             icon: const Icon(Icons.archive),
@@ -52,11 +58,9 @@ class ChatPage extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 1600),
           child: Row(
             children: [
-              // Left-side chat list with a fixed minimum width of 250px
+              // Left-side chat list
               SizedBox(
-                width: screenWidth > 1000
-                    ? screenWidth * 0.25
-                    : 250, // Minimum 250px
+                width: screenWidth > 1000 ? screenWidth * 0.25 : 250,
                 child: BlocBuilder<ChatBloc, chat_state.ChatState>(
                   builder: (context, state) {
                     if (state is chat_state.ChatLoadingState) {
@@ -69,7 +73,7 @@ class ChatPage extends StatelessWidget {
                       return Center(
                         child: Text(
                           'Error: ${state.error}',
-                          style: AppTextStyles.bodyLarge, // Updated style
+                          style: AppTextStyles.bodyLarge,
                         ),
                       );
                     }
@@ -79,13 +83,14 @@ class ChatPage extends StatelessWidget {
                           .where((chat) => !chat.isArchived)
                           .toList();
 
-                      _logger.info('Available chat IDs: ${chats.map((c) => c.id).join(', ')}');
+                      _logger.info(
+                          'Available chat IDs: ${chats.map((c) => c.id).join(', ')}');
 
                       if (chats.isEmpty) {
                         return const Center(
                           child: Text(
                             'No chats found.',
-                            style: AppTextStyles.bodyMedium, // Updated style
+                            style: AppTextStyles.bodyMedium,
                           ),
                         );
                       }
@@ -99,7 +104,8 @@ class ChatPage extends StatelessWidget {
                             return InkWell(
                               onTap: () {
                                 _logger.info('Navigating to chat: ${chat.id}');
-                                context.pushReplacement('/chat/${chat.id}');
+                                context.pushReplacement(
+                                    '/chat/${chat.id}?userId=$userId');
                               },
                               child: ChatCard(chat: chat),
                             );
@@ -113,14 +119,27 @@ class ChatPage extends StatelessWidget {
                 ),
               ),
 
-              // Updated center section with proper error handling
+              // Center chatbox
               Flexible(
                 flex: 2,
                 child: selectedChatId != null
-                    ? Builder(
-                        builder: (context) {
-                          _logger.info('Creating ChatboxPage with ID: $selectedChatId');
-                          return ChatboxPage(contactId: selectedChatId);
+                    ? FutureBuilder<ContactModel?>(
+                        future: serviceLocator<LocalDataSource>()
+                            .getUserById(selectedChatId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+
+                          final contact = snapshot.data;
+                          return ChatboxPage(
+                            userId: userId,
+                            contactId: selectedChatId,
+                            contactName: contact?.userName ?? 'Unknown User',
+                            signalRService: serviceLocator<SignalRService>(),
+                          );
                         },
                       )
                     : const Center(
@@ -139,7 +158,7 @@ class ChatPage extends StatelessWidget {
                   child: const Center(
                     child: Text(
                       'User Profile Section',
-                      style: AppTextStyles.bodyLarge, // Updated style
+                      style: AppTextStyles.bodyLarge,
                     ),
                   ),
                 ),

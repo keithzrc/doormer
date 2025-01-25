@@ -9,11 +9,7 @@ import 'package:doormer/src/features/chatbox/data/repositories/chatbox_repositor
 import 'package:doormer/src/features/chatbox/domain/usecase/chatbox_usecase.dart';
 import 'package:doormer/src/features/chatbox/presentation/bloc/chatbox_bloc.dart';
 
-
 void initChatModule() {
-  // Register LocalDataSource
-  serviceLocator.registerSingleton<LocalDataSource>(LocalDataSource());
-
   // Register ChatRepository
   serviceLocator.registerSingleton<ContactRepository>(
     ChatRepositoryImpl(

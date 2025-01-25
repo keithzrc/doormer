@@ -7,7 +7,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.5.3
+  sdk: ^3.6.1
   flutter: ^3.27.2
 
 dependencies:
@@ -37,11 +37,12 @@ dependencies:
   uuid_type: ^2.1.0
 
   logging: ^1.2.0
-  signalr_netcore:
+  signalr_netcore: 
     git:
       url: https://github.com/Doormer/signalr_client.git
       ref: master
       commit: ee597999a96f97660386ad9887ecc79f605617c6
+
 
 dev_dependencies:
   flutter_test:
