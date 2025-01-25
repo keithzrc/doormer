@@ -1,4 +1,3 @@
-import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/features/auth/presentation/bloc/auth_bloc.dart';
@@ -8,17 +7,15 @@ import 'package:doormer/src/features/auth/presentation/widgets/web/auth_textfiel
 import 'package:doormer/src/features/auth/presentation/widgets/web/switch_auth_mode_line.dart';
 import 'package:doormer/src/features/auth/utils/auth_validators.dart';
 
-//https://medium.com/@mazleyou/implementing-google-sign-in-in-flutter-web-applications-4735aed5c6b8
-
 class SignUpPageWeb extends StatelessWidget {
   final VoidCallback onSwitchAuthMode;
   final String userType;
 
   SignUpPageWeb({
-    Key? key,
+    super.key,
     required this.onSwitchAuthMode,
     required this.userType,
-  }) : super(key: key);
+  });
 
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();

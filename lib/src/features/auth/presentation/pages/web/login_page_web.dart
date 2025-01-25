@@ -12,8 +12,7 @@ class LoginPageWeb extends StatelessWidget {
   final String userType;
 
   LoginPageWeb(
-      {Key? key, required this.onSwitchAuthMode, required this.userType})
-      : super(key: key);
+      {super.key, required this.onSwitchAuthMode, required this.userType});
 
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();

@@ -1,4 +1,5 @@
 import 'package:doormer/src/shared/user/Entity/user_entity.dart';
+import 'package:doormer/src/shared/user/Models/account_status.dart';
 import 'package:doormer/src/shared/user/user_type.dart';
 import 'package:uuid/uuid.dart';
 
@@ -15,25 +16,16 @@ class Employer extends User {
     required UuidValue id,
     required String email,
     required UserType userType,
+    required AccountStatus accountStatus,
     required this.companyName,
     required this.nzbn,
     required this.companyType,
     required this.companySize,
     required this.industry,
     required this.oriented,
-  }) : super(id: id, email: email, userType: userType);
-
-  factory Employer.fromJson(Map<String, dynamic> json) {
-    return Employer(
-      id: json['id'],
-      email: json['email'],
-      userType: UserTypeExtension.fromApiString(json['userType']),
-      companyName: json['companyName'],
-      nzbn: json['nzbn'],
-      companyType: json['companyType'],
-      companySize: json['companySize'],
-      industry: json['industry'],
-      oriented: json['oriented'],
-    );
-  }
+  }) : super(
+            id: id,
+            email: email,
+            userType: userType,
+            accountStatus: accountStatus);
 }
