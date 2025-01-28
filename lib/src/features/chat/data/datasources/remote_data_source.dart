@@ -5,8 +5,11 @@ import 'package:uuid/uuid.dart';
 
 class ChatRemoteDataSource {
   final Dio dio;
+  static const String baseUrl = 'http://localhost:5597';
 
-  ChatRemoteDataSource({required this.dio});
+  ChatRemoteDataSource({required this.dio}) {
+    dio.options.baseUrl = baseUrl; 
+  }
 
   Future<List<ContactModel>> getActiveChatList(UuidValue userId) async {
 
@@ -90,6 +93,17 @@ class ChatRemoteDataSource {
     } on DioException catch (e) {
       AppLogger.error('Error in updateChat API call: $e');
       throw Exception(e.response?.data['message'] ?? 'Failed to update chat');
+  
+  Future<int> getUnreadMessageCount(int contactId) async {
+    try {
+      final response = await _dio.post(
+        '/api/chat/get-unread-message-count',
+        data: {'ContactId': contactId},
+      );
+      return response.data['count'] as int;
+    } catch (e, stackTrace) {
+      AppLogger.error('Failed to get unread message count', e, stackTrace);
+      rethrow;
     }
   }
 }

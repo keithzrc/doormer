@@ -9,6 +9,9 @@ part 'contact_entity.freezed.dart';
 @freezed
 class Contact with _$Contact {
   const factory Contact({
+    /// Unique numeric identifier for the contact
+    required int contactId,
+
     /// Unique identifier for the contact, represented as a UUID.
     required UuidValue id,
 

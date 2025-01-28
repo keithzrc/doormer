@@ -83,4 +83,14 @@ class MockContactRepository extends _i1.Mock implements _i2.ContactRepository {
         returnValue: _i3.Future<void>.value(),
         returnValueForMissingStub: _i3.Future<void>.value(),
       ) as _i3.Future<void>);
+
+  @override
+  _i3.Future<int> getUnreadMessageCount(int? contactId) => (super.noSuchMethod(
+        Invocation.method(
+          #getUnreadMessageCount,
+          [contactId],
+        ),
+        returnValue: _i3.Future<int>.value(0),
+        returnValueForMissingStub: _i3.Future<int>.value(0),
+      ) as _i3.Future<int>);
 }

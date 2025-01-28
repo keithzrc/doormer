@@ -34,7 +34,26 @@ abstract class ContactRepository {
   ///
   /// Parameters:
   /// - [chatId]: The unique identifier of the chat to delete.
-  // Future<void> deleteChat(String chatId);
+
+  Future<void> deleteChat(String chatId);
 
   Future<void> archiveChat(UuidValue id, UuidValue contactId, bool isArchived);
+
+  /// Gets the count of unread messages for a specific contact.
+  ///
+  /// Parameters:
+  /// - [contactId]: The unique identifier of the contact.
+  ///
+  /// Returns:
+  /// - A `Future` that resolves to the number of unread messages.
+  Future<int> getUnreadMessageCount(int contactId);
+
+  /// Gets the count of unread messages for multiple contacts.
+  ///
+  /// Parameters:
+  /// - [contacts]: The list of contacts to get unread counts for.
+  ///
+  /// Returns:
+  /// - A `Future` that resolves to a map of contact IDs to their unread message counts.
+
 }

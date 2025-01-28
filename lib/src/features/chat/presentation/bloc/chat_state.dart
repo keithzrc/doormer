@@ -18,3 +18,15 @@ class ChatErrorState extends ChatState {
   final String error;
   ChatErrorState(this.error);
 }
+
+class UnreadMessageCountLoadingState extends ChatState {}
+
+class UnreadMessageCountLoadedState extends ChatState {
+  final int count;
+  UnreadMessageCountLoadedState(this.count);
+}
+
+class UnreadMessageCountErrorState extends ChatState {
+  final String error;
+  UnreadMessageCountErrorState(this.error);
+}

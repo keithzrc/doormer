@@ -11,4 +11,12 @@ class ToggleArchiveStatusEvent extends ChatEvent {
   ToggleArchiveStatusEvent(this.contact);
 }
 
+class DeleteChatEvent extends ChatEvent {
+  final String chatId;
+  DeleteChatEvent(this.chatId);
+}
 
+class LoadUnreadMessageCountEvent extends ChatEvent {
+  final int contactId;
+  LoadUnreadMessageCountEvent(this.contactId);
+}

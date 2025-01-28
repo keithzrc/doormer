@@ -16,12 +16,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetSortedArchivedChatList getArchivedChatListUseCase;
   final ToggleChatArchivedStatus toggleChatUseCase;
   //final DeleteChat deleteChatUseCase;
+  final GetUnreadMessageCount getUnreadMessageCountUseCase;
 
   ChatBloc({
     required this.getChatListUseCase,
     required this.getArchivedChatListUseCase,
     required this.toggleChatUseCase,
     //required this.deleteChatUseCase,
+    required this.getUnreadMessageCountUseCase,
     List<Contact>? initialChats,
   }) : super(initialChats != null
             ? ChatLoadedState(
@@ -69,6 +71,26 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       }
     });
 
-    
+//     on<DeleteChatEvent>((event, emit) async {
+//       try {
+//         await deleteChatUseCase.call(event.chatId);
+//         add(LoadArchivedChatsEvent());
+//       } catch (e, stackTrace) {
+//         emit(ChatErrorState(e.toString()));
+//         AppLogger.error('Deleted chat with error', e, stackTrace);
+//       }
+//     });
+
+    on<LoadUnreadMessageCountEvent>((event, emit) async {
+      emit(UnreadMessageCountLoadingState());
+      try {
+        final count = await getUnreadMessageCountUseCase.call(event.contactId);
+        emit(UnreadMessageCountLoadedState(count));
+        AppLogger.info('Unread message count loaded successfully');
+      } catch (e, stackTrace) {
+        emit(ChatErrorState(e.toString()));
+        AppLogger.error('Failed to load unread message count', e, stackTrace);
+      }
+    });
   }
 }

@@ -68,3 +68,14 @@ class GetSortedActiveChatList {
     return chats;
   }
 }
+
+class GetUnreadMessageCount {
+  final ContactRepository repository;
+
+  GetUnreadMessageCount(this.repository);
+
+  Future<int> call(int contactId) async {
+    final count = await repository.getUnreadMessageCount(contactId);
+    return count;
+  }
+}
