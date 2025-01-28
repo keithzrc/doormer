@@ -1,4 +1,4 @@
-// archieve_state.dart
+// chat_state.dart
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 
 abstract class ChatState {}
@@ -6,15 +6,12 @@ abstract class ChatState {}
 class ChatLoadingState extends ChatState {}
 
 class ChatLoadedState extends ChatState {
-  final List<Contact> chats;
-  ChatLoadedState(this.chats);
-}
-
-class ArchivedChatLoadingState extends ChatState {}
-
-class ArchivedChatLoadedState extends ChatState {
+  final List<Contact> unarchivedChats;
   final List<Contact> archivedChats;
-  ArchivedChatLoadedState(this.archivedChats);
+  ChatLoadedState({
+    required this.unarchivedChats,
+    required this.archivedChats,
+  });
 }
 
 class ChatErrorState extends ChatState {

@@ -1,4 +1,5 @@
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
+import 'package:uuid/uuid.dart';
 
 /// Defines the contract for the Chat repository.
 ///
@@ -10,7 +11,7 @@ abstract class ContactRepository {
   ///
   /// Returns:
   /// - A `Future` that resolves to a list of unarchived `Contact` entities.
-  Future<List<Contact>> getActiveChatList();
+  Future<List<Contact>> getActiveChatList(UuidValue userId);
 
   /// Retrieves a list of archived chats as domain entities (`Contact`).
   ///
@@ -18,7 +19,7 @@ abstract class ContactRepository {
   ///
   /// Returns:
   /// - A `Future` that resolves to a list of archived `Contact` entities.
-  Future<List<Contact>> getArchivedChatList();
+  Future<List<Contact>> getArchivedChatList(UuidValue userId);
 
   /// Updates an existing chat with the data from the provided `Contact` entity.
   ///
@@ -33,7 +34,10 @@ abstract class ContactRepository {
   ///
   /// Parameters:
   /// - [chatId]: The unique identifier of the chat to delete.
+
   Future<void> deleteChat(String chatId);
+
+  Future<void> archiveChat(UuidValue id, UuidValue contactId, bool isArchived);
 
   /// Gets the count of unread messages for a specific contact.
   ///
@@ -51,4 +55,5 @@ abstract class ContactRepository {
   ///
   /// Returns:
   /// - A `Future` that resolves to a map of contact IDs to their unread message counts.
+
 }

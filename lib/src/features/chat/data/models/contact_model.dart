@@ -72,7 +72,7 @@ class ContactModel {
   Map<String, dynamic> toJson() => _$ContactModelToJson(this);
 
   /// Converts this model to a domain entity [Contact].
-  Contact toEntity() {
+  Contact toEntity(UuidValue userId) {
     return Contact(
       contactId: contactId,
       id: id,
@@ -96,6 +96,26 @@ class ContactModel {
       lastMessageCreatedTime: contact.lastMessageCreatedTime,
       isArchived: contact.isArchived,
       isRead: contact.isRead,
+    );
+  }
+
+  ContactModel copyWith({
+    UuidValue? id,
+    String? userName,
+    String? avatarUrl,
+    String? lastMessage,
+    DateTime? lastMessageCreatedTime,
+    bool? isArchived,
+    bool? isRead,
+  }) {
+    return ContactModel(
+      id: id ?? this.id,
+      userName: userName ?? this.userName,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      lastMessage: lastMessage ?? this.lastMessage,
+      lastMessageCreatedTime: lastMessageCreatedTime ?? this.lastMessageCreatedTime,
+      isArchived: isArchived ?? this.isArchived,
+      isRead: isRead ?? this.isRead,
     );
   }
 }
