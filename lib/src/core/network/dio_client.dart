@@ -31,6 +31,7 @@ class DioClient {
       requestBody: true,
       responseBody: true,
       responseHeader: false,
+      error: true,
     ));
 
     // Add SessionInterceptor for token management

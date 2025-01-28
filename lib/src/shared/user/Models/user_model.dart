@@ -1,3 +1,4 @@
+import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:doormer/src/shared/user/user_type.dart';
 import 'package:doormer/src/shared/user/Models/account_status.dart'; // Import AccountStatus
 import 'package:uuid/uuid.dart';
@@ -33,12 +34,14 @@ class UserModel {
 
   // Factory method to create UserModel from JSON
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    AppLogger.info('Parsing UserModel from JSON: $json'); // Log the JSON data
+
     return UserModel(
-      id: UuidValue(json['id']),
-      email: json['email'],
+      id: UuidValue(json['id']), // This might throw an error if `id` is null
+      email: json['email'], // Provide a default value for safety
       userType: UserTypeExtension.fromApiString(json['userType']),
-      accountStatus: AccountStatusExtension.fromApiString(
-          json['accountStatus']), // Map accountStatus
+      accountStatus:
+          AccountStatusExtension.fromApiString(json['accountStatus']),
       firstName: json['firstName'],
       lastName: json['lastName'],
       companyName: json['companyName'],

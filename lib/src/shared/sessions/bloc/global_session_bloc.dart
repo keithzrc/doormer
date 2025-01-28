@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:doormer/src/core/services/sessions/session_service.dart';
+import 'package:doormer/src/shared/user/Entity/user_entity.dart';
 import 'package:equatable/equatable.dart';
 
 part 'global_session_event.dart';
@@ -14,13 +15,14 @@ class GlobalSessionBloc extends Bloc<GlobalSessionEvent, GlobalSessionState> {
     on<CheckSession>(_onCheckSession);
     on<ExpireSession>(_onExpireSession);
     on<RefreshSession>(_onRefreshSession);
+    on<SessionStarted>(_onSessionStarted);
   }
 
   Future<void> _onCheckSession(
     CheckSession event,
     Emitter<GlobalSessionState> emit,
   ) async {
-    // Implementation
+    // TODO: Implementation
   }
 
   Future<void> _onExpireSession(
@@ -37,9 +39,16 @@ class GlobalSessionBloc extends Bloc<GlobalSessionEvent, GlobalSessionState> {
     try {
       emit(SessionLoadingState());
       await _sessionService.refreshToken();
-      emit(SessionActiveState());
+      emit(SessionActiveState(event.user));
     } catch (e) {
       emit(SessionExpiredState());
     }
+  }
+
+  Future<void> _onSessionStarted(
+    SessionStarted event, // Fix the event type here
+    Emitter<GlobalSessionState> emit,
+  ) async {
+    emit(SessionActiveState(event.user));
   }
 }

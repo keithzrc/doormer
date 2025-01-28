@@ -9,7 +9,14 @@ abstract class GlobalSessionState extends Equatable {
 
 class SessionInitialState extends GlobalSessionState {}
 
-class SessionActiveState extends GlobalSessionState {}
+class SessionActiveState extends GlobalSessionState {
+  final User user;
+
+  const SessionActiveState(this.user);
+
+  @override
+  List<Object> get props => [user];
+}
 
 class SessionExpiredState extends GlobalSessionState {}
 

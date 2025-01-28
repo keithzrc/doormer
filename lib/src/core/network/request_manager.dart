@@ -73,6 +73,12 @@ class RequestManager {
     bool requiresAuth = true,
   }) async {
     try {
+      // Log the request payload
+      AppLogger.error('POST Request Path: $path');
+      AppLogger.error('POST Request Data: $data');
+      AppLogger.error(
+          'POST Request Headers: ${_getRequestOptions(requiresAuth).headers}');
+
       final response = await _dio.post(
         path,
         data: data,

@@ -2,10 +2,11 @@ import 'package:doormer/src/shared/user/Entity/user_candidate_entity.dart';
 import 'package:doormer/src/shared/user/Entity/user_employer_entity.dart';
 import 'package:doormer/src/shared/user/Entity/user_entity.dart';
 import 'package:doormer/src/shared/user/Models/user_model.dart';
+import 'package:doormer/src/shared/user/user_type.dart';
 
 extension UserModelToEntity on UserModel {
   User toEntity() {
-    if (userType == 'candidate') {
+    if (userType == UserType.candidate) {
       if (firstName == null || lastName == null) {
         throw Exception(
             'Invalid data: Candidate must have firstName and lastName');
@@ -18,7 +19,7 @@ extension UserModelToEntity on UserModel {
         firstName: firstName!,
         lastName: lastName!,
       );
-    } else if (userType == 'employer') {
+    } else if (userType == UserType.employer) {
       if (companyName == null ||
           nzbn == null ||
           companyType == null ||
@@ -30,7 +31,7 @@ extension UserModelToEntity on UserModel {
       return Employer(
         id: id,
         email: email,
-        userType: userType,
+        userType: userType, // Directly transfer the enum
         accountStatus: accountStatus,
         companyName: companyName!,
         nzbn: nzbn!,
@@ -40,7 +41,8 @@ extension UserModelToEntity on UserModel {
         oriented: oriented!,
       );
     } else {
-      throw Exception('Unknown userType: $userType');
+      throw Exception(
+          'Unknown userType: $userType'); // Already an enum, no need for string checks
     }
   }
 }

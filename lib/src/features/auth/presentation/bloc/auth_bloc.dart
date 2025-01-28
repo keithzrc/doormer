@@ -38,10 +38,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           email: event.email, password: event.password);
 
       // Dispatch SessionStarted to GlobalSessionBloc
-      globalSessionBloc.add(SessionStarted());
+      globalSessionBloc.add(SessionStarted(user));
 
       // Emit success state with user data upon successful signup
-      emit(AuthSuccess(user));
+      emit(AuthSuccess());
       AppLogger.info('AuthSuccess state emitted with user: ${user.email}');
     } catch (e, stackTrace) {
       // Handle errors by emitting failure state and logging the error
@@ -63,11 +63,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user =
           await authUseCase.login(email: event.email, password: event.password);
 
+      AppLogger.info('User acquired: $user');
       // Dispatch SessionStarted to GlobalSessionBloc
-      globalSessionBloc.add(SessionStarted());
+      globalSessionBloc.add(SessionStarted(user));
 
       // Emit success state with user data upon successful login
-      emit(AuthSuccess(user));
+      emit(AuthSuccess());
       AppLogger.info('AuthSuccess state emitted with user: ${user.email}');
     } catch (e, stackTrace) {
       // Handle errors by emitting failure state and logging the error
@@ -82,7 +83,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     try {
       await authUseCase.verifyEmail(email: event.email, code: event.code);
-      emit(AuthSuccess(null)); // No user data needed for email verification
+      emit(AuthSuccess()); // No user data needed for email verification
     } catch (e) {
       emit(AuthFailure(e.toString()));
     }
@@ -102,10 +103,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = await authUseCase.googleSignIn();
       AppLogger.info('AuthUsecase called googleSignIn');
       // Dispatch SessionStarted to GlobalSessionBloc
-      globalSessionBloc.add(SessionStarted());
+      globalSessionBloc.add(SessionStarted(user));
 
       // Emit success state with user data
-      emit(AuthSuccess(user));
+      emit(AuthSuccess());
       AppLogger.info('AuthSuccess state emitted with user: ${user.email}');
     } catch (e, stackTrace) {
       // Emit failure state
