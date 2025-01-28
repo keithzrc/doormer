@@ -1,3 +1,5 @@
+import 'package:doormer/src/core/utils/app_logger.dart';
+
 enum UserType { candidate, employer }
 
 extension UserTypeExtension on UserType {

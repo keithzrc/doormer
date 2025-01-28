@@ -1,8 +1,8 @@
-import 'package:doormer/src/features/auth/presentation/pages/confirm_email_page.dart';
-import 'package:doormer/src/features/auth/presentation/pages/login_page.dart';
-import 'package:doormer/src/features/auth/presentation/pages/signup_page.dart';
+import 'package:doormer/src/features/auth/presentation/pages/mobile/confirm_email_page.dart';
+import 'package:doormer/src/features/auth/presentation/pages/mobile/login_page.dart';
+import 'package:doormer/src/features/auth/presentation/pages/mobile/signup_page.dart';
 import 'package:doormer/src/features/auth/presentation/pages/web/auth_page_web.dart';
-import 'package:doormer/src/features/auth/presentation/pages/web/company_info_web.dart';
+import 'package:doormer/src/features/auth/presentation/pages/web/signup_company_info_page_web.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -18,7 +18,7 @@ WebRouter defines the routing structure and logic specifically for the web platf
 class WebRouter {
   // TODO: Change to th according web UI
   static final GoRouter router = GoRouter(
-    initialLocation: '/auth',
+    initialLocation: '/auth/companyInfo',
     routes: [
       // Auth Routes
       GoRoute(
@@ -42,7 +42,7 @@ class WebRouter {
           ),
           GoRoute(
             path: 'companyInfo',
-            builder: (context, state) => const CompanyInfoPage(),
+            builder: (context, state) => const SignUpCompanyInfoPageWeb(),
           ),
         ],
       ),

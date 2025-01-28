@@ -11,12 +11,12 @@ class AuthInitial extends AuthState {}
 class AuthLoading extends AuthState {}
 
 class AuthSuccess extends AuthState {
-  final User? user;
+  // final User? user;
 
-  AuthSuccess(this.user);
+  // AuthSuccess(this.user);
 
-  @override
-  List<Object?> get props => [user];
+  // @override
+  // List<Object?> get props => [user];
 }
 
 class AuthFailure extends AuthState {

@@ -1,7 +1,7 @@
-import 'package:doormer/src/features/auth/candidate/presentation/pages/auth_page.dart';
-import 'package:doormer/src/features/auth/candidate/presentation/pages/confirm_email_page.dart';
-import 'package:doormer/src/features/auth/candidate/presentation/pages/login_page.dart';
-import 'package:doormer/src/features/auth/candidate/presentation/pages/signup_page.dart';
+import 'package:doormer/src/features/auth/presentation/pages/mobile/auth_page.dart';
+import 'package:doormer/src/features/auth/presentation/pages/mobile/confirm_email_page.dart';
+import 'package:doormer/src/features/auth/presentation/pages/mobile/login_page.dart';
+import 'package:doormer/src/features/auth/presentation/pages/mobile/signup_page.dart';
 import 'package:doormer/src/shared/dashboard/presentation/pages/dashboard_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

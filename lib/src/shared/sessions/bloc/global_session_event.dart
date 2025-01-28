@@ -11,6 +11,20 @@ class CheckSession extends GlobalSessionEvent {}
 
 class ExpireSession extends GlobalSessionEvent {}
 
-class RefreshSession extends GlobalSessionEvent {}
+class RefreshSession extends GlobalSessionEvent {
+  final User user;
 
-class SessionStarted extends GlobalSessionEvent {}
+  const RefreshSession(this.user);
+
+  @override
+  List<Object> get props => [user];
+}
+
+class SessionStarted extends GlobalSessionEvent {
+  final User user;
+
+  const SessionStarted(this.user);
+
+  @override
+  List<Object> get props => [user];
+}

@@ -42,3 +42,6 @@ class VerifyEmailRequested extends AuthEvent {
 
 /// Event triggered when the user requests Google Sign-In.
 class GoogleSignInRequested extends AuthEvent {}
+
+/// Event triggered when user 'Employer' submits company information
+class SignupCompanyInfoRequested extends AuthEvent {}
