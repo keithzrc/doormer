@@ -11,24 +11,31 @@ class AuthRemoteDataSource {
   final RequestManager requestManager;
   final SessionService sessionService;
   final GoogleSignIn googleSignIn;
+  final Dio dio;
 
   AuthRemoteDataSource(
       {required this.requestManager,
       required this.sessionService,
-      required this.googleSignIn});
+      required this.googleSignIn,
+      required this.dio});
 
-  // Used by candidates
   Future<LoginResponseModel> signup(String email, String password) async {
     try {
+      final formData = FormData.fromMap({
+        'auth_type': 1, // This will be sent as part of form-data
+        'email': email,
+        'password': password,
+      });
+
       final response = await requestManager.post(
-        '/auth/signup',
-        data: {'email': email, 'password': password},
+        '/signup',
+        data: formData, // Use FormData instead of raw JSON
         requiresAuth: false,
       );
 
-      // Parse the response JSON and return a UserModel
       return LoginResponseModel.fromJson(response.data);
     } on DioException catch (e) {
+      AppLogger.error('Signup Error: ${e.response?.data}');
       throw Exception(e.response?.data['message'] ?? 'Signup failed');
     }
   }
@@ -36,8 +43,8 @@ class AuthRemoteDataSource {
   Future<LoginResponseModel> login(String email, String password) async {
     try {
       final response = await requestManager.post(
-        '/auth/login',
-        data: {'email': email, 'password': password},
+        '/login',
+        data: {'auth_type': '1', 'email': email, 'password': password},
         requiresAuth: false,
       );
 
@@ -53,7 +60,7 @@ class AuthRemoteDataSource {
   Future<void> verifyEmail(String email, String code) async {
     try {
       await requestManager.post(
-        '/auth/confirm-email', // Replace with your actual endpoint
+        '/confirm-email', // Replace with your actual endpoint
         data: {'email': email, 'code': code},
       );
     } on DioException catch (e) {
