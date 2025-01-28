@@ -16,8 +16,11 @@ class ChatRepositoryImpl implements ContactRepository {
   final List<ContactModel> _chats = [];
   final Completer<void> _dataLoaded = Completer<void>();
 
-  ChatRepositoryImpl(
-      {required this.localDataSource, required this.remoteDataSource, required this.tokenStorage,}) {
+  ChatRepositoryImpl({
+    required this.localDataSource,
+    required this.remoteDataSource,
+    required this.tokenStorage,
+  }) {
     // Constructor cannot await, not a problem when using API
     _initializeData();
   }
@@ -38,12 +41,13 @@ class ChatRepositoryImpl implements ContactRepository {
       _dataLoaded.complete();
     }
   }
-  
+
   @override
   Future<List<Contact>> getActiveChatList(UuidValue userId) async {
     try {
       final remoteContacts = await remoteDataSource.getActiveChatList(userId);
-      AppLogger.info('Active contacts fetched successfully: ${remoteContacts.length}');
+      AppLogger.info(
+          'Active contacts fetched successfully: ${remoteContacts.length}');
       return remoteContacts.map((model) => model.toEntity(userId)).toList();
     } catch (e, stackTrace) {
       AppLogger.error('Failed to fetch active chats from remote', e);
@@ -54,9 +58,10 @@ class ChatRepositoryImpl implements ContactRepository {
 
   @override
   Future<List<Contact>> getArchivedChatList(UuidValue userId) async {
-    try {       
+    try {
       final remoteContacts = await remoteDataSource.getArchivedChatList(userId);
-      AppLogger.info('Archived contacts fetched successfully: ${remoteContacts.length}');
+      AppLogger.info(
+          'Archived contacts fetched successfully: ${remoteContacts.length}');
       return remoteContacts.map((model) => model.toEntity(userId)).toList();
     } catch (e, stackTrace) {
       AppLogger.error('Failed to fetch archived chats from remote', e);
@@ -93,10 +98,12 @@ class ChatRepositoryImpl implements ContactRepository {
   // }
 
   @override
-  Future<void> archiveChat(UuidValue id, UuidValue contactId, bool isArchived) async {
+  Future<void> archiveChat(
+      UuidValue id, UuidValue contactId, bool isArchived) async {
     try {
       await remoteDataSource.archiveChat(id, contactId, isArchived);
-      AppLogger.info('Chat archive status updated successfully: ${id.toString()}');
+      AppLogger.info(
+          'Chat archive status updated successfully: ${id.toString()}');
     } catch (e) {
       AppLogger.error('Failed to update chat archive status', e);
       rethrow;
@@ -113,4 +120,3 @@ class ChatRepositoryImpl implements ContactRepository {
     }
   }
 }
-

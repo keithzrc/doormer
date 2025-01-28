@@ -38,8 +38,8 @@ class ContactModel {
 
   /// Constructor for [ContactModel].
   ContactModel({
-    required this.contactId,
     required this.id,
+    required this.contactId,
     required this.userName,
     required this.avatarUrl,
     required this.lastMessage,
@@ -74,8 +74,8 @@ class ContactModel {
   /// Converts this model to a domain entity [Contact].
   Contact toEntity(UuidValue userId) {
     return Contact(
-      contactId: contactId,
       id: id,
+      contactId: contactId,
       userName: userName,
       avatarUrl: avatarUrl,
       lastMessage: lastMessage,
@@ -88,8 +88,8 @@ class ContactModel {
   /// Constructs a `ContactModel` from a domain entity [Contact].
   static ContactModel fromEntity(Contact contact) {
     return ContactModel(
-      contactId: contact.contactId,
       id: contact.id,
+      contactId: contact.contactId,
       userName: contact.userName,
       avatarUrl: contact.avatarUrl,
       lastMessage: contact.lastMessage,
@@ -101,6 +101,7 @@ class ContactModel {
 
   ContactModel copyWith({
     UuidValue? id,
+    int? contactId,
     String? userName,
     String? avatarUrl,
     String? lastMessage,
@@ -110,10 +111,12 @@ class ContactModel {
   }) {
     return ContactModel(
       id: id ?? this.id,
+      contactId: contactId ?? this.contactId,
       userName: userName ?? this.userName,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       lastMessage: lastMessage ?? this.lastMessage,
-      lastMessageCreatedTime: lastMessageCreatedTime ?? this.lastMessageCreatedTime,
+      lastMessageCreatedTime:
+          lastMessageCreatedTime ?? this.lastMessageCreatedTime,
       isArchived: isArchived ?? this.isArchived,
       isRead: isRead ?? this.isRead,
     );

@@ -8,11 +8,10 @@ class ChatRemoteDataSource {
   static const String baseUrl = 'http://localhost:5597';
 
   ChatRemoteDataSource({required this.dio}) {
-    dio.options.baseUrl = baseUrl; 
+    dio.options.baseUrl = baseUrl;
   }
 
   Future<List<ContactModel>> getActiveChatList(UuidValue userId) async {
-
     try {
       final response = await dio.post(
         '/api/chat/get-active-contacts',
@@ -20,19 +19,19 @@ class ChatRemoteDataSource {
           'userId': userId.toString(),
         },
       );
-      
+
       AppLogger.info('Active contacts response: ${response.data}');
       return (response.data as List)
           .map((json) => ContactModel.fromJson(json))
           .toList();
     } on DioException catch (e) {
       AppLogger.error('Error in getActiveChatList API call: $e');
-      throw Exception(e.response?.data['message'] ?? 'Failed to fetch active chats');
+      throw Exception(
+          e.response?.data['message'] ?? 'Failed to fetch active chats');
     }
   }
 
   Future<List<ContactModel>> getArchivedChatList(UuidValue userId) async {
-
     try {
       final response = await dio.post(
         '/api/chat/get-archived-contact',
@@ -44,17 +43,20 @@ class ChatRemoteDataSource {
       return (response.data as List)
           .map((json) => ContactModel.fromJson(json))
           .toList();
-
     } on DioException catch (e) {
       AppLogger.error('Error in getArchivedChatList API call: $e');
-      throw Exception(e.response?.data['message'] ?? 'Failed to fetch archived chats');
+      throw Exception(
+          e.response?.data['message'] ?? 'Failed to fetch archived chats');
     }
   }
 
-  Future<void> archiveChat(UuidValue id, UuidValue contactId, bool isArchived) async {
+  Future<void> archiveChat(
+      UuidValue id, UuidValue contactId, bool isArchived) async {
     try {
       await dio.post(
-        isArchived ? '/api/chat/archive-contact' : '/api/chat/unarchive-contact',
+        isArchived
+            ? '/api/chat/archive-contact'
+            : '/api/chat/unarchive-contact',
         data: {
           'userId': id.toString(),
           'contactUserId': contactId.toString(),
@@ -63,8 +65,8 @@ class ChatRemoteDataSource {
       );
     } on DioException catch (e) {
       AppLogger.error('Error in archiveChat API call: $e');
-      throw Exception(e.response?.data['message'] ?? 
-        'Failed to ${isArchived ? 'archive' : 'unarchive'} chat');
+      throw Exception(e.response?.data['message'] ??
+          'Failed to ${isArchived ? 'archive' : 'unarchive'} chat');
     }
   }
 
@@ -79,7 +81,8 @@ class ChatRemoteDataSource {
       );
     } on DioException catch (e) {
       AppLogger.error('Error in createContact API call: $e');
-      throw Exception(e.response?.data['message'] ?? 'Failed to create contact');
+      throw Exception(
+          e.response?.data['message'] ?? 'Failed to create contact');
     }
   }
 
@@ -93,10 +96,12 @@ class ChatRemoteDataSource {
     } on DioException catch (e) {
       AppLogger.error('Error in updateChat API call: $e');
       throw Exception(e.response?.data['message'] ?? 'Failed to update chat');
-  
+    }
+  }
+
   Future<int> getUnreadMessageCount(int contactId) async {
     try {
-      final response = await _dio.post(
+      final response = await dio.post(
         '/api/chat/get-unread-message-count',
         data: {'ContactId': contactId},
       );
