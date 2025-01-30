@@ -54,11 +54,12 @@ class LoginPageWeb extends StatelessWidget {
                       router.go('/main/home'); // Navigate to the dashboard
                       break;
                     case AccountStatus.pending:
-                      router.go('/company-info'); // Navigate to company info
+                      router.go(
+                          '/pending-verification'); // Navigate to verification pending page
                       break;
                     case AccountStatus.inactive:
-                      router
-                          .go('/activation'); // Navigate to the activation page
+                      router.go(
+                          '/account-activation'); // Navigate to the activation page
                       break;
                   }
                 }

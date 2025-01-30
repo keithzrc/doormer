@@ -1,3 +1,5 @@
+import 'package:doormer/src/shared/sessions/bloc/global_session_bloc.dart';
+import 'package:doormer/src/shared/user/Models/account_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/features/auth/presentation/bloc/auth_bloc.dart';
@@ -6,6 +8,7 @@ import 'package:doormer/src/features/auth/presentation/bloc/auth_state.dart';
 import 'package:doormer/src/features/auth/presentation/widgets/web/auth_textfield_web.dart';
 import 'package:doormer/src/features/auth/presentation/widgets/web/switch_auth_mode_line.dart';
 import 'package:doormer/src/features/auth/utils/auth_validators.dart';
+import 'package:go_router/go_router.dart';
 
 class SignUpPageWeb extends StatelessWidget {
   final VoidCallback onSwitchAuthMode;
@@ -38,10 +41,29 @@ class SignUpPageWeb extends StatelessWidget {
       child: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthSuccess) {
-            // Handle successful sign-up or Google Sign-In
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Sign-Up successful!')),
-            );
+            // Trigger navigation based on GlobalSessionBloc
+            final sessionState = context.read<GlobalSessionBloc>().state;
+            if (sessionState is SessionActiveState) {
+              final user =
+                  sessionState.user; // Access User from GlobalSessionBloc
+              final accountStatus = user.accountStatus;
+              final router = GoRouter.of(context);
+
+              // Navigate based on accountStatus
+              switch (accountStatus) {
+                case AccountStatus.active:
+                  router.go('/main/home'); // Navigate to the dashboard
+                  break;
+                case AccountStatus.pending:
+                  router.go(
+                      '/verification-pending'); // Navigate to verification pending page
+                  break;
+                case AccountStatus.inactive:
+                  router.go(
+                      '/account-activation'); // Navigate to the activation page
+                  break;
+              }
+            }
           } else if (state is AuthFailure) {
             // Display error message
             ScaffoldMessenger.of(context).showSnackBar(
