@@ -66,15 +66,15 @@ class _SignupPageBodyState extends State<_SignupPageBody> {
     return null;
   }
 
-  String? _validateConfirmPassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please confirm your password';
-    }
-    if (value != _passwordController.text) {
-      return 'Passwords do not match';
-    }
-    return null;
-  }
+  // String? _validateConfirmPassword(String? value) {
+  //   if (value == null || value.isEmpty) {
+  //     return 'Please confirm your password';
+  //   }
+  //   if (value != _passwordController.text) {
+  //     return 'Passwords do not match';
+  //   }
+  //   return null;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -220,57 +220,57 @@ class _SignupPageBodyState extends State<_SignupPageBody> {
                         SizedBox(height: 16.h),
 
                         // Confirm Password TextField with toggle visibility
-                        TextFormField(
-                          controller: _confirmPasswordController,
-                          decoration: InputDecoration(
-                            labelText: 'Confirm Password',
-                            hintText: 'Enter your password again',
-                            prefixIcon: const Icon(Icons.lock_outline),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _isConfirmPasswordVisible
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _isConfirmPasswordVisible =
-                                      !_isConfirmPasswordVisible;
-                                });
-                              },
-                              splashColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              iconSize: 20.sp,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              borderSide: const BorderSide(
-                                  color: Colors.grey, width: 1),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              borderSide: const BorderSide(
-                                  color: Colors.black, width: 1.5),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              borderSide:
-                                  const BorderSide(color: Colors.red, width: 1),
-                            ),
-                            focusedErrorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              borderSide:
-                                  const BorderSide(color: Colors.red, width: 2),
-                            ),
-                            hintStyle: const TextStyle(color: Colors.grey),
-                            labelStyle: const TextStyle(color: Colors.black),
-                          ),
-                          style: const TextStyle(color: Colors.black),
-                          obscureText: !_isConfirmPasswordVisible,
-                          validator: _validateConfirmPassword,
-                          textInputAction: TextInputAction.done,
-                        ),
-                        SizedBox(height: 24.h),
+                        // TextFormField(
+                        //   controller: _confirmPasswordController,
+                        //   decoration: InputDecoration(
+                        //     labelText: 'Confirm Password',
+                        //     hintText: 'Enter your password again',
+                        //     prefixIcon: const Icon(Icons.lock_outline),
+                        //     suffixIcon: IconButton(
+                        //       icon: Icon(
+                        //         _isConfirmPasswordVisible
+                        //             ? Icons.visibility
+                        //             : Icons.visibility_off,
+                        //       ),
+                        //       onPressed: () {
+                        //         setState(() {
+                        //           _isConfirmPasswordVisible =
+                        //               !_isConfirmPasswordVisible;
+                        //         });
+                        //       },
+                        //       splashColor: Colors.transparent,
+                        //       highlightColor: Colors.transparent,
+                        //       iconSize: 20.sp,
+                        //     ),
+                        //     enabledBorder: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(10.r),
+                        //       borderSide: const BorderSide(
+                        //           color: Colors.grey, width: 1),
+                        //     ),
+                        //     focusedBorder: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(10.r),
+                        //       borderSide: const BorderSide(
+                        //           color: Colors.black, width: 1.5),
+                        //     ),
+                        //     errorBorder: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(10.r),
+                        //       borderSide:
+                        //           const BorderSide(color: Colors.red, width: 1),
+                        //     ),
+                        //     focusedErrorBorder: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(10.r),
+                        //       borderSide:
+                        //           const BorderSide(color: Colors.red, width: 2),
+                        //     ),
+                        //     hintStyle: const TextStyle(color: Colors.grey),
+                        //     labelStyle: const TextStyle(color: Colors.black),
+                        //   ),
+                        //   style: const TextStyle(color: Colors.black),
+                        //   obscureText: !_isConfirmPasswordVisible,
+                        //   validator: _validateConfirmPassword,
+                        //   textInputAction: TextInputAction.done,
+                        // ),
+                        // SizedBox(height: 24.h),
 
                         // Sign Up Button
                         ElevatedButton(

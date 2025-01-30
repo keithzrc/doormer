@@ -21,10 +21,10 @@ class LoginPage extends StatelessWidget {
             serviceLocator<AuthBloc>(), // Get AuthBloc from service locator
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
-            if (state is LoginSuccess) {
+            if (state is AuthSuccess) {
               // Navigate to the home screen using go_router
               context.go('/main/home');
-            } else if (state is LoginFailure) {
+            } else if (state is AuthFailure) {
               // Show an error message
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.error)),
@@ -48,7 +48,7 @@ class LoginPage extends StatelessWidget {
                     obscureText: true,
                   ),
                   const SizedBox(height: 24),
-                  state is LoginLoading
+                  state is AuthLoading
                       ? const CircularProgressIndicator()
                       : ElevatedButton(
                           onPressed: () {
