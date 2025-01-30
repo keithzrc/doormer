@@ -44,4 +44,14 @@ class VerifyEmailRequested extends AuthEvent {
 class GoogleSignInRequested extends AuthEvent {}
 
 /// Event triggered when user 'Employer' submits company information
-class SignupCompanyInfoRequested extends AuthEvent {}
+class SignupCompanyInfoRequested extends AuthEvent {
+  final String companyName;
+  final String nzbn;
+  final String companyType;
+  final String companySize;
+  final String industry;
+  final String oriented;
+
+  SignupCompanyInfoRequested(this.companyName, this.nzbn, this.companyType,
+      this.companySize, this.industry, this.oriented);
+}

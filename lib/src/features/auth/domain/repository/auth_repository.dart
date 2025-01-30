@@ -24,4 +24,21 @@ abstract class AuthRepository {
 
   /// Logout user
   Future<void> logout();
+
+  /// Register company information
+  /// Register employer (company) information
+  Future<User> registerCompanyInfo({
+    required String companyName,
+    required String nzbn,
+    required String companyType,
+    required String companySize,
+    required String industry,
+    required String oriented,
+  });
+
+  /// Register user information
+  Future<User> registerCandidateInfo({
+    required String firstName,
+    required String lastName,
+  });
 }

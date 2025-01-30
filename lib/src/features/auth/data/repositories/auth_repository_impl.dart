@@ -90,4 +90,51 @@ class AuthRepositoryImpl implements AuthRepository {
     final user = loginResponse.user.toEntity();
     return user;
   }
+
+  @override
+  Future<User> registerCompanyInfo({
+    required String companyName,
+    required String nzbn,
+    required String companyType,
+    required String companySize,
+    required String industry,
+    required String oriented,
+  }) async {
+    try {
+      print(123);
+      // Call the data source to register company info
+      final userModel = await dataSource.registerCompanyInfo(
+        companyName: companyName,
+        nzbn: nzbn,
+        companyType: companyType,
+        companySize: companySize,
+        industry: industry,
+        oriented: oriented,
+      );
+
+      // Convert the UserModel from the data source into a User entity
+      return userModel.toEntity();
+    } catch (e) {
+      throw Exception('Failed to register company info: $e');
+    }
+  }
+
+  @override
+  Future<User> registerCandidateInfo({
+    required String firstName,
+    required String lastName,
+  }) async {
+    try {
+      // Call the data source to register candidate info
+      final userModel = await dataSource.registerCandidateInfo(
+        firstName: firstName,
+        lastName: lastName,
+      );
+
+      // Convert the UserModel from the data source into a User entity
+      return userModel.toEntity();
+    } catch (e) {
+      throw Exception('Failed to register candidate info: $e');
+    }
+  }
 }

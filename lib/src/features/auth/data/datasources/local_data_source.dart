@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:doormer/src/features/auth/data/models/login_response_model.dart';
+import 'package:doormer/src/shared/user/Models/user_model.dart';
 import 'package:flutter/services.dart';
 
 class AuthLocalDataSource {
@@ -58,5 +59,47 @@ class AuthLocalDataSource {
     } catch (e) {
       throw Exception('Failed to load mock data: $e');
     }
+  }
+
+  Future<UserModel> registerCompanyInfo({
+    required String companyName,
+    required String nzbn,
+    required String companyType,
+    required String companySize,
+    required String industry,
+    required String oriented,
+  }) async {
+    // Simulate saving company info and returning updated user data
+    final mockResponse = {
+      "id": "7d1277f6-72f2-48ac-9fe5-4ac3903502ee",
+      "email": "employer@example.com",
+      "userType": "employer",
+      "accountStatus": "active",
+      "companyName": companyName,
+      "nzbn": nzbn,
+      "companyType": companyType,
+      "companySize": companySize,
+      "industry": industry,
+      "oriented": oriented,
+    };
+
+    return UserModel.fromJson(mockResponse);
+  }
+
+  Future<UserModel> registerCandidateInfo({
+    required String firstName,
+    required String lastName,
+  }) async {
+    // Simulate saving candidate info and returning updated user data
+    final mockResponse = {
+      "id": "7d1277f6-72f2-48ac-9fe5-4ac3903502ee",
+      "email": "candidate@example.com",
+      "userType": "candidate",
+      "accountStatus": "active",
+      "firstName": firstName,
+      "lastName": lastName,
+    };
+
+    return UserModel.fromJson(mockResponse);
   }
 }

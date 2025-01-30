@@ -3,6 +3,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:doormer/src/features/auth/domain/usecases/auth_usecase.dart';
+import 'package:doormer/src/features/auth/presentation/pages/web/signup_company_info_page_web.dart';
 import 'package:doormer/src/shared/sessions/bloc/global_session_bloc.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
@@ -21,6 +22,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginRequested>(_onLoginRequested);
     on<VerifyEmailRequested>(_onConfirmEmailRequested);
     on<GoogleSignInRequested>(_onGoogleSignInRequested);
+
+    on<SignupCompanyInfoRequested>(_onSignupCompanyInfoRequested);
   }
 
   /// Handles the SignupRequested event
@@ -113,6 +116,35 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthFailure(e.toString()));
       AppLogger.error(
           'AuthFailure state emitted for Google Sign-In', e, stackTrace);
+    }
+  }
+
+  Future<void> _onSignupCompanyInfoRequested(
+    SignupCompanyInfoRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+
+    try {
+      final updatedUser = await authUseCase.registerCompanyInfo(
+        companyName: event.companyName,
+        nzbn: event.nzbn,
+        companyType: event.companyType,
+        companySize: event.companySize,
+        industry: event.industry,
+        oriented: event.oriented,
+      );
+      AppLogger.info('$updatedUser');
+      // Dispatch UserInfoUpdated to update user in GlobalSessionBloc
+      globalSessionBloc.add(UserInfoUpdated(updatedUser));
+
+      emit(AuthSuccess());
+    } catch (e, stackTrace) {
+      emit(RegisterFailure(e.toString()));
+      AppLogger.error(
+          'RegisterFailure state emitted for Company Info Registration',
+          e,
+          stackTrace);
     }
   }
 }
