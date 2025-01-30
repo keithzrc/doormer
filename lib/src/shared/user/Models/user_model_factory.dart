@@ -6,7 +6,14 @@ import 'package:doormer/src/shared/user/user_type.dart';
 
 extension UserModelToEntity on UserModel {
   User toEntity() {
-    if (userType == UserType.candidate) {
+    if (userType == UserType.basic) {
+      return User(
+        id: id,
+        email: email,
+        userType: userType,
+        accountStatus: accountStatus,
+      );
+    } else if (userType == UserType.candidate) {
       if (firstName == null || lastName == null) {
         throw Exception(
             'Invalid data: Candidate must have firstName and lastName');
