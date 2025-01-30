@@ -28,20 +28,14 @@ class AuthFailure extends AuthState {
   List<Object?> get props => [error];
 }
 
-class LoginInitial extends AuthState {}
+// New state for email verification
+class AuthEmailVerificationPending extends AuthState {}
 
-class LoginLoading extends AuthState {}
-
-class LoginSuccess extends AuthState {}
-
-class LoginFailure extends AuthState {
+class RegisterFailure extends AuthState {
   final String error;
 
-  LoginFailure(this.error);
+  RegisterFailure(this.error);
 
   @override
   List<Object?> get props => [error];
 }
-
-// New state for email verification
-class AuthEmailVerificationPending extends AuthState {}

@@ -31,4 +31,31 @@ class AuthUseCase {
       {required String email, required String code}) async {
     return await authRepository.verifyEmail(email: email, code: code);
   }
+
+  /// Register company information usecase
+  Future<User> registerCompanyInfo({
+    required String companyName,
+    required String nzbn,
+    required String companyType,
+    required String companySize,
+    required String industry,
+    required String oriented,
+  }) async {
+    return await authRepository.registerCompanyInfo(
+        companyName: companyName,
+        nzbn: nzbn,
+        companyType: companyType,
+        companySize: companySize,
+        industry: industry,
+        oriented: oriented);
+  }
+
+  /// Register candidate information usecase
+  Future<User> registerCandidateInfo({
+    required String firstName,
+    required String lastName,
+  }) async {
+    return await authRepository.registerCandidateInfo(
+        firstName: firstName, lastName: lastName);
+  }
 }
