@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart';
+import 'package:doormer/src/features/chat/data/datasources/remote_data_source.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/features/chat/domain/repositories/contact_repository.dart';
 import 'package:doormer/src/features/chat/data/models/contact_model.dart';
@@ -8,10 +9,12 @@ import 'package:doormer/src/features/chat/data/models/contact_model.dart';
 /// Implementation of the [ContactRepository] interface.
 class ChatRepositoryImpl implements ContactRepository {
   final LocalDataSource localDataSource;
+  final ChatRemoteDataSource remoteDataSource;
   final List<ContactModel> _chats = [];
   final Completer<void> _dataLoaded = Completer<void>();
 
-  ChatRepositoryImpl({required this.localDataSource}) {
+  ChatRepositoryImpl(
+      {required this.localDataSource, required this.remoteDataSource}) {
     // Constructor cannot await, not a problem when using API
     _initializeData();
   }
@@ -83,6 +86,16 @@ class ChatRepositoryImpl implements ContactRepository {
       AppLogger.warn('Chat with ID $chatId not found.');
     } else {
       AppLogger.info('Chat with ID $chatId successfully removed.');
+    }
+  }
+
+  @override
+  Future<int> getUnreadMessageCount(int contactId) async {
+    try {
+      return await remoteDataSource.getUnreadMessageCount(contactId);
+    } catch (e, stackTrace) {
+      AppLogger.error('Failed to get unread message count', e, stackTrace);
+      rethrow;
     }
   }
 }
