@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:doormer/src/core/services/sessions/session_service.dart';
+import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:doormer/src/shared/user/Entity/user_entity.dart';
 import 'package:equatable/equatable.dart';
 
@@ -16,6 +17,7 @@ class GlobalSessionBloc extends Bloc<GlobalSessionEvent, GlobalSessionState> {
     on<ExpireSession>(_onExpireSession);
     on<RefreshSession>(_onRefreshSession);
     on<SessionStarted>(_onSessionStarted);
+    on<UserInfoUpdated>(_onUserInfoUpdated);
   }
 
   Future<void> _onCheckSession(
@@ -50,5 +52,22 @@ class GlobalSessionBloc extends Bloc<GlobalSessionEvent, GlobalSessionState> {
     Emitter<GlobalSessionState> emit,
   ) async {
     emit(SessionActiveState(event.user));
+    AppLogger.info('Session Started');
+  }
+
+  Future<void> _onUserInfoUpdated(
+    UserInfoUpdated event,
+    Emitter<GlobalSessionState> emit,
+  ) async {
+    final currentState = state;
+
+    if (currentState is SessionActiveState) {
+      // Create a new state with the updated user details
+      emit(SessionActiveState(event.updatedUser));
+    } else {
+      // Handle edge case: User not in an active session
+      AppLogger.error(
+          'UserInfoUpdated event received without an active session');
+    }
   }
 }
