@@ -2,9 +2,13 @@
 
 import 'package:doormer/src/core/theme/app_colors.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
+import 'package:doormer/src/shared/sessions/bloc/global_session_bloc.dart';
+import 'package:doormer/src/shared/user/Models/account_status.dart';
+import 'package:doormer/src/shared/user/user_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import '../../bloc/auth_bloc.dart';
 import '../../bloc/auth_event.dart';
 import '../../bloc/auth_state.dart';
@@ -35,7 +39,7 @@ class _SignupPageBodyState extends State<_SignupPageBody> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _isPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
+  //bool _isConfirmPasswordVisible = false;
 
   @override
   void dispose() {
@@ -91,9 +95,9 @@ class _SignupPageBodyState extends State<_SignupPageBody> {
         listener: (context, state) {
           if (state is AuthSuccess) {
             AppLogger.info('Signup successful');
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Signup successful!')),
-            );
+            final router = GoRouter.of(context);
+            router.go(
+                '/candidate-registration'); // Navigate to candidate registration page
           } else if (state is AuthFailure) {
             AppLogger.error('Signup failed with error: ${state.error}');
             ScaffoldMessenger.of(context).showSnackBar(
@@ -279,9 +283,8 @@ class _SignupPageBodyState extends State<_SignupPageBody> {
                               final email = _emailController.text;
                               final password = _passwordController.text;
                               // Dispatch the SignupRequested event
-                              context
-                                  .read<AuthBloc>()
-                                  .add(SignupRequested(email, password));
+                              context.read<AuthBloc>().add(SignupRequested(
+                                  email, password, UserType.candidate));
                               AppLogger.info(
                                   'Signup button pressed with email=$email');
                             }

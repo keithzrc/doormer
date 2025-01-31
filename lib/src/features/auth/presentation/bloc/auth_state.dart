@@ -31,6 +31,8 @@ class AuthFailure extends AuthState {
 // New state for email verification
 class AuthEmailVerificationPending extends AuthState {}
 
+class RegisterSuccess extends AuthState {}
+
 class RegisterFailure extends AuthState {
   final String error;
 

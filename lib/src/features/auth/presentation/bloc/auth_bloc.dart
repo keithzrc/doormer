@@ -5,6 +5,7 @@ import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:doormer/src/features/auth/domain/usecases/auth_usecase.dart';
 import 'package:doormer/src/features/auth/presentation/pages/web/signup_company_info_page_web.dart';
 import 'package:doormer/src/shared/sessions/bloc/global_session_bloc.dart';
+import 'package:doormer/src/shared/user/user_type.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
@@ -24,6 +25,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<GoogleSignInRequested>(_onGoogleSignInRequested);
 
     on<SignupCompanyInfoRequested>(_onSignupCompanyInfoRequested);
+    on<SignupCandidateInfoRequested>(_onSignupCandidateInfoRequested);
   }
 
   /// Handles the SignupRequested event
@@ -38,7 +40,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       // Call signup method on authUseCase and await result
       final user = await authUseCase.signup(
-          email: event.email, password: event.password);
+          email: event.email,
+          password: event.password,
+          userType: event.userType);
 
       // Dispatch SessionStarted to GlobalSessionBloc
       globalSessionBloc.add(SessionStarted(user));
@@ -138,7 +142,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       // Dispatch UserInfoUpdated to update user in GlobalSessionBloc
       globalSessionBloc.add(UserInfoUpdated(updatedUser));
 
-      emit(AuthSuccess());
+      emit(RegisterSuccess());
+    } catch (e, stackTrace) {
+      emit(RegisterFailure(e.toString()));
+      AppLogger.error(
+          'RegisterFailure state emitted for Company Info Registration',
+          e,
+          stackTrace);
+    }
+  }
+
+  Future<void> _onSignupCandidateInfoRequested(
+    SignupCandidateInfoRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+
+    try {
+      final updatedUser = await authUseCase.registerCandidateInfo(
+        firstName: event.firstName,
+        lastName: event.lastName,
+      );
+      AppLogger.info('$updatedUser');
+      // Dispatch UserInfoUpdated to update user in GlobalSessionBloc
+      globalSessionBloc.add(UserInfoUpdated(updatedUser));
+
+      emit(RegisterSuccess());
     } catch (e, stackTrace) {
       emit(RegisterFailure(e.toString()));
       AppLogger.error(

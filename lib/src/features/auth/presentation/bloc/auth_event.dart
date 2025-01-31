@@ -1,3 +1,4 @@
+import 'package:doormer/src/shared/user/user_type.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class AuthEvent extends Equatable {
@@ -12,8 +13,9 @@ class GoogleSignInPressed extends AuthEvent {}
 class SignupRequested extends AuthEvent {
   final String email;
   final String password;
+  final UserType userType;
 
-  SignupRequested(this.email, this.password);
+  SignupRequested(this.email, this.password, this.userType);
 
   @override
   List<Object?> get props => [email, password];
@@ -54,4 +56,11 @@ class SignupCompanyInfoRequested extends AuthEvent {
 
   SignupCompanyInfoRequested(this.companyName, this.nzbn, this.companyType,
       this.companySize, this.industry, this.oriented);
+}
+
+class SignupCandidateInfoRequested extends AuthEvent {
+  final String firstName;
+  final String lastName;
+
+  SignupCandidateInfoRequested(this.firstName, this.lastName);
 }

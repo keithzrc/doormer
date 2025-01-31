@@ -1,5 +1,6 @@
 import 'package:doormer/src/shared/sessions/bloc/global_session_bloc.dart';
 import 'package:doormer/src/shared/user/Models/account_status.dart';
+import 'package:doormer/src/shared/user/user_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/features/auth/presentation/bloc/auth_bloc.dart';
@@ -9,10 +10,13 @@ import 'package:doormer/src/features/auth/presentation/widgets/web/auth_textfiel
 import 'package:doormer/src/features/auth/presentation/widgets/web/switch_auth_mode_line.dart';
 import 'package:doormer/src/features/auth/utils/auth_validators.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in_web/google_sign_in_web.dart' as web;
+import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 
 class SignUpPageWeb extends StatelessWidget {
   final VoidCallback onSwitchAuthMode;
-  final String userType;
+  final UserType userType;
 
   SignUpPageWeb({
     super.key,
@@ -30,7 +34,7 @@ class SignUpPageWeb extends StatelessWidget {
       final password = _passwordController.text;
 
       // Dispatch the SignupRequested event
-      context.read<AuthBloc>().add(SignupRequested(email, password));
+      context.read<AuthBloc>().add(SignupRequested(email, password, userType));
     }
   }
 
@@ -61,6 +65,9 @@ class SignUpPageWeb extends StatelessWidget {
                 case AccountStatus.inactive:
                   router.go(
                       '/account-activation'); // Navigate to the activation page
+                  break;
+                case AccountStatus.partial:
+                  router.go('company-registration');
                   break;
               }
             }
@@ -101,33 +108,35 @@ class SignUpPageWeb extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 // Google Sign In
-                ElevatedButton.icon(
-                  onPressed: state is AuthLoading
-                      ? null
-                      : () {
-                          context.read<AuthBloc>().add(GoogleSignInRequested());
-                        },
-                  icon: const Icon(Icons.g_mobiledata),
-                  label: const Text('Sign up with Google'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                  ),
-                ),
+                // ElevatedButton.icon(
+                //   onPressed: state is AuthLoading
+                //       ? null
+                //       : () {
+                //           context.read<AuthBloc>().add(GoogleSignInRequested());
+                //         },
+                //   icon: const Icon(Icons.g_mobiledata),
+                //   label: const Text('Sign up with Google'),
+                //   style: ElevatedButton.styleFrom(
+                //     backgroundColor: Colors.white,
+                //     foregroundColor: Colors.black,
+                //   ),
+                // ),
+                (GoogleSignInPlatform.instance as web.GoogleSignInPlugin)
+                    .renderButton(),
                 const SizedBox(height: 8),
-                ElevatedButton.icon(
-                  onPressed: state is AuthLoading
-                      ? null
-                      : () {
-                          // TODO: Add Apple sign-up logic
-                        },
-                  icon: const Icon(Icons.apple),
-                  label: const Text('Sign up with Apple'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                  ),
-                ),
+                // ElevatedButton.icon(
+                //   onPressed: state is AuthLoading
+                //       ? null
+                //       : () {
+                //           // TODO: Add Apple sign-up logic
+                //         },
+                //   icon: const Icon(Icons.apple),
+                //   label: const Text('Sign up with Apple'),
+                //   style: ElevatedButton.styleFrom(
+                //     backgroundColor: Colors.black,
+                //     foregroundColor: Colors.white,
+                //   ),
+                // ),
                 const SizedBox(height: 16),
                 SwitchAuthModeLine(
                   text: "Already have an account? ",

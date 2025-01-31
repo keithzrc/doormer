@@ -54,13 +54,13 @@ class _SignUpCompanyInfoPageWebState extends State<SignUpCompanyInfoPageWeb> {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 24),
-                CustomTextField(
+                CustomTextFieldWeb(
                   label: 'Company Name',
                   hintText: 'Enter your company name',
                   controller: companyNameController,
                 ),
                 const SizedBox(height: 16),
-                CustomTextField(
+                CustomTextFieldWeb(
                   label: 'NZBN',
                   hintText: 'Enter your NZBN',
                   controller: nzbnController,
@@ -86,13 +86,13 @@ class _SignUpCompanyInfoPageWebState extends State<SignUpCompanyInfoPageWeb> {
                   },
                 ),
                 const SizedBox(height: 16),
-                CustomTextField(
+                CustomTextFieldWeb(
                   label: 'Industry',
                   hintText: 'Enter your industry',
                   controller: industryController,
                 ),
                 const SizedBox(height: 16),
-                CustomTextField(
+                CustomTextFieldWeb(
                   label: 'Oriented',
                   hintText: 'Enter orientation',
                   controller: orientedController,

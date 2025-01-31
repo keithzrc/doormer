@@ -1,12 +1,14 @@
 import 'package:doormer/src/shared/user/Entity/user_candidate_entity.dart';
 import 'package:doormer/src/shared/user/Entity/user_employer_entity.dart';
 import 'package:doormer/src/shared/user/Entity/user_entity.dart';
+import 'package:doormer/src/shared/user/Models/account_status.dart';
 import 'package:doormer/src/shared/user/Models/user_model.dart';
 import 'package:doormer/src/shared/user/user_type.dart';
 
 extension UserModelToEntity on UserModel {
   User toEntity() {
-    if (userType == UserType.basic) {
+    // If the user is in PARTIAL status, return a basic User entity
+    if (accountStatus == AccountStatus.partial) {
       return User(
         id: id,
         email: email,
