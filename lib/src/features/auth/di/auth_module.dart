@@ -36,7 +36,7 @@ void initAuthModule() {
 
   // Register AuthRepository
   serviceLocator.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(
-        //dataSource: serviceLocator<AuthRemoteDataSource>(),
+        remoteDataSource: serviceLocator<AuthRemoteDataSource>(),
         dataSource: serviceLocator<AuthLocalDataSource>(),
         sessionService: serviceLocator<SessionService>(),
       ));

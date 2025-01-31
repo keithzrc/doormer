@@ -19,6 +19,7 @@ class AuthRemoteDataSource {
       required this.googleSignIn,
       required this.dio});
 
+  // TODO: Add UserTypeValue to identify signing up company or candidate
   Future<LoginResponseModel> signup(String email, String password) async {
     try {
       final formData = FormData.fromMap({
@@ -69,7 +70,7 @@ class AuthRemoteDataSource {
     }
   }
 
-  Future<String> getGoogleIdToken() async {
+  Future<String> getGoogleIdTokenAndroid() async {
     try {
       // Sign out to reset the GoogleSignIn state
       await googleSignIn.signOut();
@@ -80,26 +81,49 @@ class AuthRemoteDataSource {
       }
 
       final authentication = await account.authentication;
+      AppLogger.info(
+          'Google Authentication Response: ${authentication.toString()}');
 
-      if (authentication.accessToken == null) {
+      if (authentication.idToken == null) {
         throw Exception('Failed to retrieve Google ID token.');
       }
 
-      AppLogger.info(authentication.accessToken.toString());
-      return authentication.accessToken!;
+      AppLogger.info(authentication.idToken.toString());
+      return authentication.idToken!;
     } catch (e) {
       AppLogger.error(e.toString());
       rethrow;
     }
   }
 
+  Future<String?> getGoogleIdTokenWeb() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+      if (googleSignInAccount == null) {
+        throw Exception("User canceled Google Sign-In.");
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleSignInAccount.authentication;
+
+      if (googleAuth.idToken == null) {
+        throw Exception("ID Token is null. Check OAuth settings.");
+      }
+      return googleAuth.idToken;
+    } catch (error) {
+      return null;
+    }
+  }
+
   // Exchange Google ID token for backend tokens
-  Future<LoginResponseModel> exchangeGoogleIdTokenForTokens(
-      String googleIdToken) async {
+  //TODO: Fix data form
+  Future<LoginResponseModel> verifyGoogleIdToken(String googleIdToken) async {
     try {
       final response = await requestManager.post(
         '/auth/google-sign-in', // Your backend endpoint
         data: {
+          'auth_type': 2,
           'idToken': googleIdToken,
         },
         requiresAuth: false,

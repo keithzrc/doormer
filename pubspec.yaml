@@ -33,6 +33,7 @@ dependencies:
   json_annotation: ^4.9.0
   universal_html:
   google_sign_in: ^6.2.2
+  google_sign_in_web:
 
 dev_dependencies:
   flutter_test:
