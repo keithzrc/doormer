@@ -7,19 +7,35 @@ import 'package:doormer/src/features/auth/data/datasources/local_data_source.dar
 import 'package:doormer/src/shared/user/Entity/user_entity.dart';
 import 'package:doormer/src/features/auth/domain/repository/auth_repository.dart';
 import 'package:doormer/src/shared/user/Models/user_model_factory.dart';
+import 'package:doormer/src/shared/user/user_type.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   //final AuthRemoteDataSource dataSource;
   final AuthLocalDataSource dataSource;
+  final AuthRemoteDataSource remoteDataSource;
   final SessionService sessionService;
 
   AuthRepositoryImpl({
     required this.dataSource,
     required this.sessionService,
+    required this.remoteDataSource,
   });
 
   @override
-  Future<User> signup({required String email, required String password}) async {
+  Future<User> signup(
+      {required String email,
+      required String password,
+      required UserType userType}) async {
+    int userTypeValue;
+
+    switch (userType) {
+      case UserType.employer:
+        userTypeValue = 1;
+        break;
+      case UserType.candidate:
+        userTypeValue = 2;
+        break;
+    }
     // Call remote data source to get LoginResponseModel
     final loginResponse = await dataSource.signup(email, password);
 
@@ -70,16 +86,16 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<User> signInWithGoogle() async {
     // Step 1: Get Google ID token
-    final googleIdToken = await dataSource.getGoogleIdToken();
+    final googleIdToken = await remoteDataSource.getGoogleIdTokenWeb();
 
-    final user = await exchangeGoogleIdTokenForTokens(googleIdToken);
+    final user = await verifyGoogleIdToken(googleIdToken!);
 
     return user;
   }
 
-  Future<User> exchangeGoogleIdTokenForTokens(String googleIdToken) async {
+  Future<User> verifyGoogleIdToken(String googleIdToken) async {
     final loginResponse =
-        await dataSource.exchangeGoogleIdTokenForTokens(googleIdToken);
+        await remoteDataSource.verifyGoogleIdToken(googleIdToken);
 
     // Save tokens using SessionService
     await sessionService.saveTokens(
@@ -101,7 +117,6 @@ class AuthRepositoryImpl implements AuthRepository {
     required String oriented,
   }) async {
     try {
-      print(123);
       // Call the data source to register company info
       final userModel = await dataSource.registerCompanyInfo(
         companyName: companyName,
