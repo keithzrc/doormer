@@ -10,6 +10,7 @@ import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart'
 import 'package:doormer/src/features/chat/domain/repositories/contact_repository.dart'
     as _i2;
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:uuid/uuid.dart' as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -30,10 +31,11 @@ import 'package:mockito/mockito.dart' as _i1;
 /// See the documentation for Mockito's code generation for more information.
 class MockContactRepository extends _i1.Mock implements _i2.ContactRepository {
   @override
-  _i3.Future<List<_i4.Contact>> getActiveChatList() => (super.noSuchMethod(
+  _i3.Future<List<_i4.Contact>> getActiveChatList(_i5.UuidValue? userId) =>
+      (super.noSuchMethod(
         Invocation.method(
           #getActiveChatList,
-          [],
+          [userId],
         ),
         returnValue: _i3.Future<List<_i4.Contact>>.value(<_i4.Contact>[]),
         returnValueForMissingStub:
@@ -41,10 +43,11 @@ class MockContactRepository extends _i1.Mock implements _i2.ContactRepository {
       ) as _i3.Future<List<_i4.Contact>>);
 
   @override
-  _i3.Future<List<_i4.Contact>> getArchivedChatList() => (super.noSuchMethod(
+  _i3.Future<List<_i4.Contact>> getArchivedChatList(_i5.UuidValue? userId) =>
+      (super.noSuchMethod(
         Invocation.method(
           #getArchivedChatList,
-          [],
+          [userId],
         ),
         returnValue: _i3.Future<List<_i4.Contact>>.value(<_i4.Contact>[]),
         returnValueForMissingStub:
@@ -63,12 +66,31 @@ class MockContactRepository extends _i1.Mock implements _i2.ContactRepository {
       ) as _i3.Future<void>);
 
   @override
-  _i3.Future<void> deleteChat(String? chatId) => (super.noSuchMethod(
+  _i3.Future<void> archiveChat(
+    _i5.UuidValue? id,
+    _i5.UuidValue? contactId,
+    bool? isArchived,
+  ) =>
+      (super.noSuchMethod(
         Invocation.method(
-          #deleteChat,
-          [chatId],
+          #archiveChat,
+          [
+            id,
+            contactId,
+            isArchived,
+          ],
         ),
         returnValue: _i3.Future<void>.value(),
         returnValueForMissingStub: _i3.Future<void>.value(),
       ) as _i3.Future<void>);
+
+  @override
+  _i3.Future<int> getUnreadMessageCount(int? contactId) => (super.noSuchMethod(
+        Invocation.method(
+          #getUnreadMessageCount,
+          [contactId],
+        ),
+        returnValue: _i3.Future<int>.value(0),
+        returnValueForMissingStub: _i3.Future<int>.value(0),
+      ) as _i3.Future<int>);
 }

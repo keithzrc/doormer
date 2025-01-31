@@ -16,6 +16,8 @@ class ContactModel {
   @UuidValueConverter()
   final UuidValue id;
 
+  final int contactId;
+
   /// Name of the user associated with the contact.
   final String userName;
 
@@ -37,6 +39,7 @@ class ContactModel {
   /// Constructor for [ContactModel].
   ContactModel({
     required this.id,
+    required this.contactId,
     required this.userName,
     required this.avatarUrl,
     required this.lastMessage,
@@ -69,9 +72,10 @@ class ContactModel {
   Map<String, dynamic> toJson() => _$ContactModelToJson(this);
 
   /// Converts this model to a domain entity [Contact].
-  Contact toEntity() {
+  Contact toEntity(UuidValue userId) {
     return Contact(
       id: id,
+      contactId: contactId,
       userName: userName,
       avatarUrl: avatarUrl,
       lastMessage: lastMessage,
@@ -85,12 +89,36 @@ class ContactModel {
   static ContactModel fromEntity(Contact contact) {
     return ContactModel(
       id: contact.id,
+      contactId: contact.contactId,
       userName: contact.userName,
       avatarUrl: contact.avatarUrl,
       lastMessage: contact.lastMessage,
       lastMessageCreatedTime: contact.lastMessageCreatedTime,
       isArchived: contact.isArchived,
       isRead: contact.isRead,
+    );
+  }
+
+  ContactModel copyWith({
+    UuidValue? id,
+    int? contactId,
+    String? userName,
+    String? avatarUrl,
+    String? lastMessage,
+    DateTime? lastMessageCreatedTime,
+    bool? isArchived,
+    bool? isRead,
+  }) {
+    return ContactModel(
+      id: id ?? this.id,
+      contactId: contactId ?? this.contactId,
+      userName: userName ?? this.userName,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      lastMessage: lastMessage ?? this.lastMessage,
+      lastMessageCreatedTime:
+          lastMessageCreatedTime ?? this.lastMessageCreatedTime,
+      isArchived: isArchived ?? this.isArchived,
+      isRead: isRead ?? this.isRead,
     );
   }
 }

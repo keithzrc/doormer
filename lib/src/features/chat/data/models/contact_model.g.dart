@@ -7,6 +7,7 @@ part of 'contact_model.dart';
 // **************************************************************************
 
 ContactModel _$ContactModelFromJson(Map<String, dynamic> json) => ContactModel(
+      contactId: (json['contactId'] as num).toInt(),
       id: const UuidValueConverter().fromJson(json['id'] as String),
       userName: json['userName'] as String,
       avatarUrl: json['avatarUrl'] as String,
@@ -20,6 +21,7 @@ ContactModel _$ContactModelFromJson(Map<String, dynamic> json) => ContactModel(
 Map<String, dynamic> _$ContactModelToJson(ContactModel instance) =>
     <String, dynamic>{
       'id': const UuidValueConverter().toJson(instance.id),
+      'contactId': instance.contactId,
       'userName': instance.userName,
       'avatarUrl': instance.avatarUrl,
       'lastMessage': instance.lastMessage,

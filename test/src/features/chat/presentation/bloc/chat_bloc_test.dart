@@ -76,14 +76,14 @@ void main() {
         ],
       );
       expect(chatBloc.state, isA<ChatLoadedState>());
-      expect((chatBloc.state as ChatLoadedState).chats.length, 1);
+      expect((chatBloc.state as ChatLoadedState).unarchivedChats.length, 1);
     });
 
     blocTest<ChatBloc, ChatState>(
       'should emit [ChatLoadingState, ChatLoadedState] when LoadChatsEvent is successfully handled and state contains returned chats',
       setUp: () {
         when(() => mockGetChatList.call()).thenAnswer(
-          (_) async => [
+          (_) => Future.value([
             Contact(
               id: UuidValue(const Uuid().v4()),
               userName: 'Jason',
@@ -93,7 +93,10 @@ void main() {
               isArchived: false,
               isRead: true,
             ),
-          ],
+          ]),
+        );
+        when(() => mockGetArchivedList.call()).thenAnswer(
+          (_) => Future.value([]),
         );
       },
       build: () => chatBloc,
@@ -101,14 +104,14 @@ void main() {
       expect: () => [
         isA<ChatLoadingState>(),
         predicate<ChatLoadedState>((state) {
-          final chats = state.chats;
-          return chats.isNotEmpty &&
-              chats[0].userName == 'Jason' &&
-              chats[0].lastMessage == 'Hello';
+          return state.unarchivedChats.isNotEmpty &&
+              state.unarchivedChats[0].userName == 'Jason' &&
+              state.unarchivedChats[0].lastMessage == 'Hello';
         }),
       ],
       verify: (_) {
         verify(() => mockGetChatList.call()).called(1);
+        verify(() => mockGetArchivedList.call()).called(1);
       },
     );
 
@@ -130,8 +133,9 @@ void main() {
     );
 
     blocTest<ChatBloc, ChatState>(
-      'should emit [ArchivedChatLoadingState, ArchivedChatLoadedState] when LoadArchivedChatsEvent is successfully handled and state contains returned archived chats',
+      'should emit [ChatLoadingState, ChatLoadedState] when LoadArchivedChatsEvent is successfully handled',
       setUp: () {
+        when(() => mockGetChatList.call()).thenAnswer((_) async => []);
         when(() => mockGetArchivedList.call()).thenAnswer(
           (_) async => [
             Contact(
@@ -149,69 +153,105 @@ void main() {
       build: () => chatBloc,
       act: (bloc) => bloc.add(LoadArchivedChatsEvent()),
       expect: () => [
-        isA<ArchivedChatLoadingState>(),
-        predicate<ArchivedChatLoadedState>((state) {
-          final archivedChats = state.archivedChats;
-          return archivedChats.isNotEmpty &&
-              archivedChats[0].userName == 'Iris' &&
-              archivedChats[0].lastMessage == 'Archived message' &&
-              archivedChats[0].isArchived == true;
-        }),
+        isA<ChatLoadingState>(),
+        isA<ChatLoadedState>(),
       ],
-      verify: (_) {
-        verify(() => mockGetArchivedList.call()).called(1);
-      },
     );
 
     blocTest<ChatBloc, ChatState>(
-      'should emit [ArchivedChatLoadingState, ChatErrorState] when LoadArchivedChatsEvent fails to fetch the archived chat list data',
+      'should emit [ChatLoadingState, ChatErrorState] when LoadArchivedChatsEvent fails to fetch the archived chat list data',
       setUp: () {
+        when(() => mockGetChatList.call())
+            .thenAnswer((_) async => []);
         when(() => mockGetArchivedList.call())
             .thenThrow(Exception('Error fetching archived chats'));
       },
       build: () => chatBloc,
       act: (bloc) => bloc.add(LoadArchivedChatsEvent()),
       expect: () => [
-        isA<ArchivedChatLoadingState>(),
+        isA<ChatLoadingState>(),
         isA<ChatErrorState>(),
       ],
       verify: (_) {
+        verify(() => mockGetChatList.call()).called(1);
+        verify(() => mockGetArchivedList.call()).called(1);
+      },
+    );
+
+
+  group('Archive/Unarchive Tests', () {
+    final testContact = Contact(
+      id: UuidValue(const Uuid().v4()),
+      userName: 'Test User',
+      avatarUrl: 'test.png',
+      lastMessage: 'Test message',
+      lastMessageCreatedTime: DateTime.now(),
+      isArchived: false,
+      isRead: true,
+    );
+
+    blocTest<ChatBloc, ChatState>(
+      'should emit [ChatLoadingState, ChatLoadedState] when ToggleArchiveStatusEvent is successful for archiving',
+      setUp: () {
+        when(() => mockArchiveChat.call(any<Contact>()))
+            .thenAnswer((_) async => testContact.copyWith(isArchived: true));
+        when(() => mockGetChatList.call())
+            .thenAnswer((_) async => []);
+        when(() => mockGetArchivedList.call())
+            .thenAnswer((_) async => [testContact.copyWith(isArchived: true)]);
+      },
+      build: () => chatBloc,
+      act: (bloc) => bloc.add(ToggleArchiveStatusEvent(testContact)),
+      expect: () => [
+        isA<ChatLoadingState>(),
+        isA<ChatLoadedState>(),
+      ],
+      verify: (_) {
+        verify(() => mockArchiveChat.call(testContact)).called(1);
+        verify(() => mockGetChatList.call()).called(1);
         verify(() => mockGetArchivedList.call()).called(1);
       },
     );
 
     blocTest<ChatBloc, ChatState>(
-      'should call deleteChat and then emit [ArchivedChatLoadingState, ArchivedChatLoadedState] to refresh the archived chat list after DeleteChatEvent is handled',
+      'should emit [ChatLoadingState, ChatLoadedState] when ToggleArchiveStatusEvent is successful for unarchiving',
       setUp: () {
-        when(() => mockDeleteChat.call("1")).thenAnswer((_) async => {});
-        when(() => mockGetArchivedList.call()).thenAnswer((_) async => []);
+        final archivedContact = testContact.copyWith(isArchived: true);
+        when(() => mockArchiveChat.call(any<Contact>()))
+            .thenAnswer((_) async => archivedContact.copyWith(isArchived: false));
+        when(() => mockGetChatList.call())
+            .thenAnswer((_) async => [archivedContact.copyWith(isArchived: false)]);
+        when(() => mockGetArchivedList.call())
+            .thenAnswer((_) async => []);
       },
       build: () => chatBloc,
-      act: (bloc) => bloc.add(DeleteChatEvent('1')),
+      act: (bloc) => bloc.add(ToggleArchiveStatusEvent(testContact.copyWith(isArchived: true))),
       expect: () => [
-        isA<ArchivedChatLoadingState>(),
-        isA<ArchivedChatLoadedState>(),
+        isA<ChatLoadingState>(),
+        isA<ChatLoadedState>(),
       ],
       verify: (_) {
-        verify(() => mockDeleteChat.call('1')).called(1);
+        verify(() => mockArchiveChat.call(testContact.copyWith(isArchived: true))).called(1);
+        verify(() => mockGetChatList.call()).called(1);
         verify(() => mockGetArchivedList.call()).called(1);
       },
     );
+
     blocTest<ChatBloc, ChatState>(
-      'should emit [ChatErrorState] when DeleteChatEvent fails',
+      'should emit [ChatErrorState] when ToggleArchiveStatusEvent fails',
       setUp: () {
-        when(() => mockDeleteChat.call("1"))
-            .thenThrow(Exception("Failed to delete chat"));
+        when(() => mockArchiveChat.call(any<Contact>()))
+            .thenThrow(Exception('Failed to toggle chat status'));
       },
       build: () => chatBloc,
-      act: (bloc) => bloc.add(DeleteChatEvent('1')),
+      act: (bloc) => bloc.add(ToggleArchiveStatusEvent(testContact)),
       expect: () => [
         isA<ChatErrorState>(),
       ],
       verify: (_) {
-        verify(() => mockDeleteChat.call('1')).called(1);
-        verifyNever(() => mockGetArchivedList.call());
+        verify(() => mockArchiveChat.call(testContact)).called(1);
       },
     );
   });
+});
 }

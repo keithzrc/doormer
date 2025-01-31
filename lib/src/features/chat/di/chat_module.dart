@@ -1,18 +1,30 @@
+import 'package:dio/dio.dart';
 import 'package:doormer/src/core/di/service_locator.dart';
 import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart';
+import 'package:doormer/src/features/chat/data/datasources/remote_data_source.dart';
 import 'package:doormer/src/features/chat/data/repositories/file/chat_repo_impl.dart';
 import 'package:doormer/src/features/chat/domain/repositories/contact_repository.dart';
 import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:doormer/src/core/utils/token_storage.dart';
 
 void initChatModule() {
+  // Register RemoteDataSource
+  serviceLocator.registerSingleton<ChatRemoteDataSource>(
+    ChatRemoteDataSource(dio: serviceLocator<Dio>()),
+  );
+
   // Register LocalDataSource
-  serviceLocator.registerSingleton<LocalDataSource>(LocalDataSource());
+  serviceLocator.registerSingleton<LocalDataSource>(
+    LocalDataSource(),
+  );
 
   // Register ChatRepository
   serviceLocator.registerSingleton<ContactRepository>(
     ChatRepositoryImpl(
       localDataSource: serviceLocator<LocalDataSource>(),
+      tokenStorage: serviceLocator<TokenStorage>(),
+      remoteDataSource: serviceLocator<ChatRemoteDataSource>(),
     ),
   );
 
@@ -29,8 +41,12 @@ void initChatModule() {
     () => ToggleChatArchivedStatus(serviceLocator<ContactRepository>()),
   );
 
-  serviceLocator.registerLazySingleton<DeleteChat>(
-    () => DeleteChat(serviceLocator<ContactRepository>()),
+  // serviceLocator.registerLazySingleton<DeleteChat>(
+  //   () => DeleteChat(serviceLocator<ContactRepository>()),
+  // );
+
+  serviceLocator.registerLazySingleton<GetUnreadMessageCount>(
+    () => GetUnreadMessageCount(serviceLocator<ContactRepository>()),
   );
 
   // Register ChatBloc
@@ -38,6 +54,7 @@ void initChatModule() {
         getChatListUseCase: serviceLocator<GetSortedActiveChatList>(),
         getArchivedChatListUseCase: serviceLocator<GetSortedArchivedChatList>(),
         toggleChatUseCase: serviceLocator<ToggleChatArchivedStatus>(),
-        deleteChatUseCase: serviceLocator<DeleteChat>(),
+        //deleteChatUseCase: serviceLocator<DeleteChat>(),
+        getUnreadMessageCountUseCase: serviceLocator<GetUnreadMessageCount>(),
       ));
 }

@@ -16,6 +16,9 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$Contact {
+  /// Unique numeric identifier for the contact
+  int get contactId => throw _privateConstructorUsedError;
+
   /// Unique identifier for the contact, represented as a UUID.
   UuidValue get id => throw _privateConstructorUsedError;
 
@@ -49,7 +52,8 @@ abstract class $ContactCopyWith<$Res> {
       _$ContactCopyWithImpl<$Res, Contact>;
   @useResult
   $Res call(
-      {UuidValue id,
+      {int contactId,
+      UuidValue id,
       String userName,
       String avatarUrl,
       String lastMessage,
@@ -73,6 +77,7 @@ class _$ContactCopyWithImpl<$Res, $Val extends Contact>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? contactId = null,
     Object? id = null,
     Object? userName = null,
     Object? avatarUrl = null,
@@ -82,6 +87,10 @@ class _$ContactCopyWithImpl<$Res, $Val extends Contact>
     Object? isRead = null,
   }) {
     return _then(_value.copyWith(
+      contactId: null == contactId
+          ? _value.contactId
+          : contactId // ignore: cast_nullable_to_non_nullable
+              as int,
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -122,7 +131,8 @@ abstract class _$$ContactImplCopyWith<$Res> implements $ContactCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {UuidValue id,
+      {int contactId,
+      UuidValue id,
       String userName,
       String avatarUrl,
       String lastMessage,
@@ -144,6 +154,7 @@ class __$$ContactImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? contactId = null,
     Object? id = null,
     Object? userName = null,
     Object? avatarUrl = null,
@@ -153,6 +164,10 @@ class __$$ContactImplCopyWithImpl<$Res>
     Object? isRead = null,
   }) {
     return _then(_$ContactImpl(
+      contactId: null == contactId
+          ? _value.contactId
+          : contactId // ignore: cast_nullable_to_non_nullable
+              as int,
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -189,13 +204,18 @@ class __$$ContactImplCopyWithImpl<$Res>
 
 class _$ContactImpl implements _Contact {
   const _$ContactImpl(
-      {required this.id,
+      {required this.contactId,
+      required this.id,
       required this.userName,
       required this.avatarUrl,
       required this.lastMessage,
       required this.lastMessageCreatedTime,
       required this.isArchived,
       required this.isRead});
+
+  /// Unique numeric identifier for the contact
+  @override
+  final int contactId;
 
   /// Unique identifier for the contact, represented as a UUID.
   @override
@@ -227,7 +247,7 @@ class _$ContactImpl implements _Contact {
 
   @override
   String toString() {
-    return 'Contact(id: $id, userName: $userName, avatarUrl: $avatarUrl, lastMessage: $lastMessage, lastMessageCreatedTime: $lastMessageCreatedTime, isArchived: $isArchived, isRead: $isRead)';
+    return 'Contact(contactId: $contactId, id: $id, userName: $userName, avatarUrl: $avatarUrl, lastMessage: $lastMessage, lastMessageCreatedTime: $lastMessageCreatedTime, isArchived: $isArchived, isRead: $isRead)';
   }
 
   @override
@@ -235,6 +255,8 @@ class _$ContactImpl implements _Contact {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ContactImpl &&
+            (identical(other.contactId, contactId) ||
+                other.contactId == contactId) &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.userName, userName) ||
                 other.userName == userName) &&
@@ -250,8 +272,8 @@ class _$ContactImpl implements _Contact {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, userName, avatarUrl,
-      lastMessage, lastMessageCreatedTime, isArchived, isRead);
+  int get hashCode => Object.hash(runtimeType, contactId, id, userName,
+      avatarUrl, lastMessage, lastMessageCreatedTime, isArchived, isRead);
 
   /// Create a copy of Contact
   /// with the given fields replaced by the non-null parameter values.
@@ -264,13 +286,18 @@ class _$ContactImpl implements _Contact {
 
 abstract class _Contact implements Contact {
   const factory _Contact(
-      {required final UuidValue id,
+      {required final int contactId,
+      required final UuidValue id,
       required final String userName,
       required final String avatarUrl,
       required final String lastMessage,
       required final DateTime lastMessageCreatedTime,
       required final bool isArchived,
       required final bool isRead}) = _$ContactImpl;
+
+  /// Unique numeric identifier for the contact
+  @override
+  int get contactId;
 
   /// Unique identifier for the contact, represented as a UUID.
   @override
