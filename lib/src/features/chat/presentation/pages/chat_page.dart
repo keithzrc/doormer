@@ -96,10 +96,13 @@ class _ChatPageContent extends StatelessWidget {
                             return ChatCard(
                               chat: chat,
                               isInArchivePage: false,
+                              onTap: () {
+                                // TODO: add chat box
+                              },
                               onArchive: (contact) {
                                 context.read<ChatBloc>().add(
-                                  chat_event.ToggleArchiveStatusEvent(contact),
-                                );
+                                      chat_event.ToggleArchiveStatusEvent(contact),
+                                    );
                               },
                             );
                           },

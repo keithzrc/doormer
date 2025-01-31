@@ -1,4 +1,3 @@
-// chat_state.dart
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 
 abstract class ChatState {}

@@ -75,6 +75,9 @@ class _ArchivePageContent extends StatelessWidget {
                           return ChatCard(
                             chat: chat,
                             isInArchivePage: true,
+                            onTap: () {
+                              // TODO: Add chat box
+                            },
                             onArchive: (contact) {
                               context.read<ChatBloc>().add(
                                     archive_event.ToggleArchiveStatusEvent(contact),

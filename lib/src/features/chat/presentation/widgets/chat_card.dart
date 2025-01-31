@@ -5,16 +5,16 @@ import 'package:doormer/src/core/theme/app_text_styles.dart';
 
 class ChatCard extends StatelessWidget {
   final Contact chat;
-  final VoidCallback? onTap;
-  final Function(Contact)? onArchive;
+  final VoidCallback onTap;
+  final Function(Contact) onArchive;
   final bool isInArchivePage;
 
   const ChatCard({
     super.key,
     required this.chat,
-    this.onTap,
-    this.onArchive,
-    this.isInArchivePage = false,
+    required this.onTap,
+    required this.onArchive,
+    required this.isInArchivePage,
   });
 
   @override
@@ -48,7 +48,7 @@ class ChatCard extends StatelessWidget {
               ),
               // Add red dot to users with unread messages
               // TODO: take it out, reusable
-              if (chat.isRead == false)
+              if (!chat.isRead)
                 Positioned(
                   right: 0,
                   top: 0,
@@ -56,7 +56,7 @@ class ChatCard extends StatelessWidget {
                     width: 12,
                     height: 12,
                     decoration: const BoxDecoration(
-                      color: Colors.red, //TODO: AppColors
+                      color: Colors.red, 
                       shape: BoxShape.circle,
                     ),
                   ),
