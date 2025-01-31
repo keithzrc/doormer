@@ -2,6 +2,7 @@ import 'package:doormer/src/core/di/service_locator.dart';
 import 'package:doormer/src/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:doormer/src/features/auth/presentation/pages/web/login_page_web.dart';
 import 'package:doormer/src/features/auth/presentation/pages/web/signup_page_web.dart';
+import 'package:doormer/src/shared/user/user_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,7 +15,7 @@ class AuthPageWeb extends StatefulWidget {
 
 class _AuthPageWebState extends State<AuthPageWeb> {
   bool isLoginPage = true;
-  String userType = "Job-Seeker"; // Default user type
+  UserType userType = UserType.employer; // Default user type
   List<bool> isSelected = [true, false]; // Toggle button state
 
   void toggleAuthMode() {
@@ -28,7 +29,7 @@ class _AuthPageWebState extends State<AuthPageWeb> {
       for (int i = 0; i < isSelected.length; i++) {
         isSelected[i] = i == index;
       }
-      userType = index == 0 ? "Job-Seeker" : "Employer";
+      userType = index == 0 ? UserType.employer : UserType.candidate;
     });
   }
 

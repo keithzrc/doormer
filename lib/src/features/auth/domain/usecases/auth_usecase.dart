@@ -1,4 +1,5 @@
 import 'package:doormer/src/features/auth/domain/repository/auth_repository.dart';
+import 'package:doormer/src/shared/user/user_type.dart';
 import '../../../../shared/user/Entity/user_entity.dart';
 
 class AuthUseCase {
@@ -10,8 +11,10 @@ class AuthUseCase {
   Future<User> signup({
     required String email,
     required String password,
+    required UserType userType,
   }) async {
-    return await authRepository.signup(email: email, password: password);
+    return await authRepository.signup(
+        email: email, password: password, userType: userType);
   }
 
   // Login method

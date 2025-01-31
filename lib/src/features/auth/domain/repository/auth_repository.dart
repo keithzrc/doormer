@@ -1,11 +1,12 @@
 import 'package:doormer/src/shared/user/Entity/user_entity.dart';
+import 'package:doormer/src/shared/user/user_type.dart';
 
 abstract class AuthRepository {
   /// Signs up a new user with email and password
-  Future<User> signup({
-    required String email,
-    required String password,
-  });
+  Future<User> signup(
+      {required String email,
+      required String password,
+      required UserType userType});
 
   /// Logs in the user with email and password
   Future<User> login({

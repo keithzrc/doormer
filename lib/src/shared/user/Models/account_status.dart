@@ -1,4 +1,4 @@
-enum AccountStatus { active, pending, inactive }
+enum AccountStatus { active, pending, inactive, partial }
 
 extension AccountStatusExtension on AccountStatus {
   // Convert `AccountStatus` to API string
@@ -10,6 +10,8 @@ extension AccountStatusExtension on AccountStatus {
         return 'pending';
       case AccountStatus.inactive:
         return 'inactive';
+      case AccountStatus.partial:
+        return 'partial';
     }
   }
 
@@ -22,6 +24,8 @@ extension AccountStatusExtension on AccountStatus {
         return AccountStatus.pending;
       case 'inactive':
         return AccountStatus.inactive;
+      case 'partial':
+        return AccountStatus.partial;
       default:
         throw Exception('Unknown account status $accountStatus');
     }

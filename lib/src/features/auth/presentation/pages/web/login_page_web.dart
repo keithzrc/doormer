@@ -6,13 +6,14 @@ import 'package:doormer/src/features/auth/presentation/widgets/web/switch_auth_m
 import 'package:doormer/src/features/auth/utils/auth_validators.dart';
 import 'package:doormer/src/shared/sessions/bloc/global_session_bloc.dart';
 import 'package:doormer/src/shared/user/Models/account_status.dart';
+import 'package:doormer/src/shared/user/user_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginPageWeb extends StatelessWidget {
   final VoidCallback onSwitchAuthMode;
-  final String userType;
+  final UserType userType;
 
   LoginPageWeb(
       {super.key, required this.onSwitchAuthMode, required this.userType});
@@ -60,6 +61,9 @@ class LoginPageWeb extends StatelessWidget {
                     case AccountStatus.inactive:
                       router.go(
                           '/account-activation'); // Navigate to the activation page
+                      break;
+                    case AccountStatus.partial:
+                      router.go('company-registration');
                       break;
                   }
                 }
@@ -124,7 +128,6 @@ class LoginPageWeb extends StatelessWidget {
         ElevatedButton.icon(
           onPressed: () {
             // TODO: Add Google login logic
-            print('Google Sign-In');
           },
           icon: const Icon(Icons.g_mobiledata),
           label: const Text('Sign in with Google'),
@@ -137,7 +140,6 @@ class LoginPageWeb extends StatelessWidget {
         ElevatedButton.icon(
           onPressed: () {
             // TODO: Add Apple login logic
-            print('Apple Sign-In');
           },
           icon: const Icon(Icons.apple),
           label: const Text('Sign in with Apple'),
