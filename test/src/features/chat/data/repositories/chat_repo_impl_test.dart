@@ -51,14 +51,13 @@ void main() {
     // 添加 remoteDataSource 的基本 mock
     when(mockRemoteDataSource.archiveChat(any, any, any))
         .thenAnswer((_) async => {});
-    when(mockRemoteDataSource.deleteChat(any))
-        .thenAnswer((_) async => {});
+
     when(mockRemoteDataSource.updateChat(any))
         .thenAnswer((_) async => {});
         
     repository = ChatRepositoryImpl(
-      localDataSource: mockLocalDataSource,
       remoteDataSource: mockRemoteDataSource,
+      tokenStorage: mockTokenStorage,
     );
   });
 
