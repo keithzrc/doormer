@@ -120,12 +120,14 @@ class AuthRemoteDataSource {
   //TODO: Fix data form
   Future<LoginResponseModel> verifyGoogleIdToken(String googleIdToken) async {
     try {
+      final formData = FormData.fromMap({
+        'auth_type': 2, // This will be sent as part of form-data
+        'id_token': googleIdToken,
+      });
+
       final response = await requestManager.post(
-        '/auth/google-sign-in', // Your backend endpoint
-        data: {
-          'auth_type': 2,
-          'idToken': googleIdToken,
-        },
+        '/signup', // Your backend endpoint
+        data: formData,
         requiresAuth: false,
       );
 
