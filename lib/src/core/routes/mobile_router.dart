@@ -1,8 +1,10 @@
 import 'package:doormer/src/features/auth/presentation/pages/mobile/auth_page.dart';
+import 'package:doormer/src/features/auth/presentation/pages/mobile/candidate_registration_page.dart';
 import 'package:doormer/src/features/auth/presentation/pages/mobile/confirm_email_page.dart';
 import 'package:doormer/src/features/auth/presentation/pages/mobile/login_page.dart';
 import 'package:doormer/src/features/auth/presentation/pages/mobile/signup_page.dart';
 import 'package:doormer/src/shared/dashboard/presentation/pages/dashboard_page.dart';
+import 'package:doormer/src/shared/user/Entity/user_candidate_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/home/presentation/pages/home_page.dart';
@@ -42,6 +44,10 @@ class MobileRouter {
             },
           ),
         ],
+      ),
+      GoRoute(
+        path: '/candidate-registration',
+        builder: (context, state) => CandidateRegistrationPage(),
       ),
 
       // Main App Routes with Bottom Navigation

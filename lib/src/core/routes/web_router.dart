@@ -4,6 +4,7 @@ import 'package:doormer/src/features/auth/presentation/pages/mobile/signup_page.
 import 'package:doormer/src/features/auth/presentation/pages/web/activation_page_web.dart';
 import 'package:doormer/src/features/auth/presentation/pages/web/auth_page_web.dart';
 import 'package:doormer/src/features/auth/presentation/pages/web/pending_verification_page_web.dart';
+import 'package:doormer/src/features/auth/presentation/pages/web/signup_candidate_info_page_web.dart';
 import 'package:doormer/src/features/auth/presentation/pages/web/signup_company_info_page_web.dart';
 import 'package:doormer/src/shared/sessions/bloc/global_session_bloc.dart';
 import 'package:doormer/src/shared/user/Models/account_status.dart';
@@ -44,8 +45,11 @@ class WebRouter {
             },
           ),
           GoRoute(
-              path: 'register-company',
+              path: 'company-registration',
               builder: (context, state) => const SignUpCompanyInfoPageWeb()),
+          GoRoute(
+              path: 'candidate-registration',
+              builder: (context, state) => const SignUpCandidateInfoPageWeb()),
         ],
       ),
 
@@ -81,39 +85,59 @@ class WebRouter {
       final accountStatus = user.accountStatus;
       final userType = user.userType;
 
-      // If user is Basic, force them to `/auth/register-company`
-      if (userType == UserType.basic) {
-        if (state.matchedLocation != '/auth/register-company') {
+      /// ======================== CANDIDATE REDIRECTION ========================
+      if (userType == UserType.candidate) {
+        if (accountStatus == AccountStatus.partial &&
+            state.matchedLocation != '/auth/candidate-registration') {
           debugPrint(
-              "Basic user detected. Redirecting to /auth/register-company.");
-          return '/auth/register-company';
+              "Candidate has not completed profile. Redirecting to /auth/candidate-registration.");
+          return '/auth/candidate-registration';
         }
-        return null; // Stop further redirects
+        if (accountStatus == AccountStatus.inactive &&
+            state.matchedLocation != '/account-activation') {
+          debugPrint(
+              "Inactive candidate detected. Redirecting to /account-activation.");
+          return '/account-activation';
+        }
+        if ((accountStatus == AccountStatus.pending ||
+                accountStatus == AccountStatus.active) &&
+            !state.matchedLocation.startsWith('/main')) {
+          debugPrint("Candidate is verified. Redirecting to /main/home.");
+          return '/main/home';
+        }
       }
 
-      // If user is inactive (and NOT basic), redirect them to `/account-activation`
-      else if (accountStatus == AccountStatus.inactive &&
-          state.matchedLocation != '/account-activation') {
-        debugPrint(
-            "Inactive user detected. Redirecting to /account-activation.");
-        return '/account-activation';
+      /// ======================== EMPLOYER REDIRECTION ========================
+      if (userType == UserType.employer) {
+        if (accountStatus == AccountStatus.partial &&
+            state.matchedLocation != '/auth/company-registration') {
+          debugPrint(
+              "Employer has not completed profile. Redirecting to /auth/company-registration.");
+          return '/auth/company-registration';
+        }
+        if (accountStatus == AccountStatus.inactive &&
+            state.matchedLocation != '/account-activation') {
+          debugPrint(
+              "Inactive employer detected. Redirecting to /account-activation.");
+          return '/account-activation';
+        }
+        if ((accountStatus == AccountStatus.pending ||
+                accountStatus == AccountStatus.active) &&
+            !state.matchedLocation.startsWith('/main')) {
+          debugPrint("Employer is verified. Redirecting to /main/home.");
+          return '/main/home';
+        }
       }
 
-      // If user is pending, redirect them to `/pending-verification`
-      else if (accountStatus == AccountStatus.pending &&
-          state.matchedLocation != '/pending-verification') {
-        debugPrint(
-            "Pending user detected. Redirecting to /pending-verification.");
-        return '/pending-verification';
-      }
-
-      // Prevent pending/inactive users from accessing `/main/*`
-      else if ((accountStatus == AccountStatus.pending ||
+      /// ======================== PREVENT UNVERIFIED USERS FROM ACCESSING `/main/*` ========================
+      if ((accountStatus == AccountStatus.partial ||
               accountStatus == AccountStatus.inactive) &&
           state.matchedLocation.startsWith('/main')) {
-        debugPrint("Pending/inactive user tried to access /main. Redirecting.");
-        return accountStatus == AccountStatus.pending
-            ? '/pending-verification'
+        debugPrint("Unverified user tried to access /main. Redirecting.");
+        return accountStatus == AccountStatus.partial
+            ? (userType == UserType.candidate
+                ? '/candidate-registration'
+                : '/employer-registration')
             : '/account-activation';
       }
 

@@ -31,6 +31,8 @@ class MyApp extends StatelessWidget {
           return MultiBlocProvider(
             providers: [
               // Provide the GlobalSessionBloc for session state management
+              //TODO: Checks user session everytime reopens app (CheckSession() event)
+              // And fetches user data to be stored in SessionActiveState
               BlocProvider(create: (_) => serviceLocator<GlobalSessionBloc>()),
             ],
             child: ScreenUtilInit(
@@ -51,7 +53,7 @@ class MyApp extends StatelessWidget {
                       useMaterial3: true,
                     ),
                     routerConfig:
-                        AppRouter.router, // Use WebRouter as the router
+                        AppRouter.router, // Use AppRouter as the router
                   ),
                 );
               },

@@ -5,15 +5,15 @@
       "id": "7d1277f6-72f2-48ac-9fe5-4ac3903502ee",
       "email": "company.user@example.com",
       "userType": "employer",
-      "firstName": "'123'",
-      "lastName": "'123'",
-      "accountStatus": "active",
+      "accountStatus": "partial",      
       "companyName": "MockCompany Inc.",
       "nzbn": "123456789",
       "companyType": "Private",
       "companySize": "50-100",
       "industry": "Tech",
-      "oriented": "growth"
+      "oriented": "growth",
+	    "firstName": null,
+      "lastName": null
     }
 }
 

@@ -85,5 +85,6 @@ class SessionServiceImpl implements SessionService {
       {required String accessToken, required String refreshToken}) async {
     _tokenStorage.saveAccessToken(accessToken);
     _tokenStorage.saveRefreshToken(refreshToken);
+    AppLogger.info('Tokens Saved');
   }
 }
