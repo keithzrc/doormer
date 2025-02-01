@@ -115,9 +115,12 @@ void main() {
       ),
     ];
 
+    final unarchivedChats = testChats.where((chat) => !chat.isArchived).toList();
+    final archivedChats = testChats.where((chat) => chat.isArchived).toList();
+
     when(() => mockChatBloc.state).thenReturn(ChatLoadedState(
-      unarchivedChats: testChats,
-      archivedChats: [],
+      unarchivedChats: unarchivedChats,
+      archivedChats: archivedChats,
     ));
 
     await tester.pumpWidget(createWidgetUnderTest());
