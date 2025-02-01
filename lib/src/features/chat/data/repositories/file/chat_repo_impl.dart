@@ -5,19 +5,14 @@ import 'package:doormer/src/features/chat/domain/repositories/contact_repository
 import 'package:doormer/src/features/chat/data/models/contact_model.dart';
 import 'package:uuid/uuid.dart';
 import 'package:doormer/src/features/chat/data/datasources/remote_data_source.dart';
-import 'package:doormer/src/core/utils/token_storage.dart';
 
 /// Implementation of the [ContactRepository] interface.
 class ChatRepositoryImpl implements ContactRepository {
   final ChatRemoteDataSource remoteDataSource;
-  final TokenStorage tokenStorage;
 
   ChatRepositoryImpl({
     required this.remoteDataSource,
-    required this.tokenStorage,
   });
-
-
 
   @override
   Future<List<Contact>> getActiveChatList(UuidValue userId) async {

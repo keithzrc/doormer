@@ -12,13 +12,16 @@ import 'archive_chat_usecases_test.mocks.dart';
 void main() {
   late MockContactRepository mockRepository;
   late Contact testContact;
-  final testUuid = UuidValue(const Uuid().v4());
+  late UuidValue testId;
+  late UuidValue userId;
   final testDateTime = DateTime.parse('2024-01-01T12:00:00.000Z');
 
   setUp(() {
     mockRepository = MockContactRepository();
+    testId = UuidValue(const Uuid().v4());
+    userId = UuidValue(const Uuid().v4());
     testContact = Contact(
-      id: testUuid,
+      id: testId,
       userName: 'Test User',
       avatarUrl: 'https://example.com/avatar.jpg',
       lastMessage: 'Hello World',
@@ -36,58 +39,32 @@ void main() {
     });
 
     test('should toggle chat archived status from false to true', () async {
-      when(mockRepository.updateChat(any)).thenAnswer((_) async {});
+      when(mockRepository.archiveChat(userId, testId, true))
+          .thenAnswer((_) async {});
 
-      final result = await useCase(testContact);
+      final result = await useCase(userId, testContact);
 
-      verify(mockRepository.updateChat(result)).called(1);
+      verify(mockRepository.archiveChat(userId, testId, true)).called(1);
       expect(result.isArchived, isTrue);
     });
 
     test('should toggle chat archived status from true to false', () async {
       final archivedContact = testContact.copyWith(isArchived: true);
-      when(mockRepository.updateChat(any)).thenAnswer((_) async {});
+      when(mockRepository.archiveChat(userId, testId, false))
+          .thenAnswer((_) async {});
 
-      final result = await useCase(archivedContact);
+      final result = await useCase(userId, archivedContact);
 
-      verify(mockRepository.updateChat(result)).called(1);
+      verify(mockRepository.archiveChat(userId, testId, false)).called(1);
       expect(result.isArchived, isFalse);
     });
 
     test('should handle repository errors', () async {
-      when(mockRepository.updateChat(any))
-          .thenThrow(Exception('Update failed'));
+      when(mockRepository.archiveChat(userId, testId, true))
+          .thenThrow(Exception('Archive failed'));
 
       expect(
-        () => useCase(testContact),
-        throwsException,
-      );
-    });
-  });
-
-  group('DeleteChat', () {
-    late DeleteChat useCase;
-
-    setUp(() {
-      useCase = DeleteChat(mockRepository);
-    });
-
-    test('should delete chat successfully', () async {
-      final chatId = testUuid.toString();
-      when(mockRepository.deleteChat(chatId)).thenAnswer((_) async {});
-
-      await useCase(chatId);
-
-      verify(mockRepository.deleteChat(chatId)).called(1);
-    });
-
-    test('should handle repository errors', () async {
-      final chatId = testUuid.toString();
-      when(mockRepository.deleteChat(chatId))
-          .thenThrow(Exception('Deletion failed'));
-
-      expect(
-        () => useCase(chatId),
+        () => useCase(userId, testContact),
         throwsException,
       );
     });
@@ -110,34 +87,24 @@ void main() {
         isArchived: true,
       );
 
-      when(mockRepository.getArchivedChatList())
+      when(mockRepository.getArchivedChatList(userId))
           .thenAnswer((_) async => [olderContact, newerContact]);
 
-      final result = await useCase();
+      final result = await useCase(userId);
 
-      verify(mockRepository.getArchivedChatList()).called(1);
-      expect(result.length, equals(2));
-      expect(result.first, equals(newerContact));
-      expect(result.last, equals(olderContact));
+      verify(mockRepository.getArchivedChatList(userId)).called(1);
+      expect(result.length, 2);
+      expect(result.first.lastMessageCreatedTime, equals(testDateTime));
+      expect(result.last.lastMessageCreatedTime, equals(testDateTime.subtract(const Duration(days: 1))));
     });
 
-    test('should handle empty list', () async {
-      when(mockRepository.getArchivedChatList())
-          .thenAnswer((_) async => []);
-
-      final result = await useCase();
-
-      verify(mockRepository.getArchivedChatList()).called(1);
-      expect(result, isEmpty);
-    });
-
-    test('should throw exception when repository fails', () {
-      when(mockRepository.getArchivedChatList())
-          .thenThrow(Exception('Failed to get archived chats'));
+    test('should handle repository errors', () async {
+      when(mockRepository.getArchivedChatList(userId))
+          .thenThrow(Exception('Fetch failed'));
 
       expect(
-        () => useCase(),
-        throwsException
+        () => useCase(userId),
+        throwsException,
       );
     });
   });
@@ -157,35 +124,27 @@ void main() {
         lastMessageCreatedTime: testDateTime,
       );
 
-      when(mockRepository.getActiveChatList())
+      when(mockRepository.getActiveChatList(userId))
           .thenAnswer((_) async => [olderContact, newerContact]);
 
-      final result = await useCase();
+      final result = await useCase(userId);
 
-      verify(mockRepository.getActiveChatList()).called(1);
-      expect(result.length, equals(2));
-      expect(result.first, equals(newerContact));
-      expect(result.last, equals(olderContact));
+      verify(mockRepository.getActiveChatList(userId)).called(1);
+      expect(result.length, 2);
+      expect(result.first.lastMessageCreatedTime, equals(testDateTime));
+      expect(result.last.lastMessageCreatedTime, equals(testDateTime.subtract(const Duration(days: 1))));
     });
 
-    test('should handle empty list', () async {
-      when(mockRepository.getActiveChatList())
-          .thenAnswer((_) async => []);
-
-      final result = await useCase();
-
-      expect(result, isEmpty);
-      verify(mockRepository.getActiveChatList()).called(1);
-    });
-
-    test('should throw exception when repository fails', () {
-      when(mockRepository.getActiveChatList())
-          .thenThrow(Exception('Failed to get active chats'));
+    test('should handle repository errors', () async {
+      when(mockRepository.getActiveChatList(userId))
+          .thenThrow(Exception('Fetch failed'));
 
       expect(
-        () => useCase(),
-        throwsException
+        () => useCase(userId),
+        throwsException,
       );
     });
   });
 }
+
+

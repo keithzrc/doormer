@@ -75,7 +75,7 @@ class _ArchivePageContent extends StatelessWidget {
                           return ChatCard(
                             chat: chat,
                             isInArchivePage: true,
-                            onTap: () {
+                            onTap: (contact) {
                               // TODO: Add chat box
                             },
                             onArchive: (contact) {

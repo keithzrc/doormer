@@ -19,13 +19,19 @@ void main() {
     );
   });
 
-  Widget createWidgetUnderTest({required Contact contact, VoidCallback? onTap}) {
+  Widget createWidgetUnderTest({
+    required Contact contact,
+    required Function(Contact) onTap,
+    required Function(Contact) onArchive,
+  }) {
     return MaterialApp(
       home: Material(
         child: Scaffold(
           body: ChatCard(
             chat: contact,
             onTap: onTap,
+            onArchive: onArchive,
+            isInArchivePage: false,
           ),
         ),
       ),
@@ -34,14 +40,14 @@ void main() {
 
   group('ChatCard', () {
     testWidgets('should display user information correctly', (tester) async {
-      await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
+      await tester.pumpWidget(createWidgetUnderTest(contact: testContact, onTap: (Contact contact) {}, onArchive: (Contact contact) {}));
 
       expect(find.text('Test User'), findsOneWidget);
       expect(find.text('Hello World'), findsOneWidget);
     });
 
     testWidgets('should show first letter when no avatar URL', (tester) async {
-      await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
+      await tester.pumpWidget(createWidgetUnderTest(contact: testContact, onTap: (Contact contact) {}, onArchive: (Contact contact) {}));
 
       expect(find.text('T'), findsOneWidget);
     });
@@ -51,14 +57,14 @@ void main() {
         avatarUrl: '',
         userName: '',
       );
-      await tester.pumpWidget(createWidgetUnderTest(contact: emptyContact));
+      await tester.pumpWidget(createWidgetUnderTest(contact: emptyContact, onTap: (Contact contact) {}, onArchive: (Contact contact) {}));
 
       expect(find.text('?'), findsOneWidget);
     });
 
     testWidgets('should show unread indicator when message is unread', (tester) async {
       final unreadContact = testContact.copyWith(isRead: false);
-      await tester.pumpWidget(createWidgetUnderTest(contact: unreadContact));
+      await tester.pumpWidget(createWidgetUnderTest(contact: unreadContact, onTap: (Contact contact) {}, onArchive: (Contact contact) {}));
 
       final unreadIndicator = find.byWidgetPredicate(
         (widget) =>
@@ -71,7 +77,7 @@ void main() {
     });
 
     testWidgets('should not show unread indicator when message is read', (tester) async {
-      await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
+      await tester.pumpWidget(createWidgetUnderTest(contact: testContact, onTap: (Contact contact) {}, onArchive: (Contact contact) {}));
 
       final unreadIndicator = find.byWidgetPredicate(
         (widget) =>
@@ -84,7 +90,7 @@ void main() {
 
 
     testWidgets('should have correct card styling', (tester) async {
-      await tester.pumpWidget(createWidgetUnderTest(contact: testContact));
+      await tester.pumpWidget(createWidgetUnderTest(contact: testContact, onTap: (Contact contact) {}, onArchive: (Contact contact) {}));
 
       final card = tester.widget<Card>(find.byType(Card));
       expect(card.margin, equals(const EdgeInsets.symmetric(vertical: 8.0)));
@@ -99,7 +105,7 @@ void main() {
         userName: 'A' * 100,
         lastMessage: 'B' * 100,
       );
-      await tester.pumpWidget(createWidgetUnderTest(contact: longTextContact));
+      await tester.pumpWidget(createWidgetUnderTest(contact: longTextContact, onTap: (Contact contact) {}, onArchive: (Contact contact) {}));
 
       final titleFinder = find.text('A' * 100);
       final subtitleFinder = find.text('B' * 100);

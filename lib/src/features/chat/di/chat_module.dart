@@ -6,7 +6,7 @@ import 'package:doormer/src/features/chat/domain/usecases/archive_chat_usecases.
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:doormer/src/features/chat/data/datasources/remote_data_source.dart';
-import 'package:doormer/src/core/utils/token_storage.dart';
+
 
 void initChatModule() {
   // Register RemoteDataSource
@@ -23,7 +23,6 @@ void initChatModule() {
   serviceLocator.registerSingleton<ContactRepository>(
     ChatRepositoryImpl(
       remoteDataSource: serviceLocator<ChatRemoteDataSource>(),
-      tokenStorage: serviceLocator<TokenStorage>(),
     ),
   );
 

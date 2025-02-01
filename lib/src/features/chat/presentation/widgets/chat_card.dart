@@ -5,7 +5,7 @@ import 'package:doormer/src/core/theme/app_text_styles.dart';
 
 class ChatCard extends StatelessWidget {
   final Contact chat;
-  final VoidCallback onTap;
+  final Function(Contact) onTap;
   final Function(Contact) onArchive;
   final bool isInArchivePage;
 
@@ -80,7 +80,7 @@ class ChatCard extends StatelessWidget {
               style: AppTextStyles.bodySmall,
             ),
           ),
-          onTap: onTap,
+          onTap: () => onTap(chat),
         ),
       ),
     );
@@ -101,7 +101,7 @@ class ChatCard extends StatelessWidget {
           child: Text(isInArchivePage ? 'Unarchive' : 'Archive'),
           onTap: () {
             if (onArchive != null) {
-              onArchive!(chat);
+              onArchive(chat);
             }
           },
         ),
