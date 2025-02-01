@@ -1,4 +1,7 @@
+import 'package:doormer/src/core/di/service_locator.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/pages/auth_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
@@ -50,7 +53,12 @@ class WebRouter {
       ),
       GoRoute(
         path: '/main/inbox',
-        builder: (context, state) => const ChatPage(),
+        builder: (context, state) => MaterialApp(
+          home: BlocProvider(
+            create: (_) => serviceLocator<ChatBloc>(),
+            child: const ChatPage(),
+          ),
+        ),
       ),
     ],
     errorBuilder: (context, state) => const Scaffold(

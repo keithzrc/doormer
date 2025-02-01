@@ -1,4 +1,3 @@
-import 'package:doormer/src/core/di/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/core/theme/app_text_styles.dart';
@@ -15,8 +14,8 @@ class ChatPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => serviceLocator<ChatBloc>()..add(chat_event.LoadChatsEvent()),
+    return BlocProvider.value(
+      value: context.read<ChatBloc>(),
       child: _ChatPageContent(),
     );
   }
@@ -25,6 +24,8 @@ class ChatPage extends StatelessWidget {
 class _ChatPageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    context.read<ChatBloc>().add(chat_event.LoadChatsEvent());
+
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -65,66 +66,66 @@ class _ChatPageContent extends StatelessWidget {
                     );
                   }
 
-                    if (state is chat_state.ChatErrorState) {
-                      return Center(
+                  if (state is chat_state.ChatErrorState) {
+                    return Center(
+                      child: Text(
+                        'Error: ${state.error}',
+                        style: AppTextStyles.bodyLarge, // Updated style
+                      ),
+                    );
+                  }
+
+                  if (state is chat_state.ChatLoadedState) {
+                    final chats = state.unarchivedChats;
+
+                    if (chats.isEmpty) {
+                      return const Center(
                         child: Text(
-                          'Error: ${state.error}',
-                          style: AppTextStyles.bodyLarge, // Updated style
+                          'No chats found.',
+                          style: AppTextStyles.bodyMedium, // Updated style
                         ),
                       );
                     }
 
-                    if (state is chat_state.ChatLoadedState) {
-                      final chats = state.unarchivedChats;
+                    return Padding(
+                      padding: const EdgeInsets.all(16.0), // Consistent padding
+                      child: ListView.builder(
+                        itemCount: chats.length,
+                        itemBuilder: (context, index) {
+                          final chat = chats[index];
+                          return ChatCard(
+                            chat: chat,
+                            isInArchivePage: false,
+                            onTap: (contact) {
+                              // TODO: add chat box
+                            },
+                            onArchive: (contact) {
+                              context.read<ChatBloc>().add(
+                                    chat_event.ToggleArchiveStatusEvent(
+                                        contact),
+                                  );
+                            },
+                          );
+                        },
+                      ),
+                    );
+                  }
 
-                      if (chats.isEmpty) {
-                        return const Center(
-                          child: Text(
-                            'No chats found.',
-                            style: AppTextStyles.bodyMedium, // Updated style
-                          ),
-                        );
-                      }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
 
-                      return Padding(
-                        padding:
-                            const EdgeInsets.all(16.0), // Consistent padding
-                        child: ListView.builder(
-                          itemCount: chats.length,
-                          itemBuilder: (context, index) {
-                            final chat = chats[index];
-                            return ChatCard(
-                              chat: chat,
-                              isInArchivePage: false,
-                              onTap: (contact) {
-                                // TODO: add chat box
-                              },
-                              onArchive: (contact) {
-                                context.read<ChatBloc>().add(
-                                      chat_event.ToggleArchiveStatusEvent(contact),
-                                    );
-                              },
-                            );
-                          },
-                        ),
-                      );
-                    }
-
-                    return const SizedBox.shrink();
-                  },
+            // Center chat content placeholder (dynamically adjusts to remaining width)
+            const Flexible(
+              flex: 2,
+              child: Center(
+                child: Text(
+                  'Chat Content Goes Here',
+                  style: AppTextStyles.bodyLarge, // Updated style
                 ),
               ),
-
-              // Center chat content placeholder (dynamically adjusts to remaining width)
-              const Flexible(
-                flex: 2,
-                child: Center(
-                  child: Text(
-                    'Chat Content Goes Here',
-                    style: AppTextStyles.bodyLarge, // Updated style
-                  ),
-                ),
-              ),
+            ),
 
             // Right-side user profile placeholder
             Flexible(

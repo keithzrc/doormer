@@ -1,47 +1,37 @@
-import 'package:uuid/uuid.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
+import 'package:doormer/src/features/chat/presentation/pages/chat_page.dart';
+import 'package:doormer/src/features/chat/presentation/widgets/chat_card.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
-import 'package:doormer/src/features/chat/presentation/pages/chat_page.dart';
 import 'package:doormer/src/features/chat/presentation/bloc/chat_state.dart';
-import 'package:doormer/src/features/chat/presentation/widgets/chat_card.dart';
-import 'package:doormer/src/core/di/service_locator.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uuid/uuid.dart';
 
 class MockChatBloc extends Mock implements ChatBloc {
   @override
   Stream<ChatState> get stream => Stream.value(state);
-
-  @override
-  Future<void> close() async {
-    return;
-  }
 }
 
 void main() {
   late MockChatBloc mockChatBloc;
 
-  setUpAll(() {
-    serviceLocator.reset();
-  });
-
   setUp(() {
     mockChatBloc = MockChatBloc();
-    serviceLocator.registerFactory<ChatBloc>(() => mockChatBloc);
-  });
-
-  tearDown(() {
-    serviceLocator.reset();
   });
 
   Widget createWidgetUnderTest() {
-    return const MaterialApp(
-      home: ChatPage(),
+    return MaterialApp(
+      home: BlocProvider<ChatBloc>.value(
+        value: mockChatBloc,
+        child: const ChatPage(),
+      ),
     );
   }
 
-  testWidgets('displays loading indicator when in loading state', (tester) async {
+  testWidgets('displays loading indicator when in loading state',
+      (tester) async {
     when(() => mockChatBloc.state).thenReturn(ChatLoadingState());
 
     await tester.pumpWidget(createWidgetUnderTest());
@@ -131,7 +121,7 @@ void main() {
     ));
 
     await tester.pumpWidget(createWidgetUnderTest());
-    await tester.pumpAndSettle(); 
+    await tester.pumpAndSettle();
 
     expect(find.byType(ChatCard), findsOneWidget);
     expect(find.text('Chat 1'), findsOneWidget);
