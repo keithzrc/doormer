@@ -80,8 +80,9 @@ class ChatCard extends StatelessWidget {
           trailing: SizedBox(
             width: 48,
             child: Text(
-              chat.lastMessageCreatedTime.toIso8601String(),
+              formatTime(chat.lastMessageCreatedTime),
               style: AppTextStyles.bodySmall,
+              textAlign: TextAlign.right,
             ),
           ),
           onTap: () => onTap(chat),
