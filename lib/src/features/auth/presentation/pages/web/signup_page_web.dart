@@ -67,7 +67,7 @@ class SignUpPageWeb extends StatelessWidget {
                       '/account-activation'); // Navigate to the activation page
                   break;
                 case AccountStatus.partial:
-                  router.go('company-registration');
+                  router.go('/company-registration');
                   break;
               }
             }
