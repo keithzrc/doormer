@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/core/theme/app_text_styles.dart';
 
-class ChatCard extends StatefulWidget {
+class ChatCard extends StatelessWidget {
   final Contact chat;
   final Function(Contact) onTap;
   final Function(Contact) onArchive;
   final bool isInArchivePage;
-
 
   const ChatCard({
     super.key,
@@ -19,28 +18,9 @@ class ChatCard extends StatefulWidget {
   });
 
   @override
-  State<ChatCard> createState() => _ChatCardState();
-}
-
-class _ChatCardState extends State<ChatCard> {
-  bool _hasError = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _hasError = widget.chat.avatarUrl.trim().isEmpty;
-  }
-
-  @override
-  void didUpdateWidget(ChatCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.chat.avatarUrl.isEmpty) {
-      setState(() => _hasError = true);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final hasValidUrl = chat.avatarUrl.trim().isNotEmpty;
+    
     return GestureDetector(
       onSecondaryTapDown: (details) {
         _showContextMenu(context, details.globalPosition);
@@ -57,26 +37,22 @@ class _ChatCardState extends State<ChatCard> {
               CircleAvatar(
                 radius: 30,
                 backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(40),
-                backgroundImage: widget.chat.avatarUrl.trim().isNotEmpty
-                    ? NetworkImage(widget.chat.avatarUrl)
+                foregroundImage: hasValidUrl
+                    ? NetworkImage(chat.avatarUrl)
                     : null,
-                onBackgroundImageError: (_, __) {
-                  setState(() => _hasError = true);
-                },
-                child: _hasError || widget.chat.avatarUrl.trim().isEmpty
-                    ? Text(
-                        widget.chat.userName.isNotEmpty
-                            ? widget.chat.userName[0].toUpperCase()
-                            : '?',
-                        style: AppTextStyles.titleLarge.copyWith(
-                          color: Colors.black,
-                        ),
-                      )
-                    : null,
+                onForegroundImageError: (_, __) => null,
+                child: Text(
+                  chat.userName.isNotEmpty
+                      ? chat.userName[0].toUpperCase()
+                      : '?',
+                  style: AppTextStyles.titleLarge.copyWith(
+                    color: Colors.black,
+                  ),
+                ),
               ),
               // Add red dot to users with unread messages
               // TODO: take it out, reusable
-              if (!widget.chat.isRead)
+              if (!chat.isRead)
                 Positioned(
                   right: 0,
                   top: 0,
@@ -92,23 +68,23 @@ class _ChatCardState extends State<ChatCard> {
             ],
           ),
           title: Text(
-            widget.chat.userName,
+            chat.userName,
             style: AppTextStyles.bodyLarge,
             overflow: TextOverflow.ellipsis,
           ),
           subtitle: Text(
-            widget.chat.lastMessage,
+            chat.lastMessage,
             style: AppTextStyles.bodyMedium,
             overflow: TextOverflow.ellipsis,
           ),
           trailing: SizedBox(
             width: 48,
             child: Text(
-              widget.chat.lastMessageCreatedTime.toIso8601String(),
+              chat.lastMessageCreatedTime.toIso8601String(),
               style: AppTextStyles.bodySmall,
             ),
           ),
-          onTap: () => widget.onTap(widget.chat),
+          onTap: () => onTap(chat),
         ),
       ),
     );
@@ -126,11 +102,9 @@ class _ChatCardState extends State<ChatCard> {
       ),
       items: [
         PopupMenuItem(
-          child: Text(widget.isInArchivePage ? 'Unarchive' : 'Archive'),
+          child: Text(isInArchivePage ? 'Unarchive' : 'Archive'),
           onTap: () {
-            if (widget.onArchive != null) {
-              widget.onArchive(widget.chat);
-            }
+            onArchive(chat);
           },
         ),
       ],
