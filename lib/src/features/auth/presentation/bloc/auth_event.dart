@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:doormer/src/shared/user/user_type.dart';
 import 'package:equatable/equatable.dart';
 
@@ -62,6 +64,9 @@ class SignupCompanyInfoRequested extends AuthEvent {
 class SignupCandidateInfoRequested extends AuthEvent {
   final String firstName;
   final String lastName;
+  final Uint8List? fileByte;
+  final String? fileName;
 
-  SignupCandidateInfoRequested(this.firstName, this.lastName);
+  SignupCandidateInfoRequested(
+      this.firstName, this.lastName, this.fileByte, this.fileName);
 }
