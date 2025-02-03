@@ -17,9 +17,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 final serviceLocator = GetIt.instance;
 
 void initAuthModule() {
-  serviceLocator.registerFactory<GoogleSignIn>(() => GoogleSignIn(
-        clientId: AppConfig.googleClientId,
-      ));
+  serviceLocator.registerLazySingleton<GoogleSignIn>(() => GoogleSignIn(
+      clientId: AppConfig.googleClientId,
+      scopes: ['openid', 'email', 'profile']));
 
   // Register AuthRemoteDataSource
   serviceLocator.registerFactory<AuthRemoteDataSource>(
