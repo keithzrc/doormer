@@ -97,30 +97,28 @@ class AuthRemoteDataSource {
     }
   }
 
-  Future<String?> getGoogleIdTokenWeb() async {
-    try {
-      debugPrint('12345');
-      await googleSignIn.signOut();
-      await Future.delayed(Duration(seconds: 1));
-      final GoogleSignInAccount? googleSignInAccount =
-          await googleSignIn.signIn();
-      if (googleSignInAccount == null) {
-        throw Exception("User canceled Google Sign-In.");
-      }
+  // Future<String?> getGoogleIdTokenWeb() async {
+  //   AppLogger.info('Starting to get GoogleIdTokenWeb');
+  //   try {
+  //     await googleSignIn.signOut();
+  //     final GoogleSignInAccount? googleSignInAccount =
+  //         await googleSignIn.signIn();
+  //     if (googleSignInAccount == null) {
+  //       throw Exception("User canceled Google Sign-In.");
+  //     }
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleSignInAccount.authentication;
-      debugPrint('123');
-      debugPrint('google id token: ${googleAuth.idToken}');
-      if (googleAuth.idToken == null) {
-        throw Exception("ID Token is null. Check OAuth settings.");
-      }
-      AppLogger.info('Google ID Token: ${googleAuth.idToken}');
-      return googleAuth.idToken;
-    } catch (error) {
-      return null;
-    }
-  }
+  //     final GoogleSignInAuthentication googleAuth =
+  //         await googleSignInAccount.authentication;
+  //     AppLogger.error('google id token: ${googleAuth.idToken}');
+  //     if (googleAuth.idToken == null) {
+  //       throw Exception("ID Token is null. Check OAuth settings.");
+  //     }
+  //     AppLogger.info('Google ID Token: ${googleAuth.idToken}');
+  //     return googleAuth.idToken;
+  //   } catch (error) {
+  //     return null;
+  //   }
+  // }
 
   // Exchange Google ID token for backend tokens
   Future<LoginResponseModel> verifyGoogleIdToken(String googleIdToken) async {

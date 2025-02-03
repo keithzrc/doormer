@@ -84,19 +84,8 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<User> signInWithGoogle() async {
-    // Step 1: Get Google ID token
-    final googleIdToken = await remoteDataSource.getGoogleIdTokenWeb();
-    AppLogger.info('Got googleIdToken: $googleIdToken');
-
-    final user = await verifyGoogleIdToken(googleIdToken!);
-
-    return user;
-  }
-
-  Future<User> verifyGoogleIdToken(String googleIdToken) async {
-    final loginResponse =
-        await remoteDataSource.verifyGoogleIdToken(googleIdToken);
+  Future<User> signInWithGoogle(String idToken) async {
+    final loginResponse = await remoteDataSource.verifyGoogleIdToken(idToken);
 
     // Save tokens using SessionService
     await sessionService.saveTokens(

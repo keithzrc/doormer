@@ -6,9 +6,6 @@ abstract class AuthEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Event triggered when the user presses the Google sign-in button.
-class GoogleSignInPressed extends AuthEvent {}
-
 /// Event triggered when the user submits the signup form with email and password.
 class SignupRequested extends AuthEvent {
   final String email;
@@ -43,7 +40,11 @@ class VerifyEmailRequested extends AuthEvent {
 }
 
 /// Event triggered when the user requests Google Sign-In.
-class GoogleSignInRequested extends AuthEvent {}
+class GoogleSignInRequested extends AuthEvent {
+  final String idToken;
+
+  GoogleSignInRequested(this.idToken);
+}
 
 /// Event triggered when user 'Employer' submits company information
 class SignupCompanyInfoRequested extends AuthEvent {

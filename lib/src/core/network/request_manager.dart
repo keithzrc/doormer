@@ -74,9 +74,9 @@ class RequestManager {
   }) async {
     try {
       // Log the request payload
-      AppLogger.error('POST Request Path: $path');
-      AppLogger.error('POST Request Data: $data');
-      AppLogger.error(
+      AppLogger.info('POST Request Path: $path');
+      AppLogger.info('POST Request Data: $data');
+      AppLogger.info(
           'POST Request Headers: ${_getRequestOptions(requiresAuth).headers}');
 
       final response = await _dio.post(

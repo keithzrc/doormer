@@ -26,8 +26,8 @@ class AuthUseCase {
   }
 
   // Sign Up/ Login with Google
-  Future<User> googleSignIn() async {
-    return await authRepository.signInWithGoogle();
+  Future<User> signInWithGoogle(String idToken) async {
+    return await authRepository.signInWithGoogle(idToken);
   }
 
   Future<void> verifyEmail(
