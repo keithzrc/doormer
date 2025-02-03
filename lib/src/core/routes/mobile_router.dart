@@ -45,10 +45,10 @@ class MobileRouter {
           ),
         ],
       ),
-      GoRoute(
-        path: '/candidate-registration',
-        builder: (context, state) => CandidateRegistrationPage(),
-      ),
+      // GoRoute(
+      //   path: '/candidate-registration',
+      //   builder: (context, state) => CandidateRegistrationPage(),
+      // ),
 
       // Main App Routes with Bottom Navigation
       //// TODO:(Split main )
