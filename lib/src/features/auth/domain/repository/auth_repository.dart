@@ -15,7 +15,7 @@ abstract class AuthRepository {
   });
 
   /// Signs in a user via Google
-  Future<User> signInWithGoogle();
+  Future<User> signInWithGoogle(String idToken);
 
   /// Signs in a user via Apple
   Future<User> signInWithApple();

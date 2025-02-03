@@ -107,7 +107,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     try {
       // Perform Google sign-in (update the method with actual logic)
-      final user = await authUseCase.googleSignIn();
+      final user = await authUseCase.signInWithGoogle(event.idToken);
       AppLogger.info('AuthUsecase called googleSignIn');
       // Dispatch SessionStarted to GlobalSessionBloc
       globalSessionBloc.add(SessionStarted(user));
