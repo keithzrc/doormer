@@ -20,7 +20,7 @@ Future<void> initDependencies() async {
 
   // Register TokenStorage
   serviceLocator.registerLazySingleton(() =>
-      TokenStorage(storage: serviceLocator<FlutterSecureStorage>()));
+      TokenStorage(secureStorage: serviceLocator<FlutterSecureStorage>()));
 
   // Register SessionService
   serviceLocator.registerLazySingleton<SessionService>(

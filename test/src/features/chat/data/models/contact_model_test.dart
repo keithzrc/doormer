@@ -167,7 +167,7 @@ void main() {
 
     group('Entity conversion', () {
       test('toEntity should convert to Contact correctly', () {
-        final entity = sut.toEntity(validUuid);
+        final entity = sut.toEntity();
 
         expect(entity, isA<Contact>());
         expect(entity.id, equals(validUuid));

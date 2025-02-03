@@ -22,6 +22,10 @@ class ChatPage extends StatelessWidget {
 }
 
 class _ChatPageContent extends StatelessWidget {
+  static const double _minChatListWidth = 250.0;
+  static const double _breakpointWidth = 1000.0;
+  static const double _chatListWidthRatio = 0.25;
+
   @override
   Widget build(BuildContext context) {
     context.read<ChatBloc>().add(chat_event.LoadChatsEvent());
@@ -55,9 +59,9 @@ class _ChatPageContent extends StatelessWidget {
           children: [
             // Left-side chat list with a fixed minimum width of 250px
             SizedBox(
-              width: screenWidth > 1000
-                  ? screenWidth * 0.25
-                  : 250, // Minimum 250px
+              width: screenWidth > _breakpointWidth
+                  ? screenWidth * _chatListWidthRatio
+                  : _minChatListWidth,
               child: BlocBuilder<ChatBloc, chat_state.ChatState>(
                 builder: (context, state) {
                   if (state is chat_state.ChatLoadingState) {

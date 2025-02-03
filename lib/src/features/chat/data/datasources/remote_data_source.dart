@@ -24,7 +24,7 @@ class ChatRemoteDataSource {
           .toList();
     } on DioException catch (e) {
       AppLogger.error('Error in getActiveChatList API call: $e');
-      throw Exception(e.response?.data['message'] ?? 'Failed to fetch active chats');
+      rethrow;
     }
   }
 
@@ -44,7 +44,7 @@ class ChatRemoteDataSource {
 
     } on DioException catch (e) {
       AppLogger.error('Error in getArchivedChatList API call: $e');
-      throw Exception(e.response?.data['message'] ?? 'Failed to fetch archived chats');
+      rethrow;
     }
   }
 
@@ -60,8 +60,7 @@ class ChatRemoteDataSource {
       );
     } on DioException catch (e) {
       AppLogger.error('Error in archiveChat API call: $e');
-      throw Exception(e.response?.data['message'] ?? 
-        'Failed to ${isArchived ? 'archive' : 'unarchive'} chat');
+      rethrow;
     }
   }
 
@@ -76,7 +75,7 @@ class ChatRemoteDataSource {
       );
     } on DioException catch (e) {
       AppLogger.error('Error in createContact API call: $e');
-      throw Exception(e.response?.data['message'] ?? 'Failed to create contact');
+      rethrow;
     }
   }
 
@@ -89,7 +88,7 @@ class ChatRemoteDataSource {
       );
     } on DioException catch (e) {
       AppLogger.error('Error in updateChat API call: $e');
-      throw Exception(e.response?.data['message'] ?? 'Failed to update chat');
+      rethrow;
     }
   }
 }

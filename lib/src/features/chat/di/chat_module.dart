@@ -39,15 +39,10 @@ void initChatModule() {
     () => ToggleChatArchivedStatus(serviceLocator<ContactRepository>()),
   );
 
-  // serviceLocator.registerLazySingleton<DeleteChat>(
-  //   () => DeleteChat(serviceLocator<ContactRepository>()),
-  // );
-
   // Register ChatBloc
   serviceLocator.registerFactory<ChatBloc>(() => ChatBloc(
         getChatListUseCase: serviceLocator<GetSortedActiveChatList>(),
         getArchivedChatListUseCase: serviceLocator<GetSortedArchivedChatList>(),
         toggleChatUseCase: serviceLocator<ToggleChatArchivedStatus>(),
-        //deleteChatUseCase: serviceLocator<DeleteChat>(),
       ));
 }

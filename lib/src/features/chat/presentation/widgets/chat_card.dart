@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:doormer/src/core/theme/app_text_styles.dart';
 
-class ChatCard extends StatelessWidget {
+class ChatCard extends StatefulWidget {
   final Contact chat;
   final Function(Contact) onTap;
   final Function(Contact) onArchive;
   final bool isInArchivePage;
+
 
   const ChatCard({
     super.key,
@@ -16,6 +17,27 @@ class ChatCard extends StatelessWidget {
     required this.onArchive,
     required this.isInArchivePage,
   });
+
+  @override
+  State<ChatCard> createState() => _ChatCardState();
+}
+
+class _ChatCardState extends State<ChatCard> {
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _hasError = widget.chat.avatarUrl.trim().isEmpty;
+  }
+
+  @override
+  void didUpdateWidget(ChatCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.chat.avatarUrl.isEmpty) {
+      setState(() => _hasError = true);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,21 +56,27 @@ class ChatCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 30,
-                backgroundImage: chat.avatarUrl.isNotEmpty
-                    ? NetworkImage(chat.avatarUrl)
+                backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(40),
+                backgroundImage: widget.chat.avatarUrl.trim().isNotEmpty
+                    ? NetworkImage(widget.chat.avatarUrl)
                     : null,
-                child: chat.avatarUrl.isEmpty
+                onBackgroundImageError: (_, __) {
+                  setState(() => _hasError = true);
+                },
+                child: _hasError || widget.chat.avatarUrl.trim().isEmpty
                     ? Text(
-                        chat.userName.isNotEmpty
-                            ? chat.userName[0].toUpperCase()
+                        widget.chat.userName.isNotEmpty
+                            ? widget.chat.userName[0].toUpperCase()
                             : '?',
-                        style: AppTextStyles.titleLarge,
+                        style: AppTextStyles.titleLarge.copyWith(
+                          color: Colors.black,
+                        ),
                       )
                     : null,
               ),
               // Add red dot to users with unread messages
               // TODO: take it out, reusable
-              if (!chat.isRead)
+              if (!widget.chat.isRead)
                 Positioned(
                   right: 0,
                   top: 0,
@@ -64,23 +92,23 @@ class ChatCard extends StatelessWidget {
             ],
           ),
           title: Text(
-            chat.userName,
+            widget.chat.userName,
             style: AppTextStyles.bodyLarge,
             overflow: TextOverflow.ellipsis,
           ),
           subtitle: Text(
-            chat.lastMessage,
+            widget.chat.lastMessage,
             style: AppTextStyles.bodyMedium,
             overflow: TextOverflow.ellipsis,
           ),
           trailing: SizedBox(
             width: 48,
             child: Text(
-              chat.lastMessageCreatedTime.toIso8601String(),
+              widget.chat.lastMessageCreatedTime.toIso8601String(),
               style: AppTextStyles.bodySmall,
             ),
           ),
-          onTap: () => onTap(chat),
+          onTap: () => widget.onTap(widget.chat),
         ),
       ),
     );
@@ -98,10 +126,10 @@ class ChatCard extends StatelessWidget {
       ),
       items: [
         PopupMenuItem(
-          child: Text(isInArchivePage ? 'Unarchive' : 'Archive'),
+          child: Text(widget.isInArchivePage ? 'Unarchive' : 'Archive'),
           onTap: () {
-            if (onArchive != null) {
-              onArchive(chat);
+            if (widget.onArchive != null) {
+              widget.onArchive(widget.chat);
             }
           },
         ),

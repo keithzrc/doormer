@@ -22,23 +22,6 @@ class ToggleChatArchivedStatus {
     return updatedContact;
   }
 }
-
-/// Use case for deleting a chat.
-/// This class interacts with the ChatRepository to delete a chat
-/// identified by its chatId.
-// TODO: Move to centralized/ active chat usecase file
-// class DeleteChat {
-//   final ContactRepository repository;
-
-//   DeleteChat(this.repository);
-
-//   Future<void> call(String chatId) async {
-//     await repository.deleteChat(chatId);
-//   }
-// }
-
-/// Use case for retrieving the list of archived chats.
-/// This class interacts with the ChatRepository to fetch all archived chats.
 class GetSortedArchivedChatList {
   final ContactRepository repository;
 
