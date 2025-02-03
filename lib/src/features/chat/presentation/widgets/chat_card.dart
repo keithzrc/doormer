@@ -22,9 +22,7 @@ class ChatCard extends StatelessWidget {
     final hasValidUrl = chat.avatarUrl.trim().isNotEmpty;
     
     return GestureDetector(
-      onSecondaryTapDown: (details) {
-        _showContextMenu(context, details.globalPosition);
-      },
+      onSecondaryTapDown: (details) => _showContextMenu(context, details.globalPosition),
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 8.0),
         elevation: 2,
@@ -32,41 +30,7 @@ class ChatCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(15.0),
         ),
         child: ListTile(
-          leading: Stack(
-            children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(40),
-                foregroundImage: hasValidUrl
-                    ? NetworkImage(chat.avatarUrl)
-                    : null,
-                onForegroundImageError: (_, __) => null,
-                child: Text(
-                  chat.userName.isNotEmpty
-                      ? chat.userName[0].toUpperCase()
-                      : '?',
-                  style: AppTextStyles.titleLarge.copyWith(
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              // Add red dot to users with unread messages
-              // TODO: take it out, reusable
-              if (!chat.isRead)
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: Container(
-                    width: 12,
-                    height: 12,
-                    decoration: const BoxDecoration(
-                      color: Colors.red, 
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-            ],
-          ),
+          leading: _buildAvatar(hasValidUrl, context),
           title: Text(
             chat.userName,
             style: AppTextStyles.bodyLarge,
@@ -91,6 +55,41 @@ class ChatCard extends StatelessWidget {
     );
   }
 
+  Widget _buildAvatar(bool hasValidUrl, BuildContext context) {
+    return Stack(
+      children: [
+        CircleAvatar(
+          radius: 30,
+          backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(40),
+          foregroundImage: hasValidUrl
+              ? NetworkImage(chat.avatarUrl)
+              : null,
+          child: Text(
+            chat.userName.isNotEmpty
+                ? chat.userName[0].toUpperCase()
+                : '?',
+            style: AppTextStyles.titleLarge.copyWith(
+              color: Colors.black,
+            ),
+          ),
+        ),
+        if (!chat.isRead)
+          Positioned(
+            right: 0,
+            top: 0,
+            child: Container(
+              width: 12,
+              height: 12,
+              decoration: const BoxDecoration(
+                color: Colors.red, 
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
   void _showContextMenu(BuildContext context, Offset position) {
     final RenderBox overlay = 
         Overlay.of(context).context.findRenderObject() as RenderBox;
@@ -104,9 +103,7 @@ class ChatCard extends StatelessWidget {
       items: [
         PopupMenuItem(
           child: Text(isInArchivePage ? 'Unarchive' : 'Archive'),
-          onTap: () {
-            onArchive(chat);
-          },
+          onTap: () => onArchive(chat),
         ),
       ],
     );
