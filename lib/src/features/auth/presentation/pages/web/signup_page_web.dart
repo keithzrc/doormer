@@ -11,9 +11,6 @@ import 'package:doormer/src/features/auth/presentation/widgets/web/auth_textfiel
 import 'package:doormer/src/features/auth/presentation/widgets/web/switch_auth_mode_line.dart';
 import 'package:doormer/src/features/auth/utils/auth_validators.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:google_sign_in_web/google_sign_in_web.dart' as web;
-import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 
 class SignUpPageWeb extends StatelessWidget {
   final VoidCallback onSwitchAuthMode;

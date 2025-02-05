@@ -4,8 +4,8 @@ import 'package:doormer/src/features/auth/presentation/pages/mobile/signup_page.
 import 'package:doormer/src/features/auth/presentation/pages/web/activation_page_web.dart';
 import 'package:doormer/src/features/auth/presentation/pages/web/auth_page_web.dart';
 import 'package:doormer/src/features/auth/presentation/pages/web/pending_verification_page_web.dart';
-import 'package:doormer/src/features/auth/presentation/pages/web/signup_candidate_info_page_web.dart';
-import 'package:doormer/src/features/auth/presentation/pages/web/signup_company_info_page_web.dart';
+import 'package:doormer/src/features/registration/presentation/pages/signup_candidate_info_page_web.dart';
+import 'package:doormer/src/features/registration/presentation/pages/signup_company_info_page_web.dart';
 import 'package:doormer/src/shared/sessions/bloc/global_session_bloc.dart';
 import 'package:doormer/src/shared/user/Models/account_status.dart';
 import 'package:doormer/src/shared/user/user_type.dart';
@@ -27,7 +27,7 @@ WebRouter defines the routing structure and logic specifically for the web platf
 
 class WebRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/auth',
+    initialLocation: '/auth/candidate-registration',
     routes: [
       // Authentication Routes (Only for users NOT logged in)
       GoRoute(
@@ -49,7 +49,7 @@ class WebRouter {
               builder: (context, state) => const SignUpCompanyInfoPageWeb()),
           GoRoute(
               path: 'candidate-registration',
-              builder: (context, state) => const SignUpCandidateInfoPageWeb()),
+              builder: (context, state) => SignUpCandidateInfoPageWeb()),
         ],
       ),
 
@@ -68,82 +68,82 @@ class WebRouter {
           path: '/main/inbox', builder: (context, state) => const ChatPage()),
     ],
 
-    redirect: (context, state) {
-      final sessionState = context.read<GlobalSessionBloc>().state;
+    // redirect: (context, state) {
+    //   final sessionState = context.read<GlobalSessionBloc>().state;
 
-      debugPrint("Redirect function triggered");
-      debugPrint("Current Route: ${state.fullPath}");
-      debugPrint("Session State: $sessionState");
+    //   debugPrint("Redirect function triggered");
+    //   debugPrint("Current Route: ${state.fullPath}");
+    //   debugPrint("Session State: $sessionState");
 
-      // If user is NOT logged in, redirect to `/auth`
-      if (sessionState is! SessionActiveState) {
-        debugPrint("User is NOT logged in. Redirecting to /auth");
-        return '/auth';
-      }
+    //   // If user is NOT logged in, redirect to `/auth`
+    //   if (sessionState is! SessionActiveState) {
+    //     debugPrint("User is NOT logged in. Redirecting to /auth");
+    //     return '/auth';
+    //   }
 
-      final user = sessionState.user;
-      final accountStatus = user.accountStatus;
-      final userType = user.userType;
+    //   final user = sessionState.user;
+    //   final accountStatus = user.accountStatus;
+    //   final userType = user.userType;
 
-      /// ======================== CANDIDATE REDIRECTION ========================
-      if (userType == UserType.candidate) {
-        if (accountStatus == AccountStatus.partial &&
-            state.matchedLocation != '/auth/candidate-registration') {
-          debugPrint(
-              "Candidate has not completed profile. Redirecting to /auth/candidate-registration.");
-          return '/auth/candidate-registration';
-        }
-        if (accountStatus == AccountStatus.inactive &&
-            state.matchedLocation != '/account-activation') {
-          debugPrint(
-              "Inactive candidate detected. Redirecting to /account-activation.");
-          return '/account-activation';
-        }
-        if ((accountStatus == AccountStatus.pending ||
-                accountStatus == AccountStatus.active) &&
-            !state.matchedLocation.startsWith('/main')) {
-          debugPrint("Candidate is verified. Redirecting to /main/home.");
-          return '/main/home';
-        }
-      }
+    //   /// ======================== CANDIDATE REDIRECTION ========================
+    //   if (userType == UserType.candidate) {
+    //     if (accountStatus == AccountStatus.partial &&
+    //         state.matchedLocation != '/auth/candidate-registration') {
+    //       debugPrint(
+    //           "Candidate has not completed profile. Redirecting to /auth/candidate-registration.");
+    //       return '/auth/candidate-registration';
+    //     }
+    //     if (accountStatus == AccountStatus.inactive &&
+    //         state.matchedLocation != '/account-activation') {
+    //       debugPrint(
+    //           "Inactive candidate detected. Redirecting to /account-activation.");
+    //       return '/account-activation';
+    //     }
+    //     if ((accountStatus == AccountStatus.pending ||
+    //             accountStatus == AccountStatus.active) &&
+    //         !state.matchedLocation.startsWith('/main')) {
+    //       debugPrint("Candidate is verified. Redirecting to /main/home.");
+    //       return '/main/home';
+    //     }
+    //   }
 
-      /// ======================== EMPLOYER REDIRECTION ========================
-      if (userType == UserType.employer) {
-        if (accountStatus == AccountStatus.partial &&
-            state.matchedLocation != '/auth/company-registration') {
-          debugPrint(
-              "Employer has not completed profile. Redirecting to /auth/company-registration.");
-          return '/auth/company-registration';
-        }
-        if (accountStatus == AccountStatus.inactive &&
-            state.matchedLocation != '/account-activation') {
-          debugPrint(
-              "Inactive employer detected. Redirecting to /account-activation.");
-          return '/account-activation';
-        }
-        if ((accountStatus == AccountStatus.pending ||
-                accountStatus == AccountStatus.active) &&
-            !state.matchedLocation.startsWith('/main')) {
-          debugPrint("Employer is verified. Redirecting to /main/home.");
-          return '/main/home';
-        }
-      }
+    //   /// ======================== EMPLOYER REDIRECTION ========================
+    //   if (userType == UserType.employer) {
+    //     if (accountStatus == AccountStatus.partial &&
+    //         state.matchedLocation != '/auth/company-registration') {
+    //       debugPrint(
+    //           "Employer has not completed profile. Redirecting to /auth/company-registration.");
+    //       return '/auth/company-registration';
+    //     }
+    //     if (accountStatus == AccountStatus.inactive &&
+    //         state.matchedLocation != '/account-activation') {
+    //       debugPrint(
+    //           "Inactive employer detected. Redirecting to /account-activation.");
+    //       return '/account-activation';
+    //     }
+    //     if ((accountStatus == AccountStatus.pending ||
+    //             accountStatus == AccountStatus.active) &&
+    //         !state.matchedLocation.startsWith('/main')) {
+    //       debugPrint("Employer is verified. Redirecting to /main/home.");
+    //       return '/main/home';
+    //     }
+    //   }
 
-      /// ======================== PREVENT UNVERIFIED USERS FROM ACCESSING `/main/*` ========================
-      if ((accountStatus == AccountStatus.partial ||
-              accountStatus == AccountStatus.inactive) &&
-          state.matchedLocation.startsWith('/main')) {
-        debugPrint("Unverified user tried to access /main. Redirecting.");
-        return accountStatus == AccountStatus.partial
-            ? (userType == UserType.candidate
-                ? '/candidate-registration'
-                : '/employer-registration')
-            : '/account-activation';
-      }
+    //   /// ======================== PREVENT UNVERIFIED USERS FROM ACCESSING `/main/*` ========================
+    //   if ((accountStatus == AccountStatus.partial ||
+    //           accountStatus == AccountStatus.inactive) &&
+    //       state.matchedLocation.startsWith('/main')) {
+    //     debugPrint("Unverified user tried to access /main. Redirecting.");
+    //     return accountStatus == AccountStatus.partial
+    //         ? (userType == UserType.candidate
+    //             ? '/candidate-registration'
+    //             : '/employer-registration')
+    //         : '/account-activation';
+    //   }
 
-      debugPrint("No redirect needed. Allowing navigation.");
-      return null;
-    },
+    //   debugPrint("No redirect needed. Allowing navigation.");
+    //   return null;
+    // },
     // Handle unknown routes
     errorBuilder: (context, state) {
       debugPrint('Page not found: ${state.fullPath}');

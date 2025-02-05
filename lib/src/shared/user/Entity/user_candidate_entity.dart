@@ -7,17 +7,40 @@ import 'package:uuid/uuid.dart';
 class Candidate extends User {
   final String firstName;
   final String lastName;
+  final String mobileNumber;
 
-  Candidate({
-    required UuidValue id,
-    required String email,
-    required UserType userType,
-    required AccountStatus accountStatus,
-    required this.firstName,
-    required this.lastName,
-  }) : super(
+  Candidate(
+      {required UuidValue id,
+      required String email,
+      required UserType userType,
+      required AccountStatus accountStatus,
+      required this.firstName,
+      required this.lastName,
+      required this.mobileNumber})
+      : super(
             id: id,
             email: email,
             userType: userType,
             accountStatus: accountStatus);
+
+  @override
+  Candidate copyWith({
+    UuidValue? id,
+    String? email,
+    UserType? userType,
+    AccountStatus? accountStatus,
+    String? firstName,
+    String? lastName,
+    String? mobileNumber,
+  }) {
+    return Candidate(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      userType: userType ?? this.userType,
+      accountStatus: accountStatus ?? this.accountStatus,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      mobileNumber: mobileNumber ?? this.mobileNumber,
+    );
+  }
 }

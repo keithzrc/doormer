@@ -32,5 +32,5 @@ class SessionStarted extends GlobalSessionEvent {
 class UserInfoUpdated extends GlobalSessionEvent {
   final User updatedUser;
 
-  UserInfoUpdated(this.updatedUser);
+  const UserInfoUpdated(this.updatedUser);
 }

@@ -34,6 +34,9 @@ dependencies:
   universal_html:
   google_sign_in: ^6.2.2
   google_sign_in_web:
+  file_picker:
+  intl_phone_field: ^3.2.0
+  intl_phone_number_input: ^0.7.4
 
 dev_dependencies:
   flutter_test:

@@ -1,11 +1,5 @@
 import 'dart:async';
-import 'package:doormer/src/features/auth/di/auth_module.dart';
-import 'package:doormer/src/shared/sessions/bloc/global_session_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:doormer/src/core/services/sessions/session_service.dart';
-import 'package:go_router/go_router.dart';
-import 'package:doormer/src/shared/user/Entity/user_entity.dart';
 
 class PendingVerificationPageWeb extends StatefulWidget {
   const PendingVerificationPageWeb({super.key});
@@ -18,7 +12,7 @@ class PendingVerificationPageWeb extends StatefulWidget {
 class _PendingVerificationPageWebState
     extends State<PendingVerificationPageWeb> {
   Timer? _timer;
-  final SessionService _sessionService = serviceLocator<SessionService>();
+  // final SessionService _sessionService = serviceLocator<SessionService>();
 
   @override
   void initState() {
