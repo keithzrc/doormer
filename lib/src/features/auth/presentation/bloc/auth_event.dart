@@ -47,26 +47,3 @@ class GoogleSignInRequested extends AuthEvent {
 
   GoogleSignInRequested(this.idToken);
 }
-
-/// Event triggered when user 'Employer' submits company information
-class SignupCompanyInfoRequested extends AuthEvent {
-  final String companyName;
-  final String nzbn;
-  final String companyType;
-  final String companySize;
-  final String industry;
-  final String oriented;
-
-  SignupCompanyInfoRequested(this.companyName, this.nzbn, this.companyType,
-      this.companySize, this.industry, this.oriented);
-}
-
-class SignupCandidateInfoRequested extends AuthEvent {
-  final String firstName;
-  final String lastName;
-  final Uint8List? fileByte;
-  final String? fileName;
-
-  SignupCandidateInfoRequested(
-      this.firstName, this.lastName, this.fileByte, this.fileName);
-}

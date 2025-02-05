@@ -16,7 +16,7 @@ extension UserModelToEntity on UserModel {
         accountStatus: accountStatus,
       );
     } else if (userType == UserType.candidate) {
-      if (firstName == null || lastName == null) {
+      if (firstName == null || lastName == null || mobileNumber == null) {
         throw Exception(
             'Invalid data: Candidate must have firstName and lastName');
       }
@@ -27,6 +27,7 @@ extension UserModelToEntity on UserModel {
         accountStatus: accountStatus,
         firstName: firstName!,
         lastName: lastName!,
+        mobileNumber: mobileNumber!,
       );
     } else if (userType == UserType.employer) {
       if (companyName == null ||
@@ -34,13 +35,17 @@ extension UserModelToEntity on UserModel {
           companyType == null ||
           companySize == null ||
           industry == null ||
-          oriented == null) {
+          oriented == null ||
+          companyDescription == null ||
+          contactFirstName == null ||
+          contactLastName == null ||
+          contactPhoneNumber == null) {
         throw Exception('Invalid data: Employer must have all required fields');
       }
       return Employer(
         id: id,
         email: email,
-        userType: userType, // Directly transfer the enum
+        userType: userType,
         accountStatus: accountStatus,
         companyName: companyName!,
         nzbn: nzbn!,
@@ -48,6 +53,10 @@ extension UserModelToEntity on UserModel {
         companySize: companySize!,
         industry: industry!,
         oriented: oriented!,
+        companyDescription: companyDescription!,
+        contactFirstName: contactFirstName!,
+        contactLastName: contactLastName!,
+        contactPhoneNumber: contactPhoneNumber!,
       );
     } else {
       throw Exception(

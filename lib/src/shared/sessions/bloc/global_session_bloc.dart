@@ -70,4 +70,11 @@ class GlobalSessionBloc extends Bloc<GlobalSessionEvent, GlobalSessionState> {
           'UserInfoUpdated event received without an active session');
     }
   }
+
+  User? getUser() {
+    if (state is SessionActiveState) {
+      return (state as SessionActiveState).user;
+    }
+    return null;
+  }
 }

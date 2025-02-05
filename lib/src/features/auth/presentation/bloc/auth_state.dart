@@ -1,4 +1,3 @@
-import 'package:doormer/src/shared/user/Entity/user_entity.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class AuthState extends Equatable {
@@ -30,14 +29,3 @@ class AuthFailure extends AuthState {
 
 // New state for email verification
 class AuthEmailVerificationPending extends AuthState {}
-
-class RegisterSuccess extends AuthState {}
-
-class RegisterFailure extends AuthState {
-  final String error;
-
-  RegisterFailure(this.error);
-
-  @override
-  List<Object?> get props => [error];
-}

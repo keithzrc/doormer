@@ -5,6 +5,7 @@ class CustomTextFieldWeb extends StatelessWidget {
   final String hintText;
   final TextInputType? keyboardType;
   final TextEditingController? controller;
+  final String? Function(String?)? validator;
 
   const CustomTextFieldWeb({
     Key? key,
@@ -12,6 +13,7 @@ class CustomTextFieldWeb extends StatelessWidget {
     required this.hintText,
     this.keyboardType,
     this.controller,
+    this.validator,
   }) : super(key: key);
 
   @override
@@ -24,9 +26,10 @@ class CustomTextFieldWeb extends StatelessWidget {
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        TextField(
+        TextFormField(
           controller: controller,
           keyboardType: keyboardType,
+          validator: validator,
           decoration: InputDecoration(
             hintText: hintText,
             border: const OutlineInputBorder(),

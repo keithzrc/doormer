@@ -1,6 +1,5 @@
 import 'package:doormer/src/core/di/service_locator.dart';
-import 'package:doormer/src/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:doormer/src/features/auth/presentation/bloc/auth_event.dart';
+import 'package:doormer/src/features/registration/presentation/bloc/general_registration/registration_bloc.dart';
 import 'package:doormer/src/shared/widgets/web/dropdown_menu.dart';
 import 'package:doormer/src/shared/widgets/web/text_field.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +36,8 @@ class _SignUpCompanyInfoPageWebState extends State<SignUpCompanyInfoPageWeb> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => serviceLocator<AuthBloc>(), // Provide AuthBloc
+      create: (context) =>
+          serviceLocator<RegistrationBloc>(), // Provide RegistrationBloc
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Company Info'),
@@ -103,13 +103,20 @@ class _SignUpCompanyInfoPageWebState extends State<SignUpCompanyInfoPageWeb> {
                     builder: (context) => ElevatedButton(
                       onPressed: () {
                         // Trigger Bloc event with collected form data
-                        context.read<AuthBloc>().add(SignupCompanyInfoRequested(
-                              companyNameController.text,
-                              nzbnController.text,
-                              companyType,
-                              companySize,
-                              industryController.text,
-                              orientedController.text,
+                        // TODO: Finish remianing fields
+                        context
+                            .read<RegistrationBloc>()
+                            .add(SubmitCompanyInfoRequested(
+                              companyName: companyNameController.text,
+                              nzbn: nzbnController.text,
+                              companyType: companyType,
+                              companySize: companySize,
+                              industry: industryController.text,
+                              companyOrientation: orientedController.text,
+                              companyDescription: "",
+                              contactFirstName: "",
+                              contactLastName: "",
+                              contactPhoneNumber: "",
                             ));
                       },
                       child: const Text('Submit'),

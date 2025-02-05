@@ -1,11 +1,8 @@
-// lib/features/auth/data/datasources/auth_remote_datasource.dart
-
 import 'package:dio/dio.dart';
 import 'package:doormer/src/core/network/request_manager.dart';
 import 'package:doormer/src/core/services/sessions/session_service.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:doormer/src/features/auth/data/models/login_response_model.dart';
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthRemoteDataSource {
@@ -96,29 +93,6 @@ class AuthRemoteDataSource {
       rethrow;
     }
   }
-
-  // Future<String?> getGoogleIdTokenWeb() async {
-  //   AppLogger.info('Starting to get GoogleIdTokenWeb');
-  //   try {
-  //     await googleSignIn.signOut();
-  //     final GoogleSignInAccount? googleSignInAccount =
-  //         await googleSignIn.signIn();
-  //     if (googleSignInAccount == null) {
-  //       throw Exception("User canceled Google Sign-In.");
-  //     }
-
-  //     final GoogleSignInAuthentication googleAuth =
-  //         await googleSignInAccount.authentication;
-  //     AppLogger.error('google id token: ${googleAuth.idToken}');
-  //     if (googleAuth.idToken == null) {
-  //       throw Exception("ID Token is null. Check OAuth settings.");
-  //     }
-  //     AppLogger.info('Google ID Token: ${googleAuth.idToken}');
-  //     return googleAuth.idToken;
-  //   } catch (error) {
-  //     return null;
-  //   }
-  // }
 
   // Exchange Google ID token for backend tokens
   Future<LoginResponseModel> verifyGoogleIdToken(String googleIdToken) async {

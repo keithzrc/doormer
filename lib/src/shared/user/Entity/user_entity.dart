@@ -15,4 +15,18 @@ class User {
     required this.userType,
     required this.accountStatus,
   });
+
+  User copyWith({
+    UuidValue? id,
+    String? email,
+    UserType? userType,
+    AccountStatus? accountStatus,
+  }) {
+    return User(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      userType: userType ?? this.userType,
+      accountStatus: accountStatus ?? this.accountStatus,
+    );
+  }
 }
