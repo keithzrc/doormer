@@ -31,12 +31,12 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
   @override
   Stream<List<Message>> getMessages(String contactId) async* {
     final controller = _getControllerFor(contactId);
-    
+
     try {
       // 返回现有消息列表
       final messages = _messagesByContact[contactId] ?? [];
       yield messages;
-      
+
       // 订阅后续更新
       await for (final updates in controller.stream) {
         yield updates;
@@ -55,18 +55,21 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
 
       // 确保消息列表存在并获取当前消息
       final currentMessages = _messagesByContact[message.contactId] ?? [];
-      
+      print('currentMessages: ${currentMessages}');
+      print('message: ${message.contactId}');
       // 创建新的消息列表，包含所有现有消息和新消息
       final updatedMessages = List<Message>.from(currentMessages)..add(message);
-      
+
       // 更新存储
       _messagesByContact[message.contactId] = updatedMessages;
-      
+
       // 通知监听者
       _getControllerFor(message.contactId).add(updatedMessages);
-      
-      AppLogger.info('Message sent successfully to contact: ${message.contactId}');
-      AppLogger.debug('Current messages in storage: ${_messagesByContact[message.contactId]}');
+
+      AppLogger.info(
+          'Message sent successfully to contact: ${message.contactId}');
+      AppLogger.debug(
+          'Current messages in storage: ${_messagesByContact[message.contactId]}');
     } catch (e) {
       AppLogger.error('Failed to send message', e);
       throw Exception('Failed to send message: ${e.toString()}');
@@ -84,10 +87,10 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
   //     timestamp: DateTime.now(),
   //     isFromMe: true,
   //     type: type,
-  //     mediaUrl: type != MessageType.text && type != MessageType.emoji 
+  //     mediaUrl: type != MessageType.text && type != MessageType.emoji
   //         ? 'https://example.com/files/${path.split('/').last}'
   //         : null,
-  //     audioDurationMs: type == MessageType.audio || type == MessageType.voice 
+  //     audioDurationMs: type == MessageType.audio || type == MessageType.voice
   //         ? const Duration(seconds: 30).inMilliseconds
   //         : null,
   //   ).toEntity();
@@ -95,34 +98,29 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
   //   await sendMessage(message);
   // }
 
-  
-
   @override
   Future<void> updateMessage(Message message) async {
-
     try {
-    final currentMessages = _messagesByContact[message.contactId] ?? [];
-    final messageIndex = currentMessages.indexWhere((m) => m.id == message.id);
+      final currentMessages = _messagesByContact[message.contactId] ?? [];
+      final messageIndex =
+          currentMessages.indexWhere((m) => m.id == message.id);
 
-    if (messageIndex != -1) {
-      currentMessages[messageIndex] = message;
-      _messagesByContact[message.contactId] = currentMessages;
-      
-      // 通知监听者消息已更新
-      _getControllerFor(message.contactId).add(currentMessages);
-      AppLogger.info('Message updated: ${message.id}');
-    } else {
-      AppLogger.error('Failed to update message: Message not found');
-      throw Exception('Message not found');
+      if (messageIndex != -1) {
+        currentMessages[messageIndex] = message;
+        _messagesByContact[message.contactId] = currentMessages;
+
+        // 通知监听者消息已更新
+        _getControllerFor(message.contactId).add(currentMessages);
+        AppLogger.info('Message updated: ${message.id}');
+      } else {
+        AppLogger.error('Failed to update message: Message not found');
+        throw Exception('Message not found');
+      }
+    } catch (e) {
+      AppLogger.error('Failed to update message', e);
+      throw Exception('Failed to update message: ${e.toString()}');
     }
-  } catch (e) {
-    AppLogger.error('Failed to update message', e);
-    throw Exception('Failed to update message: ${e.toString()}');
   }
-}
-  
-
-  
 
   /// Disposes of resources.
   void dispose() {
@@ -132,13 +130,13 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
     _messageControllers.clear();
     AppLogger.info('ChatboxRepositoryImpl disposed');
   }
-  
+
   @override
   Future<void> deleteMessage(String messageId) {
     // TODO: implement deleteMessage
     throw UnimplementedError();
   }
-  
+
   @override
   Future<void> sendFile(String path, MessageType type) {
     // TODO: implement sendFile
@@ -149,15 +147,15 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
   void handleReceivedMessage(Message message) {
     // 确保消息列表存在
     _messagesByContact.putIfAbsent(message.contactId, () => []);
-    
+
     // 获取并更新消息列表
     final currentMessages = _messagesByContact[message.contactId]!;
     final updatedMessages = List<Message>.from(currentMessages)..add(message);
     _messagesByContact[message.contactId] = updatedMessages;
-    
+
     // 通知监听者
     _getControllerFor(message.contactId).add(updatedMessages);
-    
+
     AppLogger.info('Received message handled: ${message.content}');
   }
 }
