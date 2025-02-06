@@ -119,5 +119,71 @@ void main() {
       expect(title.overflow, equals(TextOverflow.ellipsis));
       expect(subtitle.overflow, equals(TextOverflow.ellipsis));
     });
+
+
+    testWidgets('should show first letter when URL is empty', (tester) async {
+      final contactWithoutAvatar = testContact.copyWith(
+        avatarUrl: '',
+        userName: 'Test User',
+      );
+      await tester.pumpWidget(createWidgetUnderTest(
+        contact: contactWithoutAvatar,
+        onTap: (Contact contact) {},
+        onArchive: (Contact contact) {},
+      ));
+
+      final avatar = find.byType(CircleAvatar);
+      expect(avatar, findsOneWidget);
+      
+      final circleAvatar = tester.widget<CircleAvatar>(avatar);
+      expect(circleAvatar.foregroundImage, isNull);
+      expect(find.text('T'), findsOneWidget);
+    });
+
+    testWidgets('should show first letter when URL contains only whitespace', (tester) async {
+      final contactWithWhitespaceUrl = testContact.copyWith(
+        avatarUrl: '   ',
+        userName: 'Test User',
+      );
+      await tester.pumpWidget(createWidgetUnderTest(
+        contact: contactWithWhitespaceUrl,
+        onTap: (Contact contact) {},
+        onArchive: (Contact contact) {},
+      ));
+
+      final avatar = find.byType(CircleAvatar);
+      expect(avatar, findsOneWidget);
+      
+      final circleAvatar = tester.widget<CircleAvatar>(avatar);
+      expect(circleAvatar.foregroundImage, isNull);
+      expect(find.text('T'), findsOneWidget);
+    });
+
+    testWidgets('should show first letter when URL is invalid', (tester) async {
+      final contactWithInvalidUrl = testContact.copyWith(
+        avatarUrl: 'invalid-url',
+        userName: 'Test User',
+      );
+      
+      final errors = <dynamic>[];
+      final originalOnError = FlutterError.onError;
+      FlutterError.onError = (details) {
+        errors.add(details.exception);
+      };
+
+      await tester.pumpWidget(createWidgetUnderTest(
+        contact: contactWithInvalidUrl,
+        onTap: (Contact contact) {},
+        onArchive: (Contact contact) {},
+      ));
+      await tester.pump();
+
+      FlutterError.onError = originalOnError;
+
+      expect(errors.any((e) => e is NetworkImageLoadException), isTrue);
+      
+      expect(find.text('T'), findsOneWidget);
+    });
   });
 }
+
