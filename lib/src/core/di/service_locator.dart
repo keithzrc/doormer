@@ -4,6 +4,7 @@ import 'package:doormer/src/core/services/sessions/session_service.dart';
 import 'package:doormer/src/core/signalr_service.dart';
 import 'package:doormer/src/core/utils/token_storage.dart';
 import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart';
+import 'package:doormer/src/features/chatbox/di/chatbox_injection.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:doormer/src/features/auth/di/auth_module.dart';
@@ -40,4 +41,5 @@ Future<void> initDependencies() async {
   // 初始化特性模块
   initAuthModule();
   initChatModule();
+  initChatboxDependencies();
 }

@@ -42,6 +42,7 @@ class _ChatboxPageState extends State<ChatboxPage> {
         getMessages: serviceLocator<GetMessages>(),
         sendMessage: serviceLocator<SendMessage>(),
         sendFile: serviceLocator<SendFile>(),
+        handleReceivedMessage: serviceLocator<HandleReceivedMessage>(),
        // getContactInfo: serviceLocator<GetContactInfo>(),
         signalRService: widget.signalRService,
         userId: widget.userId,
@@ -100,16 +101,21 @@ class _ChatboxViewState extends State<_ChatboxView> {
     _setupSignalRHandler();
   }
 
-  void _setupSignalRHandler() {
+   void _setupSignalRHandler() {
     _chatboxBloc.signalRService.hubConnection.on("ReceiveMessage", (args) {
       if (args != null && args.isNotEmpty) {
+        final senderId = args[0] as String;
+        final content = args[1] as String;
+        final isFromMe = senderId == widget.userId;
+
+        final conversationPartnerId = isFromMe ? widget.contactId : senderId;
         final message = Message(
           id: DateTime.now().toString(),
-          content: args[1] as String,
+          content: content,
           timestamp: DateTime.now(),
-          isFromMe: args[0] == widget.userId,
+          isFromMe: isFromMe,
           type: MessageType.text,
-          contactId: args[0] as String,
+          contactId: conversationPartnerId,
         );
         _chatboxBloc.add(ReceiveMessageEvent(message));
       }

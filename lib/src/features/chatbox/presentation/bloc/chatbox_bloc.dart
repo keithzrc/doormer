@@ -30,6 +30,9 @@ class ChatboxBloc extends Bloc<ChatboxEvent, ChatboxState> {
   /// User ID for identifying messages.
   final String userId;
 
+  /// Use case for handling received messages.
+  final HandleReceivedMessage handleReceivedMessage;
+
   /// Creates a new instance of [ChatboxBloc].
   ///
   /// Requires all necessary use cases to be provided:
@@ -45,6 +48,7 @@ class ChatboxBloc extends Bloc<ChatboxEvent, ChatboxState> {
     required this.getMessages,
     required this.sendMessage,
     required this.sendFile,
+    required this.handleReceivedMessage,
     //required this.getContactInfo,
     required this.signalRService,
     required this.userId,
@@ -123,21 +127,34 @@ class ChatboxBloc extends Bloc<ChatboxEvent, ChatboxState> {
     ///
     /// Adds the new message to the existing messages list and updates the state.
     on<ReceiveMessageEvent>((event, emit) async {
-      try {
+      try { handleReceivedMessage(event.message);
         if (state is MessagesLoaded) {
           final currentMessages = (state as MessagesLoaded).messages;
-          final updatedMessages = List<Message>.from(currentMessages)..add(event.message);
-          emit(MessagesLoaded(updatedMessages));
-          AppLogger.info('New message received and state updated: ${event.message.content}');
+          
+          // 检查消息是否已存在
+          final messageExists = currentMessages.any((m) => m.id == event.message.id);
+          if (!messageExists) {
+            final updatedMessages = List<Message>.from(currentMessages)..add(event.message);
+            
+            // 按时间戳排序
+            updatedMessages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+            
+            emit(MessagesLoaded(updatedMessages));
+            AppLogger.info('New message received and state updated: ${event.message.content}');
+          }
         } else {
-          // 如果当前没有加载消息，先加载消息
-          await emit.forEach(
-            getMessages(event.message.contactId),
-            onData: (List<Message> messages) {
-              final updatedMessages = List<Message>.from(messages)..add(event.message);
-              return MessagesLoaded(updatedMessages);
-            },
-          );
+          // 如果当前没有加载消息，获取完整的消息历史
+          final messages = await getMessages(event.message.contactId).first;
+          final updatedMessages = List<Message>.from(messages);
+          
+          // 检查新消息是否已存在
+          if (!updatedMessages.any((m) => m.id == event.message.id)) {
+            updatedMessages.add(event.message);
+            // 按时间戳排序
+            updatedMessages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+          }
+          
+          emit(MessagesLoaded(updatedMessages));
         }
       } catch (e) {
         AppLogger.error('Error handling received message', e);

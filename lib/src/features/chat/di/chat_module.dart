@@ -7,7 +7,6 @@ import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:doormer/src/features/chatbox/domain/repositories/chatbox_repository.dart';
 import 'package:doormer/src/features/chatbox/data/repositories/chatbox_repository_impl.dart';
 import 'package:doormer/src/features/chatbox/domain/usecase/chatbox_usecase.dart';
-import 'package:doormer/src/features/chatbox/presentation/bloc/chatbox_bloc.dart';
 import 'package:doormer/src/core/signalr_service.dart';
 
 void initChatModule() {
@@ -36,6 +35,11 @@ void initChatModule() {
 
   serviceLocator.registerLazySingleton<SendFile>(
     () => SendFile(serviceLocator<ChatboxRepository>()),
+  );
+
+  // 添加 HandleReceivedMessage 的注册
+  serviceLocator.registerLazySingleton<HandleReceivedMessage>(
+    () => HandleReceivedMessage(serviceLocator<ChatboxRepository>()),
   );
 
   // serviceLocator.registerLazySingleton<GetContactInfo>(
@@ -68,12 +72,5 @@ void initChatModule() {
       ));
 
   // Register ChatboxBloc
-  serviceLocator.registerFactory<ChatboxBloc>(() => ChatboxBloc(
-        getMessages: serviceLocator<GetMessages>(),
-        sendMessage: serviceLocator<SendMessage>(),
-        sendFile: serviceLocator<SendFile>(),
-       // getContactInfo: serviceLocator<GetContactInfo>(),
-        signalRService: serviceLocator<SignalRService>(),
-        userId: serviceLocator<String>(),
-      ));
+  
 }

@@ -46,6 +46,8 @@ abstract class ChatboxRepository {
   /// - [message]: The updated message entity.
   Future<void> updateMessage(Message message);
 
+  /// Handles a received message.
+void handleReceivedMessage(Message message);
   /// Disposes of resources.
   void dispose();
 }

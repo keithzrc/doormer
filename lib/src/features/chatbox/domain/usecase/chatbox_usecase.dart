@@ -21,6 +21,15 @@ class SendMessage {
   }
 }
 
+class HandleReceivedMessage {
+  final ChatboxRepository repository;
+  HandleReceivedMessage(this.repository);
+
+  void call(Message message) {
+    return repository.handleReceivedMessage(message);
+  }
+}
+
 class SendFile {
   final ChatboxRepository repository;
   SendFile(this.repository);

@@ -145,17 +145,28 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
 
   /// 处理接收到的消息
   void handleReceivedMessage(Message message) {
-    // 确保消息列表存在
-    _messagesByContact.putIfAbsent(message.contactId, () => []);
-
-    // 获取并更新消息列表
-    final currentMessages = _messagesByContact[message.contactId]!;
-    final updatedMessages = List<Message>.from(currentMessages)..add(message);
-    _messagesByContact[message.contactId] = updatedMessages;
-
-    // 通知监听者
-    _getControllerFor(message.contactId).add(updatedMessages);
-
-    AppLogger.info('Received message handled: ${message.content}');
+    try {
+      // 确保消息列表存在
+      final currentMessages = _messagesByContact[message.contactId] ?? [];
+      print('recieve currentMessages: ${currentMessages}');
+      print('recieve message: ${message.contactId}');
+      // 检查消息是否已存在
+      if (!currentMessages.any((m) => m.id == message.id)) {
+        final updatedMessages = List<Message>.from(currentMessages)..add(message);
+        
+        // 按时间戳排序
+        updatedMessages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+        
+        _messagesByContact[message.contactId] = updatedMessages;
+        
+        // 通知监听者
+        _getControllerFor(message.contactId).add(updatedMessages);
+        
+        AppLogger.info('Received message handled: ${message.content}');
+      }
+    } catch (e) {
+      AppLogger.error('Error handling received message', e);
+      throw Exception('Failed to handle received message: ${e.toString()}');
+    }
   }
 }
