@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:doormer/src/core/signalr_service.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart';
 import 'package:doormer/src/features/chat/data/models/contact_model.dart';
@@ -7,102 +8,19 @@ import 'package:doormer/src/features/chatbox/domain/entities/contact_info_entity
 import 'package:doormer/src/features/chatbox/domain/repositories/chatbox_repository.dart';
 import '../models/message_model.dart';
 import 'package:uuid/uuid.dart';
+import 'package:doormer/src/core/signalr_service.dart';
 
 /// Implementation of the [ChatboxRepository] interface.
 class ChatboxRepositoryImpl implements ChatboxRepository {
-  final LocalDataSource _localDataSource;
+  final SignalRService _signalRService;
   final _messageControllers = <String, StreamController<List<Message>>>{};
-  final Completer<void> _dataLoaded = Completer<void>();
-  List<ContactModel>? _contacts;
   final _messagesByContact = <String, List<Message>>{};
 
   ChatboxRepositoryImpl({
-    required LocalDataSource localDataSource,
-  }) : _localDataSource = localDataSource {
-    _initializeData();
-  }
+    required SignalRService signalRService,
+  }) : _signalRService = signalRService;
 
-  /// Initializes data and completes the `_dataLoaded` completer when done.
-  void _initializeData() async {
-    AppLogger.info('Initializing data in ChatboxRepositoryImpl');
-    try {
-      _contacts = await _localDataSource.loadDummyData();
-      AppLogger.info(
-          'Data initialized in ChatboxRepositoryImpl: ${_contacts?.length} contacts loaded');
-      _dataLoaded.complete(); // Signal that data is ready
-    } catch (error) {
-      AppLogger.error(
-          'Data initialization failed in ChatboxRepositoryImpl', error);
-      _dataLoaded.completeError(error); // Signal failure
-    }
-  }
-
-  /// Ensures data is loaded before initialization is completed.
-  Future<void> _ensureDataLoaded() async {
-    if (_contacts == null) {
-      AppLogger.info('Loading contacts data...');
-      _contacts = await _localDataSource.loadDummyData();
-      AppLogger.info('Loaded ${_contacts?.length} contacts');
-    }
-  }
-
-  /// Finds a contact by their ID.
-  ContactModel? _findContactById(String contactId) {
-    AppLogger.debug('Finding contact with ID: $contactId');
-    
-    if (_contacts == null) {
-      AppLogger.error('_contacts is null, data not loaded yet');
-      return null;
-    }
-
-    // 验证 contactId 是否为有效的 UUID
-    try {
-      final uuid = UuidValue(contactId);
-      AppLogger.debug('Valid UUID format: ${uuid.toString()}');
-    } catch (e) {
-      AppLogger.error('Invalid UUID format for contactId: $contactId');
-      return null;
-    }
-
-    AppLogger.debug('Available contacts: ${_contacts!.map((c) => '${c.id}: ${c.userName}').join(', ')}');
-    
-    // 使用 where + firstOrNull 替代 firstWhere 来避免异常
-    final contact = _contacts!
-        .where((contact) => contact.id.toString() == contactId)
-        .firstOrNull;
-
-    if (contact != null) {
-      AppLogger.debug('Found contact: ${contact.userName} with ID: ${contact.id}');
-    } else {
-      AppLogger.error('No contact found for ID: $contactId');
-    }
-
-    return contact;
-  }
-
-  @override
-  Future<ContactInfo> getContactInfo(String contactId) async {
-    AppLogger.info('Getting contact info for ID: $contactId');
-    
-    try {
-      await _ensureDataLoaded();
-      final contact = _findContactById(contactId);
-      
-      if (contact == null) {
-        AppLogger.error('Contact not found for ID: $contactId');
-        throw Exception('Contact not found');
-      }
-
-      final contactInfo = contact.toContactInfo();
-      
-      AppLogger.info('Successfully created ContactInfo for: ${contactInfo.name}');
-      return contactInfo;
-    } catch (e) {
-      AppLogger.error('Error in getContactInfo', e);
-      rethrow;
-    }
-  }
-
+  /// Gets or creates a StreamController for the given contact ID
   StreamController<List<Message>> _getControllerFor(String contactId) {
     return _messageControllers.putIfAbsent(
       contactId,
@@ -112,15 +30,14 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
 
   @override
   Stream<List<Message>> getMessages(String contactId) async* {
-    await _ensureDataLoaded();
     final controller = _getControllerFor(contactId);
     
     try {
-      // 初始空消息列表
-      final messages = <Message>[];
+      // 返回现有消息列表
+      final messages = _messagesByContact[contactId] ?? [];
       yield messages;
       
-      // 订阅特定联系人的消息流
+      // 订阅后续更新
       await for (final updates in controller.stream) {
         yield updates;
       }
@@ -132,125 +49,80 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
 
   @override
   Future<void> sendMessage(Message message) async {
-    await _ensureDataLoaded();
-    
     try {
-      final contact = _findContactById(message.contactId);
-      if (contact == null) {
-        throw Exception('Contact not found');
-      }
+      // 使用 SignalR 发送消息
+      await _signalRService.sendMessage(message.contactId, message.content);
 
-      final controller = _getControllerFor(message.contactId);
+      // 确保消息列表存在并获取当前消息
       final currentMessages = _messagesByContact[message.contactId] ?? [];
       
-      // 添加新消息到特定联系人的消息列表
-      final updatedMessages = [...currentMessages, message];
+      // 创建新的消息列表，包含所有现有消息和新消息
+      final updatedMessages = List<Message>.from(currentMessages)..add(message);
+      
+      // 更新存储
       _messagesByContact[message.contactId] = updatedMessages;
-      controller.add(updatedMessages);
+      
+      // 通知监听者
+      _getControllerFor(message.contactId).add(updatedMessages);
       
       AppLogger.info('Message sent successfully to contact: ${message.contactId}');
+      AppLogger.debug('Current messages in storage: ${_messagesByContact[message.contactId]}');
     } catch (e) {
       AppLogger.error('Failed to send message', e);
       throw Exception('Failed to send message: ${e.toString()}');
     }
   }
 
-  @override
-  Future<void> sendFile(String path, MessageType type) async {
-    await Future.delayed(const Duration(seconds: 1));
+  // @override
+  // Future<void> sendFile(String path, MessageType type) async {
+  //   await Future.delayed(const Duration(seconds: 1));
 
-    final message = MessageModel(
-      id: DateTime.now().toString(),
-      contactId: 'current_contact_id',
-      content: path.split('/').last,
-      timestamp: DateTime.now(),
-      isFromMe: true,
-      type: type,
-      mediaUrl: type != MessageType.text && type != MessageType.emoji 
-          ? 'https://example.com/files/${path.split('/').last}'
-          : null,
-      audioDurationMs: type == MessageType.audio || type == MessageType.voice 
-          ? const Duration(seconds: 30).inMilliseconds
-          : null,
-    ).toEntity();
+  //   final message = MessageModel(
+  //     id: DateTime.now().toString(),
+  //     contactId: 'current_contact_id',
+  //     content: path.split('/').last,
+  //     timestamp: DateTime.now(),
+  //     isFromMe: true,
+  //     type: type,
+  //     mediaUrl: type != MessageType.text && type != MessageType.emoji 
+  //         ? 'https://example.com/files/${path.split('/').last}'
+  //         : null,
+  //     audioDurationMs: type == MessageType.audio || type == MessageType.voice 
+  //         ? const Duration(seconds: 30).inMilliseconds
+  //         : null,
+  //   ).toEntity();
 
-    await sendMessage(message);
-  }
+  //   await sendMessage(message);
+  // }
 
-  @override
-  Future<void> deleteMessage(String messageId) async {
-    await _ensureDataLoaded();
-    final chat = _findChatById(messageId);
-
-    if (chat != null) {
-      final messagesList = chat['messages'] as List;
-      messagesList.removeWhere((message) => message['id'] == messageId);
-
-      final updatedMessages = messagesList
-          .map((json) => MessageModel.fromJson(json).toEntity())
-          .toList();
-      _messageControllers[chat['id']]?.add(updatedMessages);
-
-      AppLogger.info('Message deleted: $messageId');
-    } else {
-      AppLogger.error('Failed to delete message: Chat not found');
-      throw Exception('Chat not found');
-    }
-  }
+  
 
   @override
   Future<void> updateMessage(Message message) async {
-    await _ensureDataLoaded();
-    final chat = _findChatById(message.id);
-
-    if (chat != null) {
-      final messagesList = chat['messages'] as List;
-      final messageIndex =
-          messagesList.indexWhere((m) => m['id'] == message.id);
-
-      if (messageIndex != -1) {
-        messagesList[messageIndex] = {
-          'id': message.id,
-          'content': message.content,
-          'timestamp': message.timestamp.toIso8601String(),
-          'isFromMe': message.isFromMe,
-          'type': message.type.toString().split('.').last,
-          if (message.mediaUrl != null) 'mediaUrl': message.mediaUrl,
-          if (message.audioDuration != null)
-            'audioDuration': message.audioDuration!.inMilliseconds,
-        };
-
-        final updatedMessages = messagesList
-            .map((json) => MessageModel.fromJson(json).toEntity())
-            .toList();
-        _messageControllers[chat['id']]?.add(updatedMessages);
-        AppLogger.info('Message updated: ${message.id}');
-      }
-    } else {
-      AppLogger.error('Failed to update message: Chat not found');
-      throw Exception('Chat not found');
-    }
-  }
-
-  /// Finds a chat by its ID.
-  Map<String, dynamic>? _findChatById(String contactId) {
-    if (_contacts == null) return null;
 
     try {
-      final contact = _findContactById(contactId);
-      if (contact == null) return null;
+    final currentMessages = _messagesByContact[message.contactId] ?? [];
+    final messageIndex = currentMessages.indexWhere((m) => m.id == message.id);
 
-      return {
-        'id': contact.id.toString(),
-        'lastMessage': contact.lastMessage,
-        'createdTime': contact.lastMessageCreatedTime.toIso8601String(),
-        'messages': [],
-      };
-    } catch (e) {
-      AppLogger.error('Error finding chat: $e');
-      return null;
+    if (messageIndex != -1) {
+      currentMessages[messageIndex] = message;
+      _messagesByContact[message.contactId] = currentMessages;
+      
+      // 通知监听者消息已更新
+      _getControllerFor(message.contactId).add(currentMessages);
+      AppLogger.info('Message updated: ${message.id}');
+    } else {
+      AppLogger.error('Failed to update message: Message not found');
+      throw Exception('Message not found');
     }
+  } catch (e) {
+    AppLogger.error('Failed to update message', e);
+    throw Exception('Failed to update message: ${e.toString()}');
   }
+}
+  
+
+  
 
   /// Disposes of resources.
   void dispose() {
@@ -259,5 +131,33 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
     }
     _messageControllers.clear();
     AppLogger.info('ChatboxRepositoryImpl disposed');
+  }
+  
+  @override
+  Future<void> deleteMessage(String messageId) {
+    // TODO: implement deleteMessage
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> sendFile(String path, MessageType type) {
+    // TODO: implement sendFile
+    throw UnimplementedError();
+  }
+
+  /// 处理接收到的消息
+  void handleReceivedMessage(Message message) {
+    // 确保消息列表存在
+    _messagesByContact.putIfAbsent(message.contactId, () => []);
+    
+    // 获取并更新消息列表
+    final currentMessages = _messagesByContact[message.contactId]!;
+    final updatedMessages = List<Message>.from(currentMessages)..add(message);
+    _messagesByContact[message.contactId] = updatedMessages;
+    
+    // 通知监听者
+    _getControllerFor(message.contactId).add(updatedMessages);
+    
+    AppLogger.info('Received message handled: ${message.content}');
   }
 }

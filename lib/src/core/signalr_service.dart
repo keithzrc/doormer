@@ -18,11 +18,6 @@ class SignalRService {
         .withUrl("http://localhost:5597/chatHub") // 替换为后端的 URL
         .build();
 
-    // 监听来自 SignalR 的消息
-    hubConnection.on("ReceiveMessage", (args) {
-      print("Message received from ${args?[0]}: ${args?[1]}");
-    });
-
     try {
       await hubConnection.start();
       print("SignalR connected!");
@@ -37,6 +32,7 @@ class SignalRService {
   Future<void> sendMessage(String userId, String message) async {
     try {
       await hubConnection.invoke("SendMessage", args: [userId, message]);
+      AppLogger.debug('Message sent successfully');
     } catch (e) {
       print("Error sending message: $e");
     }

@@ -50,16 +50,16 @@ class SendFileEvent extends ChatboxEvent {
 }
 
 /// Event to load contact information
-class LoadContactInfo extends ChatboxEvent {
-  /// The ID of the contact whose information should be loaded
-  final String contactId;
+// class LoadContactInfo extends ChatboxEvent {
+//   /// The ID of the contact whose information should be loaded
+//   final String contactId;
 
-  /// Creates a new [LoadContactInfo] event
-  const LoadContactInfo(this.contactId);
+//   /// Creates a new [LoadContactInfo] event
+//   const LoadContactInfo(this.contactId);
 
-  @override
-  List<Object?> get props => [contactId];
-}
+//   @override
+//   List<Object?> get props => [contactId];
+// }
 
 /// Event to delete a message
 class DeleteMessageEvent extends ChatboxEvent {

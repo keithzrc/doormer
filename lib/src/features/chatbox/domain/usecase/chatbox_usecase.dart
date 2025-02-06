@@ -30,11 +30,3 @@ class SendFile {
   }
 }
 
-class GetContactInfo {
-  final ChatboxRepository repository;
-  GetContactInfo(this.repository);
-
-  Future<ContactInfo> call(String contactId) {
-    return repository.getContactInfo(contactId);
-  }
-}

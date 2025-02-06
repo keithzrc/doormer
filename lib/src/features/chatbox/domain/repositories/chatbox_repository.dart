@@ -31,15 +31,6 @@ abstract class ChatboxRepository {
   /// - [type]: The type of message (image, audio, etc.).
   Future<void> sendFile(String path, MessageType type);
 
-  /// Retrieves contact information for a specific contact.
-  ///
-  /// Parameters:
-  /// - [contactId]: The unique identifier of the contact.
-  ///
-  /// Returns:
-  /// - A `Future` that resolves to the contact's information.
-  Future<ContactInfo> getContactInfo(String contactId);
-
   /// Deletes a specific message.
   ///
   /// Parameters:
@@ -54,4 +45,7 @@ abstract class ChatboxRepository {
   /// Parameters:
   /// - [message]: The updated message entity.
   Future<void> updateMessage(Message message);
+
+  /// Disposes of resources.
+  void dispose();
 }

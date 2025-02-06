@@ -8,6 +8,7 @@ import 'package:doormer/src/features/chatbox/domain/repositories/chatbox_reposit
 import 'package:doormer/src/features/chatbox/data/repositories/chatbox_repository_impl.dart';
 import 'package:doormer/src/features/chatbox/domain/usecase/chatbox_usecase.dart';
 import 'package:doormer/src/features/chatbox/presentation/bloc/chatbox_bloc.dart';
+import 'package:doormer/src/core/signalr_service.dart';
 
 void initChatModule() {
   // Register ChatRepository
@@ -19,7 +20,8 @@ void initChatModule() {
   // Register ChatboxRepository
   serviceLocator.registerLazySingleton<ChatboxRepository>(
     () => ChatboxRepositoryImpl(
-      localDataSource: serviceLocator<LocalDataSource>(),
+      //localDataSource: serviceLocator<LocalDataSource>(),
+      signalRService: serviceLocator<SignalRService>(),
     ),
   );
 
@@ -36,9 +38,9 @@ void initChatModule() {
     () => SendFile(serviceLocator<ChatboxRepository>()),
   );
 
-  serviceLocator.registerLazySingleton<GetContactInfo>(
-    () => GetContactInfo(serviceLocator<ChatboxRepository>()),
-  );
+  // serviceLocator.registerLazySingleton<GetContactInfo>(
+  //   () => GetContactInfo(serviceLocator<ChatboxRepository>()),
+  // );
 
   // Register use cases
   serviceLocator.registerSingleton<GetSortedActiveChatList>(
@@ -70,6 +72,8 @@ void initChatModule() {
         getMessages: serviceLocator<GetMessages>(),
         sendMessage: serviceLocator<SendMessage>(),
         sendFile: serviceLocator<SendFile>(),
-        getContactInfo: serviceLocator<GetContactInfo>(),
+       // getContactInfo: serviceLocator<GetContactInfo>(),
+        signalRService: serviceLocator<SignalRService>(),
+        userId: serviceLocator<String>(),
       ));
 }

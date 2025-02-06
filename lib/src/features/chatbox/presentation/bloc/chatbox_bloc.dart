@@ -4,6 +4,7 @@ import '../../domain/usecase/chatbox_usecase.dart';
 import '../../domain/entities/message_entity.dart';
 import 'chatbox_state.dart';
 import 'chatbox_event.dart';
+import 'package:doormer/src/core/signalr_service.dart';
 
 /// Manages the chat box functionality and state.
 ///
@@ -21,7 +22,13 @@ class ChatboxBloc extends Bloc<ChatboxEvent, ChatboxState> {
   final SendFile sendFile;
 
   /// Use case for retrieving contact information.
-  final GetContactInfo getContactInfo;
+  //final GetContactInfo getContactInfo;
+
+  /// SignalR service for handling SignalR connections.
+  final SignalRService signalRService;
+
+  /// User ID for identifying messages.
+  final String userId;
 
   /// Creates a new instance of [ChatboxBloc].
   ///
@@ -30,13 +37,17 @@ class ChatboxBloc extends Bloc<ChatboxEvent, ChatboxState> {
   /// - [sendMessage] for sending new messages
   /// - [sendFile] for sending files
   /// - [getContactInfo] for retrieving contact information
+  /// - [signalRService] for handling SignalR connections
+  /// - [userId] for identifying messages
   ///
   /// Optionally accepts [initialMessages] to set the initial state.
   ChatboxBloc({
     required this.getMessages,
     required this.sendMessage,
     required this.sendFile,
-    required this.getContactInfo,
+    //required this.getContactInfo,
+    required this.signalRService,
+    required this.userId,
     List<Message>? initialMessages,
   }) : super(initialMessages != null
             ? MessagesLoaded(initialMessages)
@@ -51,13 +62,13 @@ class ChatboxBloc extends Bloc<ChatboxEvent, ChatboxState> {
         await emit.forEach(
           getMessages(event.contactId),
           onData: (List<Message> messages) {
-            AppLogger.debug('Messages loaded successfully');
+            AppLogger.debug('Messages loaded successfully: ${messages.length} messages');
             return MessagesLoaded(messages);
           },
         );
-      } catch (e, stackTrace) {
+      } catch (e) {
+        AppLogger.error('Error loading messages', e);
         emit(ChatboxError(e.toString()));
-        AppLogger.error('Messages loaded with error', e, stackTrace);
       }
     });
 
@@ -70,10 +81,9 @@ class ChatboxBloc extends Bloc<ChatboxEvent, ChatboxState> {
       try {
         await sendMessage(event.message);
         emit(MessageSent());
-        AppLogger.debug('Message sent successfully');
-      } catch (e, stackTrace) {
+      } catch (e) {
+        AppLogger.error('Error sending message', e);
         emit(ChatboxError(e.toString()));
-        AppLogger.error('Message sent with error', e, stackTrace);
       }
     });
 
@@ -96,29 +106,78 @@ class ChatboxBloc extends Bloc<ChatboxEvent, ChatboxState> {
     /// Handles loading contact information.
     ///
     /// Emits [ContactInfoLoaded] when contact information is successfully loaded.
-    on<LoadContactInfo>((event, emit) async {
-      AppLogger.info('Loading contact info for ID: ${event.contactId}');
-      try {
-        final contactInfo = await getContactInfo(event.contactId);
-        AppLogger.debug(
-            'Contact info loaded successfully: ${contactInfo.name}');
-        emit(ContactInfoLoaded(contactInfo));
-      } catch (e, stackTrace) {
-        AppLogger.error('Error loading contact info', e, stackTrace);
-        emit(ChatboxError(e.toString()));
-      }
-    });
+    // on<LoadContactInfo>((event, emit) async {
+    //   AppLogger.info('Loading contact info for ID: ${event.contactId}');
+    //   try {
+    //     final contactInfo = await getContactInfo(event.contactId);
+    //     AppLogger.debug(
+    //         'Contact info loaded successfully: ${contactInfo.name}');
+    //     emit(ContactInfoLoaded(contactInfo));
+    //   } catch (e, stackTrace) {
+    //     AppLogger.error('Error loading contact info', e, stackTrace);
+    //     emit(ChatboxError(e.toString()));
+    //   }
+    // });
 
     /// **[新增]** Handles receiving a new message from SignalR.
     ///
     /// Adds the new message to the existing messages list and updates the state.
-    on<ReceiveMessageEvent>((event, emit) {
-      if (state is MessagesLoaded) {
-        final messages = List<Message>.from((state as MessagesLoaded).messages);
-        messages.add(event.message); // 添加新消息
-        emit(MessagesLoaded(messages)); // 更新状态
-        AppLogger.info('New message received: ${event.message.content}');
+    on<ReceiveMessageEvent>((event, emit) async {
+      try {
+        if (state is MessagesLoaded) {
+          final currentMessages = (state as MessagesLoaded).messages;
+          final updatedMessages = List<Message>.from(currentMessages)..add(event.message);
+          emit(MessagesLoaded(updatedMessages));
+          AppLogger.info('New message received and state updated: ${event.message.content}');
+        } else {
+          // 如果当前没有加载消息，先加载消息
+          await emit.forEach(
+            getMessages(event.message.contactId),
+            onData: (List<Message> messages) {
+              final updatedMessages = List<Message>.from(messages)..add(event.message);
+              return MessagesLoaded(updatedMessages);
+            },
+          );
+        }
+      } catch (e) {
+        AppLogger.error('Error handling received message', e);
+        emit(ChatboxError(e.toString()));
       }
     });
+
+    // 在构造函数中设置 SignalR 消息处理
+   // _setupSignalRHandler();
+  }
+
+  // void _setupSignalRHandler() {
+  //   AppLogger.info("Setting up ReceieveMessage PRC call");
+  //   signalRService.hubConnection.on("ReceiveMessage", (List<Object?>? args) {
+  //     AppLogger.info("Receiving message: ${args?.toString()}");
+  //     if (args != null && args.length >= 2) {
+  //       try {
+  //         final message = Message(
+  //           id: DateTime.now().toString(),
+  //           content: args[1]?.toString() ?? '',
+  //           timestamp: DateTime.now(),
+  //           isFromMe: args[0]?.toString() == userId,
+  //           type: MessageType.text,
+  //           contactId: args[0]?.toString() ?? '',
+  //         );
+  //         add(ReceiveMessageEvent(message));
+  //         AppLogger.debug('Message created and event added successfully');
+  //       } catch (e) {
+  //         AppLogger.error('Error creating message from SignalR args', e);
+  //       }
+  //     } else {
+  //       AppLogger.error('Received invalid SignalR message format');
+  //     }
+  //   });
+  // }
+
+  @override
+  Future<void> close() {
+    // 清理 SignalR 处理器
+    signalRService.hubConnection.off("ReceiveMessage");
+    return super.close();
   }
 }

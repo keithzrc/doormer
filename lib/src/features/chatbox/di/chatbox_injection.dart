@@ -1,3 +1,4 @@
+import 'package:doormer/src/core/signalr_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:doormer/src/features/chat/data/datasources/local_data_source.dart';
 import '../data/repositories/chatbox_repository_impl.dart';
@@ -16,7 +17,8 @@ void initChatboxDependencies() {
   if (!sl.isRegistered<ChatboxRepository>()) {
     sl.registerLazySingleton<ChatboxRepository>(
       () => ChatboxRepositoryImpl(
-        localDataSource: sl<LocalDataSource>(),
+        //localDataSource: sl<LocalDataSource>(),
+        signalRService: sl<SignalRService>(),
       ),
     );
 
@@ -24,6 +26,6 @@ void initChatboxDependencies() {
     sl.registerLazySingleton(() => GetMessages(sl()));
     sl.registerLazySingleton(() => SendMessage(sl()));
     sl.registerLazySingleton(() => SendFile(sl()));
-    sl.registerLazySingleton(() => GetContactInfo(sl()));
+    //sl.registerLazySingleton(() => GetContactInfo(sl()));
   }
 }
