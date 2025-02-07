@@ -9,10 +9,22 @@ const fileDBPath =
 
 /// Local data source responsible for loading dummy data.
 class LocalDataSource {
+  /// 缓存已加载的数据
+  List<ContactModel>? _cachedContacts;
+  String? _currentUserId;
+
+  void setCurrentUserId(String userId) {
+    _currentUserId = userId;
+  }
+
   /// Loads dummy data from the local JSON file and parses it into a list of [ContactModel].
   ///
   /// Throws an exception if the data cannot be loaded or parsed.
   Future<List<ContactModel>> loadDummyData() async {
+    if (_cachedContacts != null) {
+      return _cachedContacts!;
+    }
+
     try {
       final String response = await rootBundle.loadString(fileDBPath);
       final List<dynamic> jsonData = json.decode(response);
@@ -21,10 +33,46 @@ class LocalDataSource {
         AppLogger.error('Dummy data JSON is empty.');
       }
 
-      return jsonData.map((data) => ContactModel.fromJson(data)).toList();
+      _cachedContacts =
+          jsonData.map((data) => ContactModel.fromJson(data)).toList();
+      return _cachedContacts!;
     } catch (e) {
       AppLogger.error('Error loading dummy data', e);
       rethrow;
     }
+  }
+
+  /// 获取所有可用的用户列表（用于身份选择）
+  Future<List<ContactModel>> getAvailableUsers() async {
+    final users = await loadDummyData();
+    if (_currentUserId != null) {
+      // 过滤掉当前用户,只返回其他用户
+      return users.where((user) => user.id.toString() != _currentUserId).toList();
+    }
+    return users;
+  }
+
+  /// 根据ID获取用户
+  Future<ContactModel?> getUserById(String id) async {
+    try {
+      final users = await loadDummyData();
+      return users.firstWhere(
+        (user) => user.id.toString() == id,
+        orElse: () => throw Exception('User not found: $id'),
+      );
+    } catch (e) {
+      AppLogger.error('Error getting user by ID: $id', e);
+      rethrow;
+    }
+  }
+
+  Future<List<ContactModel>> getContactsForCurrentUser() async {
+    if (_currentUserId == null) {
+      throw Exception('No user is currently logged in');
+    }
+
+    final allUsers = await loadDummyData();
+    // 返回除当前用户外的所有用户作为联系人
+    return allUsers.where((user) => user.id.toString() != _currentUserId).toList();
   }
 }

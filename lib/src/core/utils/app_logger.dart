@@ -18,6 +18,6 @@ class AppLogger {
   }
 
   static void error(String message, [dynamic error, StackTrace? stackTrace]) {
-    _logger.e(message);
+    _logger.e(message, error, stackTrace);
   }
 }

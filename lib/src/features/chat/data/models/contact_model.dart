@@ -2,6 +2,7 @@ import 'package:doormer/src/core/utils/uuid_converter.dart';
 import 'package:doormer/src/features/chat/domain/entities/contact_entity.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
+import 'package:doormer/src/features/chatbox/domain/entities/contact_info_entity.dart';
 
 part 'contact_model.g.dart';
 
@@ -94,6 +95,7 @@ class ContactModel {
     );
   }
 
+
   ContactModel copyWith({
     UuidValue? id,
     String? userName,
@@ -110,7 +112,20 @@ class ContactModel {
       lastMessage: lastMessage ?? this.lastMessage,
       lastMessageCreatedTime: lastMessageCreatedTime ?? this.lastMessageCreatedTime,
       isArchived: isArchived ?? this.isArchived,
-      isRead: isRead ?? this.isRead,
-    );
+      isRead: isRead ?? this.isRead);
   }
 }
+  
+//   / Converts this model to a ContactInfo entity for chatbox usage
+//   ContactInfo toContactInfo() {
+//     return ContactInfo(
+//       id: id,
+//       name: userName,
+//       avatarUrl: avatarUrl,
+//       position: 'Not Available',  // 默认值
+//       expectedSalary: 'Not Available',  // 默认值
+//       status: isRead ? 'Active' : 'Away'  // 基于isRead状态
+// >>>>>>> f20e379 (feat: implement chat feature)
+//     );
+//   }
+// }
