@@ -5,76 +5,108 @@ import 'package:doormer/src/core/theme/app_text_styles.dart';
 
 class ChatCard extends StatelessWidget {
   final Contact chat;
-  final VoidCallback? onTap;
+  final Function(Contact) onTap;
+  final Function(Contact) onArchive;
+  final bool isInArchivePage;
 
   const ChatCard({
     super.key,
     required this.chat,
-    this.onTap,
+    required this.onTap,
+    required this.onArchive,
+    required this.isInArchivePage,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-      child: ListTile(
-        leading: Stack(
-          children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundImage: chat.avatarUrl.isNotEmpty
-                  ? NetworkImage(chat.avatarUrl)
-                  : null,
-              child: chat.avatarUrl.isEmpty
-                  ? Text(
-                      chat.userName.isNotEmpty
-                          ? chat.userName[0].toUpperCase()
-                          : '?',
-                      style: AppTextStyles.titleLarge,
-                    )
-                  : null,
+    final hasValidUrl = chat.avatarUrl.trim().isNotEmpty;
+    
+    return GestureDetector(
+      onSecondaryTapDown: (details) => _showContextMenu(context, details.globalPosition),
+      child: Card(
+        margin: const EdgeInsets.symmetric(vertical: 8.0),
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        child: ListTile(
+          leading: _buildAvatar(hasValidUrl, context),
+          title: Text(
+            chat.userName,
+            style: AppTextStyles.bodyLarge,
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text(
+            chat.lastMessage,
+            style: AppTextStyles.bodyMedium,
+            overflow: TextOverflow.ellipsis,
+          ),
+          trailing: SizedBox(
+            width: 48,
+            child: Text(
+              formatTime(chat.lastMessageCreatedTime),
+              style: AppTextStyles.bodySmall,
+              textAlign: TextAlign.right,
             ),
-            // Add red dot to users with unread messages
-            // TODO: take it out, reusable
-            if (chat.isRead == false)
-              Positioned(
-                right: 0,
-                top: 0,
-                child: Container(
-                  width: 12,
-                  height: 12,
-                  decoration: const BoxDecoration(
-                    color: Colors.red, //TODO: AppColors
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-          ],
+          ),
+          onTap: () => onTap(chat),
         ),
-        title: Text(
-          chat.userName,
-          style: AppTextStyles.bodyLarge,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Text(
-          chat.lastMessage,
-          style: AppTextStyles.bodyMedium,
-          overflow: TextOverflow.ellipsis,
-        ),
-        trailing: SizedBox(
-          width: 100,
+      ),
+    );
+  }
+
+  Widget _buildAvatar(bool hasValidUrl, BuildContext context) {
+    return Stack(
+      children: [
+        CircleAvatar(
+          radius: 30,
+          backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(40),
+          //todo handle url does not point to a valid image
+          foregroundImage: hasValidUrl
+              ? NetworkImage(chat.avatarUrl)
+              : null,
           child: Text(
-            // TODO: format time to be more readable
-            chat.lastMessageCreatedTime.toIso8601String(),
-            style: AppTextStyles.bodySmall,
+            chat.userName.isNotEmpty
+                ? chat.userName[0].toUpperCase()
+                : '?',
+            style: AppTextStyles.titleLarge.copyWith(
+              color: Colors.black,
+            ),
           ),
         ),
-        onTap: onTap,
+        if (!chat.isRead)
+          Positioned(
+            right: 0,
+            top: 0,
+            child: Container(
+              width: 12,
+              height: 12,
+              decoration: const BoxDecoration(
+                color: Colors.red, 
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  void _showContextMenu(BuildContext context, Offset position) {
+    final RenderBox overlay = 
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    showMenu(
+      context: context,
+      position: RelativeRect.fromRect(
+        position & const Size(40, 40),
+        Offset.zero & overlay.size,
       ),
+      items: [
+        PopupMenuItem(
+          child: Text(isInArchivePage ? 'Unarchive' : 'Archive'),
+          onTap: () => onArchive(chat),
+        ),
+      ],
     );
   }
 }

@@ -93,4 +93,24 @@ class ContactModel {
       isRead: contact.isRead,
     );
   }
+
+  ContactModel copyWith({
+    UuidValue? id,
+    String? userName,
+    String? avatarUrl,
+    String? lastMessage,
+    DateTime? lastMessageCreatedTime,
+    bool? isArchived,
+    bool? isRead,
+  }) {
+    return ContactModel(
+      id: id ?? this.id,
+      userName: userName ?? this.userName,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      lastMessage: lastMessage ?? this.lastMessage,
+      lastMessageCreatedTime: lastMessageCreatedTime ?? this.lastMessageCreatedTime,
+      isArchived: isArchived ?? this.isArchived,
+      isRead: isRead ?? this.isRead,
+    );
+  }
 }
