@@ -116,7 +116,7 @@ class ContactModel {
   }
 }
   
-  /// Converts this model to a ContactInfo entity for chatbox usage
+//   / Converts this model to a ContactInfo entity for chatbox usage
 //   ContactInfo toContactInfo() {
 //     return ContactInfo(
 //       id: id,

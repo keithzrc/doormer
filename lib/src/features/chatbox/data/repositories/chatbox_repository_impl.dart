@@ -30,15 +30,18 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
 
   @override
   Stream<List<Message>> getMessages(String contactId) async* {
+    AppLogger.info("Getting messages for contact: $contactId");
     final controller = _getControllerFor(contactId);
-
+    
     try {
-      // 返回现有消息列表
+      // 获取现有消息列表
       final messages = _messagesByContact[contactId] ?? [];
+      AppLogger.info("Current messages in storage: ${messages.length}");
       yield messages;
 
       // 订阅后续更新
       await for (final updates in controller.stream) {
+        AppLogger.info("Received message updates: ${updates.length} messages");
         yield updates;
       }
     } catch (e) {
@@ -50,28 +53,25 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
   @override
   Future<void> sendMessage(Message message) async {
     try {
-      // 使用 SignalR 发送消息
+      AppLogger.info("Sending message - Content: ${message.content}, ContactId: ${message.contactId}, IsFromMe: ${message.isFromMe}");
       await _signalRService.sendMessage(message.contactId, message.content);
 
-      // 确保消息列表存在并获取当前消息
+      // 获取当前消息列表
       final currentMessages = _messagesByContact[message.contactId] ?? [];
-      print('currentMessages: ${currentMessages}');
-      print('message: ${message.contactId}');
-      // 创建新的消息列表，包含所有现有消息和新消息
+      AppLogger.info("Current messages before update: ${currentMessages.length}");
+      
+      // 创建新的消息列表并添加消息
       final updatedMessages = List<Message>.from(currentMessages)..add(message);
-
+      
       // 更新存储
       _messagesByContact[message.contactId] = updatedMessages;
-
+      
       // 通知监听者
       _getControllerFor(message.contactId).add(updatedMessages);
 
-      AppLogger.info(
-          'Message sent successfully to contact: ${message.contactId}');
-      AppLogger.debug(
-          'Current messages in storage: ${_messagesByContact[message.contactId]}');
+      AppLogger.info("Message stored and listeners notified - Total messages: ${updatedMessages.length}");
     } catch (e) {
-      AppLogger.error('Failed to send message', e);
+      AppLogger.error("Failed to send message", e);
       throw Exception('Failed to send message: ${e.toString()}');
     }
   }
@@ -143,29 +143,36 @@ class ChatboxRepositoryImpl implements ChatboxRepository {
     throw UnimplementedError();
   }
 
-  /// 处理接收到的消息
+   /// 处理接收到的消息
   void handleReceivedMessage(Message message) {
     try {
-      // 确保消息列表存在
+      AppLogger.info("Handling received message - Message details:");
+      AppLogger.info("- Content: ${message.content}");
+      AppLogger.info("- IsFromMe: ${message.isFromMe}");
+      AppLogger.info("- ContactId: ${message.contactId}");
+
+      // 获取当前消息列表
       final currentMessages = _messagesByContact[message.contactId] ?? [];
-      print('recieve currentMessages: ${currentMessages}');
-      print('recieve message: ${message.contactId}');
+      AppLogger.info("Current messages before update: ${currentMessages.length}");
+      
       // 检查消息是否已存在
       if (!currentMessages.any((m) => m.id == message.id)) {
+        // 创建新的消息列表并添加消息
         final updatedMessages = List<Message>.from(currentMessages)..add(message);
-        
-        // 按时间戳排序
         updatedMessages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
         
+        // 更新存储
         _messagesByContact[message.contactId] = updatedMessages;
         
         // 通知监听者
         _getControllerFor(message.contactId).add(updatedMessages);
         
-        AppLogger.info('Received message handled: ${message.content}');
+        AppLogger.info("Message stored successfully - Total messages: ${updatedMessages.length}");
+      } else {
+        AppLogger.info("Message already exists, skipping");
       }
     } catch (e) {
-      AppLogger.error('Error handling received message', e);
+      AppLogger.error("Error handling received message", e);
       throw Exception('Failed to handle received message: ${e.toString()}');
     }
   }

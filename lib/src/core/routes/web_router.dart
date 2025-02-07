@@ -26,13 +26,15 @@ class WebRouter {
           if (userId == null || userId.isEmpty) {
             return const IdentitySelectionPage();
           }
-          return ChatPage(userId: userId);
+          return ChatPage(
+            userId: userId,
+            selectedChatId: null,
+          );
         },
       ),
 
       // 具体聊天对话页面
       GoRoute(
-
         path: '/chat/:id',
         name: 'chat',
         builder: (context, state) {
@@ -46,7 +48,6 @@ class WebRouter {
             selectedChatId: chatId,
           );
         },
-
       ),
     ],
     debugLogDiagnostics: true, // 开启调试日志

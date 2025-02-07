@@ -11,6 +11,11 @@ const fileDBPath =
 class LocalDataSource {
   /// 缓存已加载的数据
   List<ContactModel>? _cachedContacts;
+  String? _currentUserId;
+
+  void setCurrentUserId(String userId) {
+    _currentUserId = userId;
+  }
 
   /// Loads dummy data from the local JSON file and parses it into a list of [ContactModel].
   ///
@@ -37,6 +42,16 @@ class LocalDataSource {
     }
   }
 
+  /// 获取所有可用的用户列表（用于身份选择）
+  Future<List<ContactModel>> getAvailableUsers() async {
+    final users = await loadDummyData();
+    if (_currentUserId != null) {
+      // 过滤掉当前用户,只返回其他用户
+      return users.where((user) => user.id.toString() != _currentUserId).toList();
+    }
+    return users;
+  }
+
   /// 根据ID获取用户
   Future<ContactModel?> getUserById(String id) async {
     try {
@@ -51,9 +66,13 @@ class LocalDataSource {
     }
   }
 
-  /// 获取所有可用的用户列表（用于身份选择）
-  Future<List<ContactModel>> getAvailableUsers() async {
-    final users = await loadDummyData();
-    return users;
+  Future<List<ContactModel>> getContactsForCurrentUser() async {
+    if (_currentUserId == null) {
+      throw Exception('No user is currently logged in');
+    }
+
+    final allUsers = await loadDummyData();
+    // 返回除当前用户外的所有用户作为联系人
+    return allUsers.where((user) => user.id.toString() != _currentUserId).toList();
   }
 }

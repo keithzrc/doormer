@@ -100,8 +100,7 @@ class _ChatboxViewState extends State<_ChatboxView> {
     // 重新添加 SignalR 处理
     _setupSignalRHandler();
   }
-
-   void _setupSignalRHandler() {
+ void _setupSignalRHandler() {
     _chatboxBloc.signalRService.hubConnection.on("ReceiveMessage", (args) {
       if (args != null && args.isNotEmpty) {
         final senderId = args[0] as String;

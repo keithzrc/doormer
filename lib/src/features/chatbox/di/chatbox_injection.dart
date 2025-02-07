@@ -10,10 +10,10 @@ import 'package:doormer/src/features/chatbox/presentation/bloc/chatbox_bloc.dart
 final sl = GetIt.instance;
 
 void initChatboxDependencies() {
-  // LocalDataSource (如果还没注册)
-  if (!sl.isRegistered<LocalDataSource>()) {
-    sl.registerSingleton<LocalDataSource>(LocalDataSource());
-  }
+  // // LocalDataSource (如果还没注册)
+  // if (!sl.isRegistered<LocalDataSource>()) {
+  //   sl.registerSingleton<LocalDataSource>(LocalDataSource());
+  // }
 
   // Repository
   if (!sl.isRegistered<ChatboxRepository>()) {

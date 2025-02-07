@@ -8,20 +8,19 @@ import 'chat_state.dart';
 
 // TODO: get user id from token as we do not have token and auth implemented yet
 // we will use a fixed ID.
-UuidValue userId = UuidValue('3fa85f64-5717-4562-b3fc-2c963f66afa7');
 
 // TODO: split archive and centralized.
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetSortedActiveChatList getChatListUseCase;
   final GetSortedArchivedChatList getArchivedChatListUseCase;
   final ToggleChatArchivedStatus toggleChatUseCase;
-  //final DeleteChat deleteChatUseCase;
+  final String userId;
 
   ChatBloc({
     required this.getChatListUseCase,
     required this.getArchivedChatListUseCase,
     required this.toggleChatUseCase,
-    //required this.deleteChatUseCase,
+    required this.userId,
     List<Contact>? initialChats,
   }) : super(initialChats != null
             ? ChatLoadedState(
@@ -32,8 +31,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<LoadChatsEvent>((_, emit) async {
       emit(ChatLoadingState());
       try {
-        final chats = await getChatListUseCase.call(userId);
-        final archivedChats = await getArchivedChatListUseCase.call(userId);
+        final chats = await getChatListUseCase.call(UuidValue(userId));
+        final archivedChats = await getArchivedChatListUseCase.call(UuidValue(userId));
         AppLogger.debug('Loaded chats: ${chats.length}, archived: ${archivedChats.length}');
         emit(ChatLoadedState(
           unarchivedChats: chats,
@@ -48,8 +47,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<LoadArchivedChatsEvent>((event, emit) async {
       emit(ChatLoadingState());
       try {
-        final chats = await getChatListUseCase.call(userId);
-        final archivedChats = await getArchivedChatListUseCase.call(userId);
+        final chats = await getChatListUseCase.call(UuidValue(userId));
+        final archivedChats = await getArchivedChatListUseCase.call(UuidValue(userId));
         emit(ChatLoadedState(
           unarchivedChats: chats,
           archivedChats: archivedChats,
@@ -62,13 +61,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     // TODO: use routes
     on<ToggleArchiveStatusEvent>((event, emit) async {
       try {
-        await toggleChatUseCase.call(userId, event.contact);
+        await toggleChatUseCase.call(UuidValue(userId), event.contact);
         add(LoadChatsEvent());
       } catch (e) {
         emit(ChatErrorState(e.toString()));
       }
     });
-
-    
   }
 }
