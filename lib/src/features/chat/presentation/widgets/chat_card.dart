@@ -61,6 +61,7 @@ class ChatCard extends StatelessWidget {
         CircleAvatar(
           radius: 30,
           backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(40),
+          //todo handle url does not point to a valid image
           foregroundImage: hasValidUrl
               ? NetworkImage(chat.avatarUrl)
               : null,
