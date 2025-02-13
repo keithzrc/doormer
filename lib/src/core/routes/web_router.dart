@@ -4,6 +4,8 @@ import 'package:doormer/src/features/auth/presentation/pages/mobile/signup_page.
 import 'package:doormer/src/features/auth/presentation/pages/web/activation_page_web.dart';
 import 'package:doormer/src/features/auth/presentation/pages/web/auth_page_web.dart';
 import 'package:doormer/src/features/auth/presentation/pages/web/pending_verification_page_web.dart';
+import 'package:doormer/src/features/chat/presentation/pages/chat_page.dart';
+import 'package:doormer/src/features/home/candidate/presentation/pages/home_page.dart';
 import 'package:doormer/src/features/registration/presentation/pages/signup_candidate_info_page_web.dart';
 import 'package:doormer/src/features/registration/presentation/pages/signup_company_info_page_web.dart';
 import 'package:doormer/src/shared/sessions/bloc/global_session_bloc.dart';
@@ -12,8 +14,6 @@ import 'package:doormer/src/shared/user/user_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../features/home/presentation/pages/home_page.dart';
-import '../../features/chat/presentation/pages/chat_page.dart';
 
 /*
 
@@ -27,7 +27,7 @@ WebRouter defines the routing structure and logic specifically for the web platf
 
 class WebRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/auth/candidate-registration',
+    initialLocation: '/auth',
     routes: [
       // Authentication Routes (Only for users NOT logged in)
       GoRoute(
