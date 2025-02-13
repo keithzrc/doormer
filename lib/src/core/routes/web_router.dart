@@ -1,9 +1,11 @@
+import 'package:doormer/src/features/auth/di/auth_module.dart';
 import 'package:doormer/src/features/auth/presentation/pages/mobile/confirm_email_page.dart';
 import 'package:doormer/src/features/auth/presentation/pages/mobile/login_page.dart';
 import 'package:doormer/src/features/auth/presentation/pages/mobile/signup_page.dart';
 import 'package:doormer/src/features/auth/presentation/pages/web/activation_page_web.dart';
 import 'package:doormer/src/features/auth/presentation/pages/web/auth_page_web.dart';
 import 'package:doormer/src/features/auth/presentation/pages/web/pending_verification_page_web.dart';
+import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:doormer/src/features/chat/presentation/pages/chat_page.dart';
 import 'package:doormer/src/features/home/candidate/presentation/pages/home_page.dart';
 import 'package:doormer/src/features/registration/presentation/pages/signup_candidate_info_page_web.dart';
@@ -61,11 +63,22 @@ class WebRouter {
           path: '/account-activation',
           builder: (context, state) => const ActivationPageWeb()),
 
-      // Main Application Routes (Require Authentication)
+      // Main App Routes for Web
+
+      // TODO: Change to th according web UI
       GoRoute(
-          path: '/main/home', builder: (context, state) => const HomePage()),
+        path: '/main/home',
+        builder: (context, state) => const HomePage(),
+      ),
       GoRoute(
-          path: '/main/inbox', builder: (context, state) => const ChatPage()),
+        path: '/main/inbox',
+        builder: (context, state) => MaterialApp(
+          home: BlocProvider(
+            create: (_) => serviceLocator<ChatBloc>(),
+            child: const ChatPage(),
+          ),
+        ),
+      ),
     ],
 
     // redirect: (context, state) {
