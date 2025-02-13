@@ -71,10 +71,15 @@ class GlobalSessionBloc extends Bloc<GlobalSessionEvent, GlobalSessionState> {
     }
   }
 
-  User? getUser() {
-    if (state is SessionActiveState) {
-      return (state as SessionActiveState).user;
+  /// Ensures user is logged in before accessing data
+  User getUser() {
+    final currentState = state;
+
+    if (currentState is SessionActiveState) {
+      return currentState.user;
+    } else {
+      add(ExpireSession()); // Move the state to SessionExpiredState
+      throw Exception("User session is expired. Redirecting to login.");
     }
-    return null;
   }
 }
