@@ -56,7 +56,8 @@ class LoginPage extends StatelessWidget {
                             final email = _emailController.text.trim();
                             final password = _passwordController.text.trim();
                             context.read<AuthBloc>().add(
-                                  LoginRequested(email, password),
+                                  LoginRequested(
+                                      email: email, password: password),
                                 );
                           },
                           child: const Text('Login'),

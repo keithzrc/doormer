@@ -1,6 +1,6 @@
 import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:doormer/src/shared/user/user_type.dart';
-import 'package:doormer/src/shared/user/Models/account_status.dart'; // Import AccountStatus
+import 'package:doormer/src/shared/user/account_status.dart';
 import 'package:uuid/uuid.dart';
 
 class UserModel {

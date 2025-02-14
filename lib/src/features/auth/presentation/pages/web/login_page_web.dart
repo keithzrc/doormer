@@ -5,7 +5,7 @@ import 'package:doormer/src/features/auth/presentation/widgets/web/auth_textfiel
 import 'package:doormer/src/features/auth/presentation/widgets/web/switch_auth_mode_line.dart';
 import 'package:doormer/src/features/auth/utils/auth_validators.dart';
 import 'package:doormer/src/shared/sessions/bloc/global_session_bloc.dart';
-import 'package:doormer/src/shared/user/Models/account_status.dart';
+import 'package:doormer/src/shared/user/account_status.dart';
 import 'package:doormer/src/shared/user/user_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +28,8 @@ class LoginPageWeb extends StatelessWidget {
       final password = _passwordController.text;
 
       // Dispatch the LoginRequested event
-      BlocProvider.of<AuthBloc>(context).add(LoginRequested(email, password));
+      BlocProvider.of<AuthBloc>(context)
+          .add(LoginRequested(email: email, password: password));
     }
   }
 

@@ -2,9 +2,9 @@ import 'package:doormer/src/core/services/sessions/session_service.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:doormer/src/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:doormer/src/features/auth/data/datasources/local_data_source.dart';
-import 'package:doormer/src/shared/user/Entity/user_entity.dart';
+import 'package:doormer/src/shared/user/entities/user_entity.dart';
 import 'package:doormer/src/features/auth/domain/repository/auth_repository.dart';
-import 'package:doormer/src/shared/user/Models/user_model_factory.dart';
+import 'package:doormer/src/shared/user/model/user_model_factory.dart';
 import 'package:doormer/src/shared/user/user_type.dart';
 
 class AuthRepositoryImpl implements AuthRepository {

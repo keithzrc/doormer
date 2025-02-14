@@ -1,12 +1,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:doormer/src/core/services/sessions/session_service.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
-import 'package:doormer/src/shared/user/Entity/user_entity.dart';
+import 'package:doormer/src/shared/user/entities/user_entity.dart';
 import 'package:equatable/equatable.dart';
 
 part 'global_session_event.dart';
 part 'global_session_state.dart';
 
+// Bloc responsible for managing user session status
 class GlobalSessionBloc extends Bloc<GlobalSessionEvent, GlobalSessionState> {
   final SessionService _sessionService;
 
@@ -20,6 +21,7 @@ class GlobalSessionBloc extends Bloc<GlobalSessionEvent, GlobalSessionState> {
     on<UserInfoUpdated>(_onUserInfoUpdated);
   }
 
+  /// Handles the CheckSession event.
   Future<void> _onCheckSession(
     CheckSession event,
     Emitter<GlobalSessionState> emit,
@@ -27,6 +29,7 @@ class GlobalSessionBloc extends Bloc<GlobalSessionEvent, GlobalSessionState> {
     // TODO: Implementation
   }
 
+  /// Handles session expiration by emitting SessionExpiredState.
   Future<void> _onExpireSession(
     ExpireSession event,
     Emitter<GlobalSessionState> emit,
@@ -34,6 +37,7 @@ class GlobalSessionBloc extends Bloc<GlobalSessionEvent, GlobalSessionState> {
     emit(SessionExpiredState());
   }
 
+  /// Handles session refresh by calling the SessionService.
   Future<void> _onRefreshSession(
     RefreshSession event,
     Emitter<GlobalSessionState> emit,
@@ -47,6 +51,7 @@ class GlobalSessionBloc extends Bloc<GlobalSessionEvent, GlobalSessionState> {
     }
   }
 
+  /// Handles session start by emitting SessionActiveState and logging.
   Future<void> _onSessionStarted(
     SessionStarted event, // Fix the event type here
     Emitter<GlobalSessionState> emit,
@@ -55,6 +60,7 @@ class GlobalSessionBloc extends Bloc<GlobalSessionEvent, GlobalSessionState> {
     AppLogger.info('Session Started');
   }
 
+  /// Updates user info during an active session.
   Future<void> _onUserInfoUpdated(
     UserInfoUpdated event,
     Emitter<GlobalSessionState> emit,
@@ -71,7 +77,7 @@ class GlobalSessionBloc extends Bloc<GlobalSessionEvent, GlobalSessionState> {
     }
   }
 
-  /// Ensures user is logged in before accessing data
+  /// Returns the current user if session is active, otherwise expires session.
   User getUser() {
     final currentState = state;
 

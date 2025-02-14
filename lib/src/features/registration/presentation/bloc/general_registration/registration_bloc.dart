@@ -1,8 +1,8 @@
 import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:doormer/src/features/registration/domain/usecase/registration_usecase.dart';
 import 'package:doormer/src/shared/sessions/bloc/global_session_bloc.dart';
-import 'package:doormer/src/shared/user/Entity/user_candidate_entity.dart';
-import 'package:doormer/src/shared/user/Entity/user_employer_entity.dart';
+import 'package:doormer/src/shared/user/entities/user_candidate_entity.dart';
+import 'package:doormer/src/shared/user/entities/user_employer_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 

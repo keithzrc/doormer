@@ -1,4 +1,4 @@
-import 'package:doormer/src/shared/user/Models/user_model.dart';
+import 'package:doormer/src/shared/user/model/user_model.dart';
 
 class LoginResponseModel {
   final String accessToken;

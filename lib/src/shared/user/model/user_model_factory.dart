@@ -1,8 +1,9 @@
-import 'package:doormer/src/shared/user/Entity/user_candidate_entity.dart';
-import 'package:doormer/src/shared/user/Entity/user_employer_entity.dart';
-import 'package:doormer/src/shared/user/Entity/user_entity.dart';
-import 'package:doormer/src/shared/user/Models/account_status.dart';
-import 'package:doormer/src/shared/user/Models/user_model.dart';
+import 'package:doormer/src/shared/user/entities/user_entity.dart';
+import 'package:doormer/src/shared/user/entities/user_candidate_entity.dart';
+import 'package:doormer/src/shared/user/entities/user_employer_entity.dart';
+import 'package:doormer/src/shared/user/model/user_model.dart';
+import 'package:doormer/src/shared/user/account_status.dart';
+
 import 'package:doormer/src/shared/user/user_type.dart';
 
 extension UserModelToEntity on UserModel {

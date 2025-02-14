@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:doormer/src/shared/user/user_type.dart';
 import 'package:equatable/equatable.dart';
 
@@ -14,7 +12,11 @@ class SignupRequested extends AuthEvent {
   final String password;
   final UserType userType;
 
-  SignupRequested(this.email, this.password, this.userType);
+  SignupRequested({
+    required this.email,
+    required this.password,
+    required this.userType,
+  });
 
   @override
   List<Object?> get props => [email, password];
@@ -25,7 +27,7 @@ class LoginRequested extends AuthEvent {
   final String email;
   final String password;
 
-  LoginRequested(this.email, this.password);
+  LoginRequested({required this.email, required this.password});
 
   @override
   List<Object?> get props => [email, password];
@@ -35,7 +37,7 @@ class VerifyEmailRequested extends AuthEvent {
   final String email;
   final String code;
 
-  VerifyEmailRequested(this.email, this.code);
+  VerifyEmailRequested({required this.email, required this.code});
 
   @override
   List<Object?> get props => [email, code];

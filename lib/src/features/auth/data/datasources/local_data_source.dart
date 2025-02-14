@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:doormer/src/features/auth/data/models/login_response_model.dart';
-import 'package:doormer/src/shared/user/Models/user_model.dart';
+import 'package:doormer/src/shared/user/model/user_model.dart';
 import 'package:flutter/services.dart';
 
 class AuthLocalDataSource {

@@ -153,7 +153,9 @@ class _ConfirmEmailPageState extends State<_ConfirmEmailPage> {
   void _submitCode() {
     final code = _controllers.map((controller) => controller.text).join();
     AppLogger.info('Verification code entered: $code');
-    context.read<AuthBloc>().add(VerifyEmailRequested(widget.email, code));
+    context
+        .read<AuthBloc>()
+        .add(VerifyEmailRequested(email: widget.email, code: code));
   }
 
   void _resendCode() {

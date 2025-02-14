@@ -1,6 +1,6 @@
 import 'package:doormer/src/features/auth/presentation/widgets/web/google_signin_button.dart';
 import 'package:doormer/src/shared/sessions/bloc/global_session_bloc.dart';
-import 'package:doormer/src/shared/user/Models/account_status.dart';
+import 'package:doormer/src/shared/user/account_status.dart';
 import 'package:doormer/src/shared/user/user_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,7 +32,8 @@ class SignUpPageWeb extends StatelessWidget {
       final password = _passwordController.text;
 
       // Dispatch the SignupRequested event
-      context.read<AuthBloc>().add(SignupRequested(email, password, userType));
+      context.read<AuthBloc>().add(SignupRequested(
+          email: email, password: password, userType: userType));
     }
   }
 
