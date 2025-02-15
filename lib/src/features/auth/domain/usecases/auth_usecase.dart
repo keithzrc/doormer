@@ -24,8 +24,8 @@ class Signup {
     required String email,
     required String password,
     required UserType userType,
-  }) {
-    return authRepository.signup(
+  }) async {
+    return await authRepository.signup(
       email: email,
       password: password,
       userType: userType,
@@ -41,8 +41,8 @@ class Login {
   Future<User> call({
     required String email,
     required String password,
-  }) {
-    return authRepository.login(email: email, password: password);
+  }) async {
+    return await authRepository.login(email: email, password: password);
   }
 }
 
@@ -51,8 +51,8 @@ class SignInWithGoogle {
 
   SignInWithGoogle(this.authRepository);
 
-  Future<User> call(String idToken) {
-    return authRepository.signInWithGoogle(idToken);
+  Future<User> call(String idToken) async {
+    return await authRepository.signInWithGoogle(idToken);
   }
 }
 
@@ -64,7 +64,7 @@ class VerifyEmail {
   Future<void> call({
     required String email,
     required String code,
-  }) {
-    return authRepository.verifyEmail(email: email, code: code);
+  }) async {
+    return await authRepository.verifyEmail(email: email, code: code);
   }
 }
