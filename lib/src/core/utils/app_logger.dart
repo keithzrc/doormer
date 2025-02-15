@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart';
 
 class AppLogger {
-  static final Logger _logger = Logger(
+  static Logger _logger = Logger(
     printer: PrettyPrinter(),
   );
 
@@ -19,5 +19,12 @@ class AppLogger {
 
   static void error(String message, [dynamic error, StackTrace? stackTrace]) {
     _logger.e(message);
+  }
+
+  // Add a disable method that sets the logger to a no-op logger.
+  static void disable() {
+    _logger = Logger(
+      level: Level.nothing,
+    );
   }
 }

@@ -14,7 +14,6 @@ void main() {
   late MockTokenStorage mockTokenStorage;
   late MockDio mockDio;
 
-  // Set up the mocks and the service before each test
   setUp(() {
     mockTokenStorage = MockTokenStorage();
     mockDio = MockDio();
@@ -24,24 +23,127 @@ void main() {
     );
   });
 
+  group('SessionService - getAccessToken', () {
+    test('should return token on success', () async {
+      // Arrange
+      const testAccessToken = 'test_access_token';
+      when(mockTokenStorage.getAccessToken())
+          .thenAnswer((_) async => testAccessToken);
+
+      // Act
+      final token = await sessionService.getAccessToken();
+
+      // Assert
+      expect(token, equals(testAccessToken));
+      verify(mockTokenStorage.getAccessToken()).called(1);
+    });
+
+    test('should catch error and return null on exception', () async {
+      // Arrange
+      when(mockTokenStorage.getAccessToken())
+          .thenThrow(Exception('Failed to retrieve token'));
+
+      // Act
+      final token = await sessionService.getAccessToken();
+
+      // Assert
+      expect(token, isNull);
+      verify(mockTokenStorage.getAccessToken()).called(1);
+    });
+  });
+
+  group('SessionService - saveTokens', () {
+    test(
+        'should call saveAccessToken and saveRefreshToken with correct parameters',
+        () async {
+      // Arrange
+      const testAccessToken = 'access_token';
+      const testRefreshToken = 'refresh_token';
+
+      when(mockTokenStorage.saveAccessToken(testAccessToken))
+          .thenAnswer((_) async {});
+      when(mockTokenStorage.saveRefreshToken(testRefreshToken))
+          .thenAnswer((_) async {});
+
+      // Act
+      await sessionService.saveTokens(
+        accessToken: testAccessToken,
+        refreshToken: testRefreshToken,
+      );
+
+      // Assert
+      verify(mockTokenStorage.saveAccessToken(testAccessToken)).called(1);
+      verify(mockTokenStorage.saveRefreshToken(testRefreshToken)).called(1);
+    });
+  });
+
+  group('SessionService - setDio', () {
+    test('should update the internal Dio instance used for refreshToken',
+        () async {
+      // Arrange: Create a new mock Dio instance
+      final newMockDio = MockDio();
+      sessionService.setDio(newMockDio);
+
+      // Set up token storage and newMockDio responses
+      const testRefreshToken = 'test_refresh_token';
+      const testNewAccessToken = 'new_access_token';
+      const testNewRefreshToken = 'new_refresh_token';
+
+      when(mockTokenStorage.getRefreshToken())
+          .thenAnswer((_) async => testRefreshToken);
+
+      when(newMockDio.post(
+        '/auth/refresh-token',
+        data: {'refresh_token': testRefreshToken},
+      )).thenAnswer((_) async => Response(
+            data: {
+              'access_token': testNewAccessToken,
+              'refresh_token': testNewRefreshToken,
+            },
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/auth/refresh-token'),
+          ));
+
+      when(mockTokenStorage.saveAccessToken(testNewAccessToken))
+          .thenAnswer((_) async {});
+      when(mockTokenStorage.saveRefreshToken(testNewRefreshToken))
+          .thenAnswer((_) async {});
+
+      // Act: Call refreshToken which should use newMockDio
+      final result = await sessionService.refreshToken();
+
+      // Assert
+      expect(result, equals(testNewAccessToken));
+      verify(newMockDio.post(
+        '/auth/refresh-token',
+        data: {'refresh_token': testRefreshToken},
+      )).called(1);
+      // Ensure the old mockDio is not used
+      verifyNever(mockDio.post(
+        any,
+        data: anyNamed('data'),
+      ));
+    });
+  });
+
   group('SessionService - logout', () {
     test('should clear tokens when logging out', () async {
-      // Arrange: Stub clearTokens to simulate successful execution
+      // Arrange
       when(mockTokenStorage.clearTokens()).thenAnswer((_) async {});
 
-      // Act: Call the logout method
+      // Act
       await sessionService.logout();
 
-      // Assert: Verify that clearTokens was called exactly once
+      // Assert
       verify(mockTokenStorage.clearTokens()).called(1);
     });
 
     test('should handle errors during logout', () async {
-      // Arrange: Stub clearTokens to throw an exception
+      // Arrange
       when(mockTokenStorage.clearTokens())
           .thenThrow(Exception('Failed to clear tokens'));
 
-      // Act & Assert: Ensure logout throws an exception
+      // Act & Assert
       expect(() => sessionService.logout(), throwsException);
     });
   });
@@ -52,7 +154,7 @@ void main() {
     const testNewRefreshToken = 'new_refresh_token';
 
     test('should successfully refresh tokens', () async {
-      // Arrange: Stub methods to simulate successful token refresh
+      // Arrange
       when(mockTokenStorage.getRefreshToken())
           .thenAnswer((_) async => testRefreshToken);
 
@@ -73,10 +175,10 @@ void main() {
       when(mockTokenStorage.saveRefreshToken(testNewRefreshToken))
           .thenAnswer((_) async {});
 
-      // Act: Call the refreshToken method
+      // Act
       final result = await sessionService.refreshToken();
 
-      // Assert: Verify behavior and result
+      // Assert
       expect(result, equals(testNewAccessToken));
       verify(mockTokenStorage.getRefreshToken()).called(1);
       verify(mockTokenStorage.saveAccessToken(testNewAccessToken)).called(1);
@@ -84,10 +186,10 @@ void main() {
     });
 
     test('should throw exception when no refresh token is available', () async {
-      // Arrange: Stub getRefreshToken to return null
+      // Arrange
       when(mockTokenStorage.getRefreshToken()).thenAnswer((_) async => null);
 
-      // Act & Assert: Ensure refreshToken throws an exception
+      // Act & Assert
       expect(
         () => sessionService.refreshToken(),
         throwsA(isA<Exception>().having(
@@ -99,7 +201,7 @@ void main() {
     });
 
     test('should handle DioException during token refresh', () async {
-      // Arrange: Simulate a DioException during the token refresh process
+      // Arrange
       when(mockTokenStorage.getRefreshToken())
           .thenAnswer((_) async => testRefreshToken);
 
@@ -115,7 +217,7 @@ void main() {
         requestOptions: RequestOptions(path: '/auth/refresh-token'),
       ));
 
-      // Act & Assert: Ensure refreshToken throws an appropriate exception
+      // Act & Assert
       expect(
         () => sessionService.refreshToken(),
         throwsA(isA<Exception>().having(
@@ -127,7 +229,7 @@ void main() {
     });
 
     test('should handle unexpected errors during token refresh', () async {
-      // Arrange: Simulate a generic exception during the token refresh process
+      // Arrange
       when(mockTokenStorage.getRefreshToken())
           .thenAnswer((_) async => testRefreshToken);
 
@@ -136,7 +238,7 @@ void main() {
         data: {'refresh_token': testRefreshToken},
       )).thenThrow(Exception('Unexpected error'));
 
-      // Act & Assert: Ensure refreshToken throws an appropriate exception
+      // Act & Assert
       expect(
         () => sessionService.refreshToken(),
         throwsA(isA<Exception>().having(
@@ -148,7 +250,7 @@ void main() {
     });
 
     test('should handle token storage errors during save', () async {
-      // Arrange: Simulate a failure when saving the access token
+      // Arrange
       when(mockTokenStorage.getRefreshToken())
           .thenAnswer((_) async => testRefreshToken);
 
@@ -167,7 +269,7 @@ void main() {
       when(mockTokenStorage.saveAccessToken(testNewAccessToken))
           .thenThrow(Exception('Failed to save access token'));
 
-      // Act & Assert: Ensure refreshToken throws an exception
+      // Act & Assert
       expect(
         () => sessionService.refreshToken(),
         throwsA(isA<Exception>()),
