@@ -1,4 +1,4 @@
-import 'package:doormer/src/shared/user/Entity/user_entity.dart';
+import 'package:doormer/src/shared/user/entities/user_entity.dart';
 import 'package:doormer/src/shared/user/user_type.dart';
 
 abstract class AuthRepository {

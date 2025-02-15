@@ -1,17 +1,14 @@
 import 'package:doormer/src/features/auth/presentation/pages/mobile/auth_page.dart';
-import 'package:doormer/src/features/auth/presentation/pages/mobile/candidate_registration_page.dart';
 import 'package:doormer/src/features/auth/presentation/pages/mobile/confirm_email_page.dart';
 import 'package:doormer/src/features/auth/presentation/pages/mobile/login_page.dart';
 import 'package:doormer/src/features/auth/presentation/pages/mobile/signup_page.dart';
+import 'package:doormer/src/features/chat/presentation/pages/chat_page.dart';
+import 'package:doormer/src/features/favourite/presentation/pages/favourite_page.dart';
+import 'package:doormer/src/features/home/candidate/presentation/pages/home_page.dart';
+import 'package:doormer/src/features/list/presentation/pages/list_page.dart';
 import 'package:doormer/src/shared/dashboard/presentation/pages/dashboard_page.dart';
-import 'package:doormer/src/shared/user/Entity/user_candidate_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../features/home/presentation/pages/home_page.dart';
-import '../../features/list/presentation/pages/list_page.dart';
-import '../../features/chat/presentation/pages/chat_page.dart';
-import '../../features/favourite/presentation/pages/favourite_page.dart';
-import '../../features/profile/presentation/pages/profile_page.dart';
 
 /*
 
@@ -83,13 +80,13 @@ class MobileRouter {
               transitionsBuilder: _fadeTransition,
             ),
           ),
-          GoRoute(
-            path: '/main/profile',
-            pageBuilder: (context, state) => const CustomTransitionPage(
-              child: ProfilePage(),
-              transitionsBuilder: _fadeTransition,
-            ),
-          ),
+          // GoRoute(
+          //   path: '/main/profile',
+          //   pageBuilder: (context, state) => const CustomTransitionPage(
+          //     child: ProfilePage(),
+          //     transitionsBuilder: _fadeTransition,
+          //   ),
+          // ),
         ],
       ),
     ],
