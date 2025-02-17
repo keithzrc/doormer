@@ -1,8 +1,5 @@
-// lib/src/features/auth/di/auth_module.dart
-
 import 'package:dio/dio.dart';
 import 'package:doormer/src/core/config/app_config.dart';
-import 'package:doormer/src/core/network/request_manager.dart';
 import 'package:doormer/src/core/services/sessions/session_service.dart';
 import 'package:doormer/src/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:doormer/src/features/auth/data/datasources/local_data_source.dart';
@@ -24,7 +21,6 @@ void initAuthModule() {
   // Register AuthRemoteDataSource
   serviceLocator.registerFactory<AuthRemoteDataSource>(
     () => AuthRemoteDataSource(
-      requestManager: serviceLocator<RequestManager>(),
       sessionService: serviceLocator<SessionService>(),
       googleSignIn: serviceLocator<GoogleSignIn>(),
       dio: serviceLocator<Dio>(),

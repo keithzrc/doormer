@@ -30,6 +30,10 @@ class SessionInterceptor extends Interceptor {
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
+    // Check if the current request should skip authentication.
+    if (options.extra['skipAuth'] == true) {
+      return handler.next(options);
+    }
     try {
       final accessToken = await _sessionService.getAccessToken();
       if (accessToken != null) {
@@ -38,7 +42,7 @@ class SessionInterceptor extends Interceptor {
     } catch (e) {
       AppLogger.error("Failed to attach access token: $e");
     }
-    super.onRequest(options, handler);
+    handler.next(options);
   }
 
   /// Handles errors and attempts to resolve 401 Unauthorized responses.
@@ -54,7 +58,7 @@ class SessionInterceptor extends Interceptor {
         // Attempt to refresh the token
         final newAccessToken = await _sessionService.refreshToken();
         if (newAccessToken != null) {
-          // Retry the original request with the new token
+          // Prepare to retry the original request with the new token.
           final retryOptions = err.requestOptions;
           retryOptions.headers['Authorization'] = 'Bearer $newAccessToken';
 
@@ -66,12 +70,12 @@ class SessionInterceptor extends Interceptor {
             ),
           );
 
-          return handler.resolve(cloneResponse); // Return the retried response
+          return handler.resolve(cloneResponse); // Return the retried response.
         }
       } on DioException catch (e) {
-        // Handle token refresh errors
+        // Handle token refresh errors.
         if (e.response?.statusCode == 401) {
-          // Both the access token and refresh token have expired; log out
+          // Both tokens are expired; log out.
           _globalSessionBloc.add(ExpireSession());
           await _sessionService.logout();
         } else {
@@ -83,7 +87,7 @@ class SessionInterceptor extends Interceptor {
       }
     }
 
-    // Forward the original error if it can't be resolved
-    super.onError(err, handler);
+    // Forward the original error if it can't be resolved.
+    handler.next(err);
   }
 }

@@ -1,23 +1,22 @@
 import 'package:dio/dio.dart';
-import 'package:doormer/src/core/network/request_manager.dart';
 import 'package:doormer/src/core/services/sessions/session_service.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:doormer/src/features/auth/data/models/login_response_model.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthRemoteDataSource {
-  final RequestManager requestManager;
   final SessionService sessionService;
   final GoogleSignIn googleSignIn;
   final Dio dio;
 
-  AuthRemoteDataSource(
-      {required this.requestManager,
-      required this.sessionService,
-      required this.googleSignIn,
-      required this.dio});
+  AuthRemoteDataSource({
+    required this.sessionService,
+    required this.googleSignIn,
+    required this.dio,
+  });
 
   // TODO: Add UserTypeValue to identify signing up company or candidate
+
   Future<LoginResponseModel> signup(String email, String password) async {
     try {
       final formData = FormData.fromMap({
@@ -26,10 +25,12 @@ class AuthRemoteDataSource {
         'password': password,
       });
 
-      final response = await requestManager.post(
+      final response = await dio.post(
         '/signup',
-        data: formData, // Use FormData instead of raw JSON
-        requiresAuth: false,
+        data: formData,
+        options: Options(
+          extra: {'skipAuth': true},
+        ),
       );
 
       return LoginResponseModel.fromJson(response.data);
@@ -41,10 +42,16 @@ class AuthRemoteDataSource {
 
   Future<LoginResponseModel> login(String email, String password) async {
     try {
-      final response = await requestManager.post(
+      final response = await dio.post(
         '/login',
-        data: {'auth_type': '1', 'email': email, 'password': password},
-        requiresAuth: false,
+        data: {
+          'auth_type': '1',
+          'email': email,
+          'password': password,
+        },
+        options: Options(
+          extra: {'skipAuth': true},
+        ),
       );
 
       AppLogger.info('Passing to UserModel.fromJson: ${response.data}');
@@ -56,9 +63,10 @@ class AuthRemoteDataSource {
   }
 
   // Sends verification code to verify email
+  // This endpoint is assumed to require authentication so no skipAuth flag is added.
   Future<void> verifyEmail(String email, String code) async {
     try {
-      await requestManager.post(
+      await dio.post(
         '/confirm-email', // Replace with your actual endpoint
         data: {'email': email, 'code': code},
       );
@@ -94,7 +102,7 @@ class AuthRemoteDataSource {
     }
   }
 
-  // Exchange Google ID token for backend tokens
+  // Exchange Google ID token for backend tokens.
   Future<LoginResponseModel> verifyGoogleIdToken(String googleIdToken) async {
     AppLogger.info('Google Id Token: $googleIdToken');
     try {
@@ -103,10 +111,12 @@ class AuthRemoteDataSource {
         'token': googleIdToken,
       });
 
-      final response = await requestManager.post(
+      final response = await dio.post(
         '/signup', // Your backend endpoint
         data: formData,
-        requiresAuth: false,
+        options: Options(
+          extra: {'skipAuth': true},
+        ),
       );
 
       if (response.statusCode == 200) {
