@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:doormer/src/features/registration/data/datasource/registration_remote_datasource.dart';
 import 'package:doormer/src/features/registration/data/model/candidate_registration_request_model.dart';
 import 'package:doormer/src/features/registration/data/model/company_registration_request_model.dart';
@@ -63,8 +62,8 @@ class RegistrationRepositoryImpl extends RegistrationRepository {
   Future<void> uploadCandidateDocument(
       {required Uint8List fileByte, required String fileName}) async {
     try {
-      // Step 1: Request SAS URL from backend
-      final String sasUrl = await dataSource.getSasUploadUrl(fileName);
+      // // Step 1: Request SAS URL from backend
+      final String sasUrl = await dataSource.getSasUploadUrl();
 
       // Step 2: Upload document to Azure Blob Storage using the SAS URL
       await dataSource.uploadFileToSasUrl(fileByte, sasUrl);

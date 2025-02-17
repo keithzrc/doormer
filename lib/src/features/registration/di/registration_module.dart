@@ -1,4 +1,4 @@
-import 'package:doormer/src/core/network/request_manager.dart';
+import 'package:dio/dio.dart';
 import 'package:doormer/src/features/registration/data/datasource/registration_remote_datasource.dart';
 import 'package:doormer/src/features/registration/data/repository/registration_repository_impl.dart';
 import 'package:doormer/src/features/registration/domain/repository/registration_repository.dart';
@@ -13,7 +13,7 @@ final serviceLocator = GetIt.instance;
 void initRegisterModule() {
   // Register RegistrationRemoteDatasource
   serviceLocator.registerLazySingleton(() => RegistrationRemoteDataSource(
-        requestManager: serviceLocator<RequestManager>(),
+        dio: serviceLocator<Dio>(),
       ));
 
   // Register RegistrationRepository
