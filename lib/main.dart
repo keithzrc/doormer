@@ -42,9 +42,10 @@ class MyApp extends StatelessWidget {
               builder: (_, __) {
                 return BlocListener<GlobalSessionBloc, GlobalSessionState>(
                   listener: (context, state) {
-                    if (state is SessionExpiredState) {
-                      AppRouter.router.go('/auth');
-                    }
+                    // TODO: Uncomment below for session navigations
+                    // if (state is SessionExpiredState) {
+                    //   AppRouter.router.go('/auth');
+                    // }
                   },
                   child: MaterialApp.router(
                     debugShowCheckedModeBanner: false,

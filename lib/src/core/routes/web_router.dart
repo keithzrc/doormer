@@ -8,6 +8,7 @@ import 'package:doormer/src/features/auth/presentation/pages/web/pending_verific
 import 'package:doormer/src/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:doormer/src/features/chat/presentation/pages/chat_page.dart';
 import 'package:doormer/src/features/home/candidate/presentation/pages/home_page.dart';
+import 'package:doormer/src/features/profile/presentation/pages/candidate/candidate_profile_page.dart';
 import 'package:doormer/src/features/registration/presentation/pages/signup_candidate_info_page_web.dart';
 import 'package:doormer/src/features/registration/presentation/pages/signup_company_info_page_web.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ WebRouter defines the routing structure and logic specifically for the web platf
 
 class WebRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/main/inbox',
+    initialLocation: '/dashboard/profile',
     routes: [
       // Authentication Routes (Only for users NOT logged in)
       GoRoute(
@@ -66,6 +67,10 @@ class WebRouter {
       GoRoute(
         path: '/main/home',
         builder: (context, state) => const HomePage(),
+      ),
+      GoRoute(
+        path: '/dashboard/profile',
+        builder: (context, state) => const CandidateProfilePage(),
       ),
       GoRoute(
         path: '/main/inbox',

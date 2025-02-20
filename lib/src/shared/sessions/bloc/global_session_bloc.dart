@@ -1,8 +1,12 @@
 import 'package:bloc/bloc.dart';
 import 'package:doormer/src/core/services/sessions/session_service.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
+import 'package:doormer/src/shared/user/account_status.dart';
+import 'package:doormer/src/shared/user/entities/user_candidate_entity.dart';
 import 'package:doormer/src/shared/user/entities/user_entity.dart';
+import 'package:doormer/src/shared/user/user_type.dart';
 import 'package:equatable/equatable.dart';
+import 'package:uuid/uuid.dart';
 
 part 'global_session_event.dart';
 part 'global_session_state.dart';
@@ -79,13 +83,25 @@ class GlobalSessionBloc extends Bloc<GlobalSessionEvent, GlobalSessionState> {
 
   /// Returns the current user if session is active, otherwise expires session.
   User getUser() {
-    final currentState = state;
+    return Candidate(
+      id: UuidValue(
+        "7d1277f6-72f2-48ac-9fe5-4ac3903502ee",
+      ),
+      email: 'candidate@example.com',
+      userType: UserType.candidate,
+      accountStatus: AccountStatus.active,
+      firstName: 'Alice',
+      lastName: 'Smith',
+      mobileNumber: '+15551234567',
+    );
+    // TODO: put it back
+    // final currentState = state;
 
-    if (currentState is SessionActiveState) {
-      return currentState.user;
-    } else {
-      add(ExpireSession()); // Move the state to SessionExpiredState
-      throw Exception("User session is expired. Redirecting to login.");
-    }
+    // if (currentState is SessionActiveState) {
+    //   return currentState.user;
+    // } else {
+    //   add(ExpireSession()); // Move the state to SessionExpiredState
+    //   throw Exception("User session is expired. Redirecting to login.");
+    // }
   }
 }
