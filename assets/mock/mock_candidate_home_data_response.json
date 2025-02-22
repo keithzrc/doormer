@@ -1,0 +1,41 @@
+{
+    "candidateProfile": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "profileAvatarUrl": "https://example.com/avatar.jpg"
+    },
+    "companyMatches": [
+      {
+        "id": "5c062ea4-6056-4e8c-8686-cc51414d702a",
+        "companyName": "Example Inc.",
+        "companyLogoUrl": "https://example.com/logo.png"
+      },
+      {
+        "id": "73db0320-d4ce-4c02-b103-d0bea970b1b3",
+        "companyName": "Tech Corp",
+        "companyLogoUrl": "https://example.com/logo2.png"
+      }
+    ],
+    "instructions": [
+      {
+        "totalFields": 5,
+        "completedFields": 3,
+        "nextFieldTip": "Please complete your email address."
+      }
+    ],
+    "news": [
+      {
+        "id": "e91b550c-5e48-48a5-8c0c-6b69c61c4f85",
+        "title": "Breaking News",
+        "content": "This is the breaking news content.",
+        "publishedAt": "2025-02-21T12:00:00Z"
+      },
+      {
+        "id": "fbaec0d6-d875-4234-8476-349157dfd270",
+        "title": "Tech News",
+        "content": "Latest updates in tech.",
+        "publishedAt": "2025-02-20T09:30:00Z"
+      }
+    ]
+  }
+  
