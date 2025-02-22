@@ -8,6 +8,7 @@ import 'package:doormer/src/core/utils/token_storage/token_storage_mobile.dart';
 import 'package:doormer/src/core/utils/token_storage/token_storage_web.dart';
 import 'package:doormer/src/features/auth/di/auth_module.dart';
 import 'package:doormer/src/features/chat/di/chat_module.dart';
+import 'package:doormer/src/features/home/di/home_module.dart';
 import 'package:doormer/src/features/registration/di/registration_module.dart';
 import 'package:doormer/src/shared/sessions/bloc/global_session_bloc.dart';
 import 'package:flutter/foundation.dart';
@@ -72,4 +73,6 @@ Future<void> initDependencies() async {
   initRegisterModule();
 
   initChatModule(); // Initialize Chat feature dependencies
+
+  initHomeModule();
 }

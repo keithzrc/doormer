@@ -64,3 +64,4 @@ flutter:
     - lib/src/features/chat/data/repositories/file/dummydata.json
     - assets/mock/mock_login_response.json
     - assets/profile/candidate_profile_options.json
+    - assets/mock/mock_candidate_home_data_response.json

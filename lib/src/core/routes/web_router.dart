@@ -10,6 +10,7 @@ import 'package:doormer/src/features/chat/presentation/pages/chat_page.dart';
 import 'package:doormer/src/features/home/candidate/presentation/pages/home_page.dart';
 import 'package:doormer/src/features/registration/presentation/pages/signup_candidate_info_page_web.dart';
 import 'package:doormer/src/features/registration/presentation/pages/signup_company_info_page_web.dart';
+import 'package:doormer/src/shared/dashboard/presentation/web/pages/dashboard_page_web.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -26,7 +27,7 @@ WebRouter defines the routing structure and logic specifically for the web platf
 
 class WebRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/main/inbox',
+    initialLocation: '/dashboard',
     routes: [
       // Authentication Routes (Only for users NOT logged in)
       GoRoute(
@@ -76,7 +77,41 @@ class WebRouter {
           ),
         ),
       ),
+      GoRoute(
+        path: '/dashboard',
+        builder: (context, state) => const DashboardPageWeb(),
+      )
     ],
+
+//     final GoRouter router = GoRouter(
+//   initialLocation: '/dashboard/home',
+//   routes: [
+//     // ShellRoute provides a persistent layout for the dashboard.
+//     ShellRoute(
+//       builder: (BuildContext context, GoRouterState state, Widget child) {
+//         return DashboardPageWeb(child: child);
+//       },
+//       routes: [
+//         GoRoute(
+//           path: '/dashboard/home',
+//           builder: (context, state) => HomePage(), // Your Home Page widget
+//         ),
+//         GoRoute(
+//           path: '/dashboard/profile',
+//           builder: (context, state) => ProfilePage(), // Your Profile Page widget
+//         ),
+//         GoRoute(
+//           path: '/dashboard/message',
+//           builder: (context, state) => MessagePage(), // Your Message Page widget
+//         ),
+//         GoRoute(
+//           path: '/dashboard/settings',
+//           builder: (context, state) => SettingsPage(), // Your Settings Page widget
+//         ),
+//       ],
+//     ),
+//   ],
+// );
 
     // redirect: (context, state) {
     //   final sessionState = context.read<GlobalSessionBloc>().state;

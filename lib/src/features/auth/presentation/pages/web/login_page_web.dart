@@ -53,7 +53,7 @@ class LoginPageWeb extends StatelessWidget {
                   // Navigate based on accountStatus
                   switch (accountStatus) {
                     case AccountStatus.active:
-                      router.go('/main/home'); // Navigate to the dashboard
+                      router.go('/dashboard'); // Navigate to the dashboard
                       break;
                     case AccountStatus.pending:
                       router.go(
