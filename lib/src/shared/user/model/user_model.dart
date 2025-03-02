@@ -53,6 +53,7 @@ class UserModel {
             AccountStatusExtension.fromApiString(json['accountStatus']),
         firstName: json['firstName'],
         lastName: json['lastName'],
+        mobileNumber: json['mobileNumber'],
         companyName: json['companyName'],
         nzbn: json['nzbn'],
         companyType: json['companyType'],

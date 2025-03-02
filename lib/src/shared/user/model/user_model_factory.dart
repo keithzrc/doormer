@@ -19,7 +19,7 @@ extension UserModelToEntity on UserModel {
     } else if (userType == UserType.candidate) {
       if (firstName == null || lastName == null || mobileNumber == null) {
         throw Exception(
-            'Invalid data: Candidate must have firstName and lastName');
+            'Invalid data: Candidate must have firstName and lastName and mobileNumber');
       }
       return Candidate(
         id: id,
