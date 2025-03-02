@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:doormer/src/core/network/dio_client.dart';
-import 'package:doormer/src/core/network/request_manager.dart';
 import 'package:doormer/src/core/services/sessions/session_service.dart';
 import 'package:doormer/src/core/services/sessions/session_service_impl.dart';
 import 'package:doormer/src/core/utils/token_storage/token_storage.dart';
@@ -48,15 +47,6 @@ Future<void> initDependencies() async {
   // Register Dio
   serviceLocator.registerLazySingleton<Dio>(
     () => DioClient.createDio(
-      sessionService: serviceLocator<SessionService>(),
-      sessionBloc: serviceLocator<GlobalSessionBloc>(),
-    ),
-  );
-
-  // Register RequestManager with Dio, SessionService, and GlobalSessionBloc
-  serviceLocator.registerSingleton<RequestManager>(
-    RequestManager(
-      dio: serviceLocator<Dio>(),
       sessionService: serviceLocator<SessionService>(),
       sessionBloc: serviceLocator<GlobalSessionBloc>(),
     ),
