@@ -37,8 +37,13 @@ void initAuthModule() {
         sessionService: serviceLocator<SessionService>(),
       ));
 
-  // Register AuthUseCase
-  serviceLocator.registerLazySingleton(() => AuthUseCase(serviceLocator()));
+  // Register AuthUseCase with individual use cases
+  serviceLocator.registerLazySingleton(() => AuthUseCase(
+        signup: Signup(serviceLocator<AuthRepository>()),
+        login: Login(serviceLocator<AuthRepository>()),
+        signInWithGoogle: SignInWithGoogle(serviceLocator<AuthRepository>()),
+        verifyEmail: VerifyEmail(serviceLocator<AuthRepository>()),
+      ));
 
   // Register AuthBloc
   serviceLocator.registerFactory(() => AuthBloc(

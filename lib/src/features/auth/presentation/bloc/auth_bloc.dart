@@ -2,8 +2,11 @@ import 'package:bloc/bloc.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:doormer/src/features/auth/domain/usecases/auth_usecase.dart';
 import 'package:doormer/src/shared/sessions/bloc/global_session_bloc.dart';
-import 'auth_event.dart';
-import 'auth_state.dart';
+import 'package:doormer/src/shared/user/user_type.dart';
+import 'package:equatable/equatable.dart';
+
+part 'auth_event.dart';
+part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthUseCase authUseCase;
@@ -30,24 +33,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     AppLogger.debug('AuthLoading state emitted');
 
-    try {
-      // Call signup method on authUseCase and await result
-      final user = await authUseCase.signup(
-          email: event.email,
-          password: event.password,
-          userType: event.userType);
+    final result = await authUseCase.signup(
+      email: event.email,
+      password: event.password,
+      userType: event.userType,
+    );
 
-      // Dispatch SessionStarted to GlobalSessionBloc
-      globalSessionBloc.add(SessionStarted(user));
-
-      // Emit success state with user data upon successful signup
-      emit(AuthSuccess());
-      AppLogger.info('AuthSuccess state emitted with user: ${user.email}');
-    } catch (e, stackTrace) {
-      // Handle errors by emitting failure state and logging the error
-      emit(AuthFailure(e.toString()));
-      AppLogger.error('AuthFailure state emitted with error', e, stackTrace);
-    }
+    result.fold(
+      (failure) {
+        emit(AuthFailure(failure.message));
+        AppLogger.error(
+            'AuthFailure state emitted with error: ${failure.message}');
+      },
+      (user) {
+        // Dispatch SessionStarted to GlobalSessionBloc
+        globalSessionBloc.add(SessionStarted(user));
+        emit(AuthSuccess());
+        AppLogger.info('AuthSuccess state emitted with user: ${user.email}');
+      },
+    );
   }
 
   /// Handles the LoginRequested event
@@ -58,38 +62,46 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     // Emit loading state before performing login
     emit(AuthLoading());
 
-    try {
-      // Call login method on authUseCase and await result
-      final user =
-          await authUseCase.login(email: event.email, password: event.password);
+    final result = await authUseCase.login(
+      email: event.email,
+      password: event.password,
+    );
 
-      AppLogger.info('User acquired: $user');
-      // Dispatch SessionStarted to GlobalSessionBloc
-      globalSessionBloc.add(SessionStarted(user));
-
-      // Emit success state with user data upon successful login
-      emit(AuthSuccess());
-      AppLogger.info('AuthSuccess state emitted with user: ${user.email}');
-    } catch (e, stackTrace) {
-      // Handle errors by emitting failure state and logging the error
-      emit(AuthFailure(e.toString()));
-      AppLogger.error('AuthFailure state emitted with error', e, stackTrace);
-    }
+    result.fold(
+      (failure) {
+        emit(AuthFailure(failure.message));
+        AppLogger.error(
+            'AuthFailure state emitted with error: ${failure.message}');
+      },
+      (user) {
+        AppLogger.info('User acquired: $user');
+        // Dispatch SessionStarted to GlobalSessionBloc
+        globalSessionBloc.add(SessionStarted(user));
+        emit(AuthSuccess());
+        AppLogger.info('AuthSuccess state emitted with user: ${user.email}');
+      },
+    );
   }
 
-  /// Handles the verifyEmailRequested event
+  /// Handles the VerifyEmailRequested event
   Future<void> _onConfirmEmailRequested(
       VerifyEmailRequested event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
-    try {
-      await authUseCase.verifyEmail(email: event.email, code: event.code);
-      emit(AuthSuccess()); // No user data needed for email verification
-    } catch (e) {
-      emit(AuthFailure(e.toString()));
-    }
+    final result = await authUseCase.verifyEmail(
+      email: event.email,
+      code: event.code,
+    );
+    result.fold(
+      (failure) {
+        emit(AuthFailure(failure.message));
+      },
+      (_) {
+        emit(AuthSuccess()); // No user data needed for email verification
+      },
+    );
   }
 
-  /// Handles googleSignInRequested event
+  /// Handles GoogleSignInRequested event
   Future<void> _onGoogleSignInRequested(
       GoogleSignInRequested event, Emitter<AuthState> emit) async {
     AppLogger.info('GoogleSignInRequested event received');
@@ -98,21 +110,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     AppLogger.debug('AuthLoading state emitted for Google Sign-In');
 
-    try {
-      // Perform Google sign-in (update the method with actual logic)
-      final user = await authUseCase.signInWithGoogle(event.idToken);
-      AppLogger.info('AuthUsecase called googleSignIn');
-      // Dispatch SessionStarted to GlobalSessionBloc
-      globalSessionBloc.add(SessionStarted(user));
-
-      // Emit success state with user data
-      emit(AuthSuccess());
-      AppLogger.info('AuthSuccess state emitted with user: ${user.email}');
-    } catch (e, stackTrace) {
-      // Emit failure state
-      emit(AuthFailure(e.toString()));
-      AppLogger.error(
-          'AuthFailure state emitted for Google Sign-In', e, stackTrace);
-    }
+    final result = await authUseCase.signInWithGoogle(event.idToken);
+    result.fold(
+      (failure) {
+        emit(AuthFailure(failure.message));
+        AppLogger.error(
+            'AuthFailure state emitted for Google Sign-In: ${failure.message}');
+      },
+      (user) {
+        // Dispatch SessionStarted to GlobalSessionBloc
+        globalSessionBloc.add(SessionStarted(user));
+        emit(AuthSuccess());
+        AppLogger.info('AuthSuccess state emitted with user: ${user.email}');
+      },
+    );
   }
 }

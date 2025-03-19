@@ -5,8 +5,6 @@ import 'package:doormer/src/shared/user/user_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doormer/src/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:doormer/src/features/auth/presentation/bloc/auth_event.dart';
-import 'package:doormer/src/features/auth/presentation/bloc/auth_state.dart';
 import 'package:doormer/src/features/auth/presentation/widgets/web/auth_textfield_web.dart';
 import 'package:doormer/src/features/auth/presentation/widgets/web/switch_auth_mode_line.dart';
 import 'package:doormer/src/features/auth/utils/auth_validators.dart';

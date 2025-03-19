@@ -3,8 +3,6 @@
 import 'package:doormer/src/core/theme/app_colors.dart';
 import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:doormer/src/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:doormer/src/features/auth/presentation/bloc/auth_event.dart';
-import 'package:doormer/src/features/auth/presentation/bloc/auth_state.dart';
 import 'package:doormer/src/shared/user/user_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -1,3 +1,5 @@
+import 'package:dartz/dartz.dart';
+import 'package:doormer/src/core/errors/failure.dart';
 import 'package:doormer/src/features/auth/domain/repository/auth_repository.dart';
 import 'package:doormer/src/shared/user/entities/user_entity.dart';
 import 'package:doormer/src/shared/user/user_type.dart';
@@ -8,11 +10,12 @@ class AuthUseCase {
   final SignInWithGoogle signInWithGoogle;
   final VerifyEmail verifyEmail;
 
-  AuthUseCase(AuthRepository authRepository)
-      : signup = Signup(authRepository),
-        login = Login(authRepository),
-        signInWithGoogle = SignInWithGoogle(authRepository),
-        verifyEmail = VerifyEmail(authRepository);
+  AuthUseCase({
+    required this.signup,
+    required this.login,
+    required this.signInWithGoogle,
+    required this.verifyEmail,
+  });
 }
 
 class Signup {
@@ -20,7 +23,7 @@ class Signup {
 
   Signup(this.authRepository);
 
-  Future<User> call({
+  Future<Either<Failure, User>> call({
     required String email,
     required String password,
     required UserType userType,
@@ -38,11 +41,14 @@ class Login {
 
   Login(this.authRepository);
 
-  Future<User> call({
+  Future<Either<Failure, User>> call({
     required String email,
     required String password,
   }) async {
-    return await authRepository.login(email: email, password: password);
+    return await authRepository.login(
+      email: email,
+      password: password,
+    );
   }
 }
 
@@ -51,7 +57,7 @@ class SignInWithGoogle {
 
   SignInWithGoogle(this.authRepository);
 
-  Future<User> call(String idToken) async {
+  Future<Either<Failure, User>> call(String idToken) async {
     return await authRepository.signInWithGoogle(idToken);
   }
 }
@@ -61,10 +67,13 @@ class VerifyEmail {
 
   VerifyEmail(this.authRepository);
 
-  Future<void> call({
+  Future<Either<Failure, void>> call({
     required String email,
     required String code,
   }) async {
-    return await authRepository.verifyEmail(email: email, code: code);
+    return await authRepository.verifyEmail(
+      email: email,
+      code: code,
+    );
   }
 }

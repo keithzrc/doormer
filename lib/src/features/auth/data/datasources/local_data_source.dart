@@ -1,53 +1,79 @@
 import 'dart:convert';
+import 'package:dartz/dartz.dart';
+import 'package:doormer/src/core/errors/failure.dart';
+import 'package:flutter/services.dart';
 import 'package:doormer/src/features/auth/data/models/login_response_model.dart';
 import 'package:doormer/src/shared/user/model/user_model.dart';
-import 'package:flutter/services.dart';
 
 class AuthLocalDataSource {
-  Future<LoginResponseModel> signup(String email, String password) async {
-    final mockData = await _loadMockData();
+  Future<Either<Failure, LoginResponseModel>> signup(
+      String email, String password) async {
+    try {
+      final mockData = await _loadMockData();
 
-    // Simulate checking credentials during signup
-    if (mockData["user_info"]["email"] == email) {
-      throw Exception("User already exists.");
-    }
+      // Simulate checking credentials during signup
+      if (mockData["user_info"]["email"] == email) {
+        throw Exception("User already exists.");
+      }
 
-    return LoginResponseModel.fromJson(mockData);
-  }
-
-  Future<LoginResponseModel> login(String email, String password) async {
-    final mockData = await _loadMockData();
-
-    // Simulate login authentication
-    if (mockData["user_info"]["email"] != email || password != "password123") {
-      throw Exception("Invalid email or password.");
-    }
-
-    return LoginResponseModel.fromJson(mockData);
-  }
-
-  Future<void> verifyEmail(String email, String code) async {
-    // Simulate verification process
-    if (code != "123456") {
-      throw Exception("Invalid verification code.");
+      return Right(LoginResponseModel.fromJson(mockData));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
-  Future<String> getGoogleIdToken() async {
-    // Simulate fetching a Google ID token
-    return "mock-google-id-token";
+  Future<Either<Failure, LoginResponseModel>> login(
+      String email, String password) async {
+    try {
+      final mockData = await _loadMockData();
+
+      // Simulate login authentication
+      if (mockData["user_info"]["email"] != email ||
+          password != "password123") {
+        throw Exception("Invalid email or password.");
+      }
+
+      return Right(LoginResponseModel.fromJson(mockData));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 
-  Future<LoginResponseModel> exchangeGoogleIdTokenForTokens(
+  Future<Either<Failure, void>> verifyEmail(String email, String code) async {
+    try {
+      // Simulate verification process
+      if (code != "123456") {
+        throw Exception("Invalid verification code.");
+      }
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  Future<Either<Failure, String>> getGoogleIdToken() async {
+    try {
+      // Simulate fetching a Google ID token
+      return const Right("mock-google-id-token");
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  Future<Either<Failure, LoginResponseModel>> exchangeGoogleIdTokenForTokens(
       String googleIdToken) async {
-    final mockData = await _loadMockData();
+    try {
+      final mockData = await _loadMockData();
 
-    // Simulate exchanging Google ID token
-    if (googleIdToken != "mock-google-id-token") {
-      throw Exception("Invalid Google ID token.");
+      // Simulate exchanging Google ID token
+      if (googleIdToken != "mock-google-id-token") {
+        throw Exception("Invalid Google ID token.");
+      }
+
+      return Right(LoginResponseModel.fromJson(mockData));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
-
-    return LoginResponseModel.fromJson(mockData);
   }
 
   Future<Map<String, dynamic>> _loadMockData() async {
@@ -61,7 +87,7 @@ class AuthLocalDataSource {
     }
   }
 
-  Future<UserModel> registerCompanyInfo({
+  Future<Either<Failure, UserModel>> registerCompanyInfo({
     required String companyName,
     required String nzbn,
     required String companyType,
@@ -69,37 +95,45 @@ class AuthLocalDataSource {
     required String industry,
     required String oriented,
   }) async {
-    // Simulate saving company info and returning updated user data
-    final mockResponse = {
-      "id": "7d1277f6-72f2-48ac-9fe5-4ac3903502ee",
-      "email": "employer@example.com",
-      "userType": "employer",
-      "accountStatus": "active",
-      "companyName": companyName,
-      "nzbn": nzbn,
-      "companyType": companyType,
-      "companySize": companySize,
-      "industry": industry,
-      "oriented": oriented,
-    };
+    try {
+      // Simulate saving company info and returning updated user data
+      final mockResponse = {
+        "id": "7d1277f6-72f2-48ac-9fe5-4ac3903502ee",
+        "email": "employer@example.com",
+        "userType": "employer",
+        "accountStatus": "active",
+        "companyName": companyName,
+        "nzbn": nzbn,
+        "companyType": companyType,
+        "companySize": companySize,
+        "industry": industry,
+        "oriented": oriented,
+      };
 
-    return UserModel.fromJson(mockResponse);
+      return Right(UserModel.fromJson(mockResponse));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 
-  Future<UserModel> registerCandidateInfo({
+  Future<Either<Failure, UserModel>> registerCandidateInfo({
     required String firstName,
     required String lastName,
   }) async {
-    // Simulate saving candidate info and returning updated user data
-    final mockResponse = {
-      "id": "7d1277f6-72f2-48ac-9fe5-4ac3903502ee",
-      "email": "candidate@example.com",
-      "userType": "candidate",
-      "accountStatus": "active",
-      "firstName": firstName,
-      "lastName": lastName,
-    };
+    try {
+      // Simulate saving candidate info and returning updated user data
+      final mockResponse = {
+        "id": "7d1277f6-72f2-48ac-9fe5-4ac3903502ee",
+        "email": "candidate@example.com",
+        "userType": "candidate",
+        "accountStatus": "active",
+        "firstName": firstName,
+        "lastName": lastName,
+      };
 
-    return UserModel.fromJson(mockResponse);
+      return Right(UserModel.fromJson(mockResponse));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 }

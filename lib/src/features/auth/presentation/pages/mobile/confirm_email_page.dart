@@ -1,7 +1,6 @@
 import 'package:doormer/src/core/utils/app_logger.dart';
 import 'package:doormer/src/features/auth/di/auth_module.dart';
 import 'package:doormer/src/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:doormer/src/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
